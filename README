@@ -1,0 +1,29 @@
+Starship Fleet
+==============
+Starship Fleet is a spaceship combat game written in C11 with SDL2.
+For Linux and FreeBSD.
+
+See screenshots directory for preview gameplay images.
+BUILD
+=====
+
+INSTALL
+=======
+
+
+GAMEPLAY
+========
+
+
+CONTROLS
+========
+
+
+DOCUMENTATION
+=============
+More information and documentation can be found in the docs/ directory.
+
+LICENSE
+=======
+All code and files are licensed under the BSD2 license.
+Checkout LICENSE for more details.
