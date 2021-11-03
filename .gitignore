@@ -1,3 +1,6 @@
 *~
+log.txt
 build/**
-
+lib/**
+docs/mydocs/**
+!lib/.placeholder
