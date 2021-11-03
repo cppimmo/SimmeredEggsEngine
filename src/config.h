@@ -18,6 +18,6 @@ typedef struct {
 } Options;
 
 bool config_load(const char *filename, Options *pOptions);
-bool config_close();
+void config_close();
 
 #endif // CONFIG_H

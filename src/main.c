@@ -1,33 +1,105 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <signal.h>
+#include <string.h>
 
 #include "log.h"
 #include "config.h"
-
-int exit_code = 0;
+#include "appwindow.h"
+#include "render.h"
+#include "glerror.h"
+#include "SDL.h"
 
 static void cmdargs(int argc, char **argv);
 static void usage();
-static void signal_interrupt(int sig);
+static void signal_handler(int signum);
+static void shutdown();
+static int exit_code = 0;
+static bool verbose = true;
 
-int main(int argc, char *argv[])
+typedef struct {
+	bool config_loaded;
+	bool log_opened;
+	bool log_closed;
+	bool config_closed;
+	bool window_created;
+} AppState;
+AppState app_state = {false,false,false,false,false,};
+
+int main(int argc, char **argv)
 {
 	cmdargs(argc, argv);
-	/* signal(SIGABRT, signal_);
-	signal(SIGFPE, signal_);
-	signal(SIGILL, signal_);
-	signal(SIGINT, signal_);
-	signal(SIGSEGV, signal_);
-	signal(SIGTERM, signal_); */
-	puts("Hello World!");
+	/* SIGABRT, SIGFPE,	SIGILL,
+	SIGINT,	SIGSEGV, SIGTERM */
+	if (!log_open(LOG_FILE, verbose)) {
+		fprintf(stderr, "Failed to open log file for writing, %s", LOG_FILE);
+	}
+	log_write(LOG_MSG, "Initializing Starship Fleet...\n");
+	log_write(LOG_MSG, "Loading configuration file...\n");
+
+	Options options = {
+        .window_title = "Starship Fleet",
+		.window_size_x = 800,
+		.window_size_y = 600,
+		.refresh_rate = 60,
+		.vsync_enabled = true,
+		.graphics_quality = 6,
+	};
+	if (!config_load(CONFIG_FILE, &options)) {
+		log_write(LOG_MSG, "Configuration parsing error. Using reasonable set of defaults.\n");
+	}
+	config_close();
+	log_write(LOG_MSG, "Configuration parsed successfully.\n");
+	log_write(LOG_MSG, "Initialization complete. Elapsed time: %ds\n", 0);
+
+	
+	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+		log_write(LOG_ERR, "SDL_Init failure: %s\n", SDL_GetError());
+		return false;
+	}
+	atexit(shutdown);
+	
+	SDL_Window *pWindow = NULL;
+	SDL_GLContext *pContext = NULL;
+	if (!window_init(pWindow, pContext, &options)) {
+		log_write(LOG_ERR, "Window initilization failure.\n");
+		exit_code = 1;
+		return exit_code;
+	}
+	r_set_gl_callback(&gl_debug_callback, NULL);
+	bool running = true;
+	SDL_Event evt;
+	while (running) {
+		while (SDL_PollEvent(&evt) != 0) {
+		    if (evt.type == SDL_QUIT) {
+				running = false;
+			}
+		}
+		static const float clear_color[] = { 0.0f, 1.0f, 0.0f, 1.0f,};
+		glClearBufferfv(GL_COLOR, 0, clear_color);
+		glClear(GL_COLOR_BUFFER_BIT);
+		
+		SDL_GL_SwapWindow(pWindow);
+	}
+	
+	window_close(pWindow, pContext);
+	SDL_Quit();
+	log_close();
 	return exit_code;
 }
 
 void cmdargs(int argc, char **argv)
 {
+	// use continue; to shift arguments for option values
 	for (int i = 1; i < argc; ++i) {
 	    printf("Testing argument[%d]: %s\n", i, argv[i]);
+		if (strcmp("-q", argv[i])) {
+			verbose = false;
+		} else if (strcmp("--quiet", argv[i])) {
+			verbose = false;
+	    } else {
+			usage();
+		}
 	}
 }
 
@@ -39,5 +111,14 @@ void usage()
 
 void signal_handler(int signum)
 {
+	switch (signum) {
 
+	}
 }
+
+// do any necessary resource management here
+void shutdown()
+{
+	SDL_Quit();
+}
+

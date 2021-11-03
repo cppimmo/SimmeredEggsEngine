@@ -9,8 +9,10 @@ bool config_load(const char *filename, Options *pOtions)
 	return true;
 }
 
-bool config_close()
+void config_close()
 {
-	return true;
+	if (pConfigFile != NULL) {
+		fclose(pConfigFile);
+	}
 }
 

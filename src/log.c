@@ -1,19 +1,38 @@
 #include "log.h"
-#include <stdarg.h>
 
-bool LogOpen(const char *filename)
+static bool verbose_stdout;
+
+bool log_open(const char *filename, bool verbose)
 {
-	if ((pLogFile = fopen(LOG_FILE, "w")))
+	verbose_stdout = verbose;
+	pLogFile = fopen(filename, "w");
+	if (pLogFile != NULL)
 		return true;
 	return false;
 }
 
-void LogWrite(const char *str)
+void log_write(enum LOG_TYPE type, const char *fmt, ...)
 {
-	fprintf(pLogFile, str);
+	va_list args;
+	va_start(args, fmt);
+	FILE *pHandle = NULL;
+	switch (type) {
+	case LOG_MSG:
+	case LOG_LOG:
+		pHandle = stdout;
+		break;
+	case LOG_ERR:
+		pHandle = stderr;
+		break;
+	default:
+		pHandle = stdout;
+	}
+	vfprintf(pHandle, fmt, args);
+	vfprintf(pLogFile, fmt, args);
+	va_end(args);
 }
 
-bool LogClose()
+bool log_close()
 {
 	if (fclose(pLogFile))
 		return true;
