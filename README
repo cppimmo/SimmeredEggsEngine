@@ -1,11 +1,17 @@
 Starship Fleet
 ==============
-Starship Fleet is a spaceship combat game written in C11 with SDL2.
+Starship Fleet is a spaceship combat game written in C11/w SDL2 and OpenGL 4.3.
 For Linux and FreeBSD.
 
 See screenshots directory for preview gameplay images.
 BUILD
 =====
+Dependencies:
+	cglm - version 0.8.4
+	SDL2 - version 2.0.16
+	gl3w - version 2.1.0
+	OpenAL - version 1.12.1
+	libaudio - version
 
 INSTALL
 =======
