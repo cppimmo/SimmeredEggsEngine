@@ -10,6 +10,8 @@
 #include "glerror.h"
 #include "SDL.h"
 
+#define APP_VERSION "1.0.0"
+
 static void cmdargs(int argc, char **argv);
 static void usage();
 static void signal_handler(int signum);
@@ -91,21 +93,25 @@ int main(int argc, char **argv)
 void cmdargs(int argc, char **argv)
 {
 	// use continue; to shift arguments for option values
-	for (int i = 1; i < argc; ++i) {
+	for (int i = 1; i <= argc - 1; ++i) {
 	    printf("Testing argument[%d]: %s\n", i, argv[i]);
-		if (strcmp("-q", argv[i])) {
+		if (strcmp(argv[i], "-q") == 0 || strcmp(argv[i], "--quiet") == 0) {
 			verbose = false;
-		} else if (strcmp("--quiet", argv[i])) {
-			verbose = false;
-	    } else {
-			usage();
+		} else {
+			if (argc > 1)
+				usage();
 		}
 	}
 }
 
 void usage()
 {
-	printf("Usage: starshipfleet: \n");
+	printf("Starship Fleet v"APP_VERSION"\n"
+		   "Starship Fleet is a spaceship fleet battle game.\n\n"
+		   "USAGE:\n\tstarshipfleet [FLAGS] [OPTIONS]\n\n"
+           "FLAGS:\n"
+	       "    -q, --quiet Suppress IO to stdout and stderr\n\n"
+           "OPTIONS:\n");
 	exit(1); // okay to exit no initialization done
 }
 
