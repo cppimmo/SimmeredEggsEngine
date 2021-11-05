@@ -12,7 +12,8 @@ Dependencies:
 	gl3w - version 2.1.0
 	OpenAL - version 1.12.1
 	libaudio - version
-
+    SDL_ttf - version 2.0.15
+	
 INSTALL
 =======
 
