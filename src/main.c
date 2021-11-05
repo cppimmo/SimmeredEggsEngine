@@ -10,6 +10,8 @@
 #include "glerror.h"
 #include "SDL.h"
 
+#include "shader.h"
+
 #define APP_VERSION "1.0.0"
 
 static void cmdargs(int argc, char **argv);
@@ -69,9 +71,38 @@ int main(int argc, char **argv)
 		return exit_code;
 	}
 	r_set_gl_callback(&gl_debug_callback, NULL);
+
+	// opengl test code
+	static const float vertices[6][2] = {
+		{-0.90f,-0.90f},
+		{ 0.85f,-0.90f},
+		{-0.90f, 0.85f},
+		{ 0.90f,-0.85f},
+		{ 0.90f, 0.90f},
+		{-0.85f, 0.90f},
+	};
+
+	GLuint vbo, vao;
+	glCreateBuffers(1, &vbo);
+	glNamedBufferStorage(vbo, sizeof(vertices), vertices, 0);
+
+	ShaderInfo shaders[] = {
+		{GL_VERTEX_SHADER,"assets/shaders/triangle_vs.glsl",0},
+		{GL_FRAGMENT_SHADER,"assets/shaders/triangle_fs.glsl",0},
+	};
+	GLuint program;
+	program_create(&program, shaders, 2);
+	program_use(program);
+
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(&vao);
+	glBindBuffer(GL_ARRAY_BUFFER, &vbo);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+	glEnableVertexAttribArray(0);
+	
 	bool running = true;
-	SDL_Event evt;
 	while (running) {
+		SDL_Event evt;
 		while (SDL_PollEvent(&evt) != 0) {
 		    if (evt.type == SDL_QUIT) {
 				running = false;
@@ -80,7 +111,9 @@ int main(int argc, char **argv)
 		static const float clear_color[] = { 0.0f, 1.0f, 0.0f, 1.0f,};
 		glClearBufferfv(GL_COLOR, 0, clear_color);
 		glClear(GL_COLOR_BUFFER_BIT);
-		
+
+		glBindVertexArray(vao);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 		SDL_GL_SwapWindow(pWindow);
 	}
 	

@@ -4,14 +4,14 @@
 bool window_init(SDL_Window *pWindow, SDL_GLContext *pContext,
 				 const Options *const pOptions)
 {
-	window_attribs(3, 3, true);
 	pWindow = SDL_CreateWindow("Starship Fleet", SDL_WINDOWPOS_UNDEFINED,
-							   SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_OPENGL);
+							   SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 	if (pWindow == NULL) {
 		log_write(LOG_ERR, "SDL_CreateWindow() failure: %s\n", SDL_GetError());
 		return false;
 	}
 	pContext = SDL_GL_CreateContext(pWindow);
+	window_attribs(3, 3, true);
 	if (pContext == NULL) {
 		log_write(LOG_ERR, "SDL_GL_CreateContext() failure: %s\n", SDL_GetError());
 		return false;

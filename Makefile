@@ -1,4 +1,4 @@
-CC=clang
+CC=gcc
 PROGNAME?=starshipfleet
 LIB_DIR?=./lib
 BUILD_DIR?=./build

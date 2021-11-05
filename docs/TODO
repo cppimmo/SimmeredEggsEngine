@@ -1,0 +1,15 @@
+Choose a texture loading library.
+
+Create texture loading interface.
+	
+Font loading library such as SDL_ttf.
+
+Create a dynamic game scene loader.
+
+Create interface for mouse, keyboard, and joystick.
+
+Complete shader interaction/loading code.
+
+Make function and data structure for loading spheres and cubes for creation of
+syboxes.
+
