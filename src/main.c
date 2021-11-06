@@ -8,7 +8,7 @@
 #include "appwindow.h"
 #include "render.h"
 #include "glerror.h"
-#include "SDL.h"
+#include "SDL2/SDL.h"
 
 #include "shader.h"
 
@@ -56,7 +56,6 @@ int main(int argc, char **argv)
 	log_write(LOG_MSG, "Configuration parsed successfully.\n");
 	log_write(LOG_MSG, "Initialization complete. Elapsed time: %ds\n", 0);
 
-	
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
 		log_write(LOG_ERR, "SDL_Init failure: %s\n", SDL_GetError());
 		return false;
@@ -101,8 +100,8 @@ int main(int argc, char **argv)
 	glEnableVertexAttribArray(0);
 	
 	bool running = true;
+	SDL_Event evt;
 	while (running) {
-		SDL_Event evt;
 		while (SDL_PollEvent(&evt) != 0) {
 		    if (evt.type == SDL_QUIT) {
 				running = false;
@@ -114,6 +113,7 @@ int main(int argc, char **argv)
 
 		glBindVertexArray(vao);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
+
 		SDL_GL_SwapWindow(pWindow);
 	}
 	

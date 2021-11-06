@@ -1,23 +1,24 @@
 #include "appwindow.h"
 #include "log.h"
 
-bool window_init(SDL_Window *pWindow, SDL_GLContext *pContext,
-				 const Options *const pOptions)
+bool window_init(SDL_Window *p_window, SDL_GLContext *p_context,
+				 const Options *const p_options)
 {
-	pWindow = SDL_CreateWindow("Starship Fleet", SDL_WINDOWPOS_UNDEFINED,
+	window_attribs(4, 2, true);
+	p_window = SDL_CreateWindow("Starship Fleet", SDL_WINDOWPOS_UNDEFINED,
 							   SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-	if (pWindow == NULL) {
+	if (p_window == NULL) {
 		log_write(LOG_ERR, "SDL_CreateWindow() failure: %s\n", SDL_GetError());
 		return false;
 	}
-	pContext = SDL_GL_CreateContext(pWindow);
-	window_attribs(3, 3, true);
-	if (pContext == NULL) {
+	
+	p_context = SDL_GL_CreateContext(p_window);
+	if (p_context == NULL) {
 		log_write(LOG_ERR, "SDL_GL_CreateContext() failure: %s\n", SDL_GetError());
 		return false;
 	}
 
-	if (SDL_GL_MakeCurrent(pWindow, pContext) < 0) {
+	if (SDL_GL_MakeCurrent(p_window, p_context) < 0) {
 		log_write(LOG_ERR, "SDL_GL_MakeCurrent() failure: %s\n", SDL_GetError());
 		return false;
 	}
@@ -30,25 +31,45 @@ bool window_init(SDL_Window *pWindow, SDL_GLContext *pContext,
 		log_write(LOG_ERR, "glewInit() error: %s\n", glewGetErrorString(glew_error));
 		return false;
 	}
-	// log_write(LOG_MSG, "gl3w loaded successfully; version: %s\n", glewGetString(GLEW_VERSION));
+
+    /*if (glGetString(GL_VENDOR) != 0)
+        log_write(LOG_LOG, "GL_VENDOR=%s\n", glGetString(GL_VENDOR));
+    if (glGetString(GL_RENDERER) != 0)
+        log_write(LOG_LOG, "GL_RENDERER=%s\n", glGetString(GL_RENDERER));
+
+    if (glGetString(GL_VERSION) != 0)
+        log_write(LOG_LOG, "GL_VERSION=%s\n", glGetString(GL_VERSION));
+
+    if (glGetString(GL_SHADING_LANGUAGE_VERSION) != 0)
+        log_write(LOG_LOG, "GL_SHADING_LANGUAGE_VERSION=%s\n",
+              glGetString(GL_SHADING_LANGUAGE_VERSION)); */
+	/* log_write(LOG_MSG, "gl3w loaded successfully; version: %s\n",
+               glewGetString(GLEW_VERSION)); */
 	return true;
 }
 
-bool window_attribs(int glVersionMajor, int glVersionMinor, bool doubleBuffer)
+bool window_attribs(int glv_major, int glv_minor, bool double_buffer)
 {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	// set opengl version
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, glVersionMajor);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, glVersionMinor);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, glv_major);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, glv_minor);
 	// use double buffering
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, doubleBuffer);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, double_buffer);
 	return true;
 }
 
-void window_event_handle(const SDL_Event *pEvent)
+int window_get_attrib(SDL_GLattr attr)
 {
-	if (pEvent->type == SDL_WINDOWEVENT) {
-		switch (pEvent->window.event) {
+	int temp;
+    SDL_GL_GetAttribute(attr, &temp);
+	return temp;
+}
+
+void window_event_handle(const SDL_Event *p_event)
+{
+	if (p_event->type == SDL_WINDOWEVENT) {
+		switch (p_event->window.event) {
 		case SDL_WINDOWEVENT_SHOWN:
 	        window_state.is_visible = true;
             break;
@@ -58,16 +79,16 @@ void window_event_handle(const SDL_Event *pEvent)
         case SDL_WINDOWEVENT_EXPOSED:		   
             break;
         case SDL_WINDOWEVENT_MOVED:
-			window_state.window_pos_x = pEvent->window.data1;
-			window_state.window_pos_y = pEvent->window.data2;
+			window_state.window_pos_x = p_event->window.data1;
+			window_state.window_pos_y = p_event->window.data2;
             break;
         case SDL_WINDOWEVENT_RESIZED:
-			window_state.window_size_x = pEvent->window.data1;
-			window_state.window_size_y = pEvent->window.data2;
+			window_state.window_size_x = p_event->window.data1;
+			window_state.window_size_y = p_event->window.data2;
             break;
         case SDL_WINDOWEVENT_SIZE_CHANGED:
-			window_state.window_size_x = pEvent->window.data1;
-			window_state.window_size_y = pEvent->window.data2;
+			window_state.window_size_x = p_event->window.data1;
+			window_state.window_size_y = p_event->window.data2;
             break;
         case SDL_WINDOWEVENT_MINIMIZED:
 			window_state.window_maximized = false;
@@ -102,9 +123,9 @@ WindowState *window_get_state()
 	return &window_state;
 }
 
-inline bool window_close(SDL_Window* pWindow, SDL_GLContext *pContext)
+inline bool window_close(SDL_Window* p_window, SDL_GLContext *p_context)
 {
-	SDL_GL_DeleteContext(pContext);
-	SDL_DestroyWindow(pWindow);
+	SDL_GL_DeleteContext(p_context);
+	SDL_DestroyWindow(p_window);
 	return true;
 }

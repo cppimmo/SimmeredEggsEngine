@@ -8,7 +8,7 @@ CFLAGS=-O2 -g -Wall -W -std=c11 \
 	-I$(LIB_DIR)/cglm-0.8.4/include \
 	-I$(LIB_DIR)/SDL2-2.0.16/include \
 	-I$(LIB_DIR)/openal-soft-1.21.1
-LDFLAGS=-lGL -lGLEW -lSDL2 -lopenal -lSDL2_ttf
+LDFLAGS=-lGL -lGLEW -lSDL2 -lopenal -lSDL_ttf
 SRCS:=$(shell find $(SRC_DIRS) -name *.cpp -or -name *.c -or -name *.s)
 OBJS:=$(SRCS:%=$(BUILD_DIR)/%.o)
 DEPS:=$(OBJS:.o=.d)

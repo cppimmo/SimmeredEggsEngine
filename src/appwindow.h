@@ -1,7 +1,7 @@
 #ifndef APPWINDOW_H
 #define APPWINDOW_H
 
-#include "SDL.h"
+#include "SDL2/SDL.h"
 #include "GL/glew.h"
 #include <stdbool.h>
 #include "config.h"
@@ -20,11 +20,12 @@ typedef struct {
 } WindowState;
 static WindowState window_state;
 
-bool window_init(SDL_Window *pWindow, SDL_GLContext *pContext,
-				 const Options *const pOptions);
-bool window_attribs(int glVersionMajor, int glVersionMinor, bool doubleBuffer);
-void window_event_handle(const SDL_Event *pEvent);
+bool window_init(SDL_Window *p_window, SDL_GLContext *p_context,
+				 const Options *const p_options);
+bool window_attribs(int glv_major, int glv_minor, bool double_buffer);
+int window_get_attrib(SDL_GLattr attr);
+void window_event_handle(const SDL_Event *p_event);
 WindowState *window_get_state();
-bool window_close(SDL_Window* pWindow, SDL_GLContext *pContext);
+bool window_close(SDL_Window* p_window, SDL_GLContext *p_context);
 
 #endif // APPWINDOW_H
