@@ -15,6 +15,7 @@ void log_write(enum LOG_TYPE type, const char *fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
+
 	FILE *pHandle = NULL;
 	switch (type) {
 	case LOG_MSG:
@@ -28,7 +29,11 @@ void log_write(enum LOG_TYPE type, const char *fmt, ...)
 		pHandle = stdout;
 	}
 	vfprintf(pHandle, fmt, args);
-	vfprintf(pLogFile, fmt, args);
+	va_end(args);
+
+	va_start(args, fmt);
+	if (pLogFile != NULL)
+		vfprintf(pLogFile, fmt, args);
 	va_end(args);
 }
 
@@ -38,3 +43,4 @@ bool log_close()
 		return true;
 	return false;
 }
+
