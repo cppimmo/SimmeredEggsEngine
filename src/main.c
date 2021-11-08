@@ -17,6 +17,7 @@
 static void cmdargs(int argc, char **argv);
 static void usage();
 static void signal_handler(int signum);
+static void sdl_log_output(void *userdata, int category, SDL_LogPriority priority, const char *message);
 static void shutdown();
 static int exit_code = 0;
 static bool verbose = true;
@@ -62,15 +63,30 @@ int main(int argc, char **argv)
 	}
 	atexit(shutdown);
 	
-	SDL_Window *pWindow = NULL;
-	SDL_GLContext *pContext = NULL;
-	if (!window_init(pWindow, pContext, &options)) {
+	SDL_Window *p_window = NULL;
+	SDL_GLContext *p_context = NULL;
+	if (!window_init(p_window, p_context, &options)) {
 		log_write(LOG_ERR, "Window initilization failure.\n");
 		exit_code = 1;
 		return exit_code;
 	}
-	r_set_gl_callback(&gl_debug_callback, NULL);
+	SDL_LogSetOutputFunction(&sdl_log_output, NULL);
+	
+    { // short scope for debug context checking
+		// need to check if the current context is version 4.3 or greater
+		int context_flags;
+		glGetIntegerv(GL_CONTEXT_FLAGS, &context_flags);
+		if (context_flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
+			log_write(LOG_MSG, "OpenGL Debug Context Enabled Successfully.\n");
+		}
+		glEnable(GL_DEBUG_OUTPUT);
+		// glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		glDebugMessageCallback(&gl_debug_callback, NULL);
+		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL,
+							  GL_TRUE);
+	}
 
+	glViewport(0, 0, 800, 600);
 	// opengl test code
 	static const float vertices[6][2] = {
 		{-0.90f,-0.90f},
@@ -92,13 +108,15 @@ int main(int argc, char **argv)
 	GLuint program;
 	program_create(&program, shaders, 2);
 	program_use(program);
-
+	
 	glGenVertexArrays(1, &vao);
-	glBindVertexArray(&vao);
-	glBindBuffer(GL_ARRAY_BUFFER, &vbo);
+
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
 	glEnableVertexAttribArray(0);
-	
+    
 	bool running = true;
 	SDL_Event evt;
 	while (running) {
@@ -114,10 +132,10 @@ int main(int argc, char **argv)
 		glBindVertexArray(vao);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		SDL_GL_SwapWindow(pWindow);
+		SDL_GL_SwapWindow(p_window);
 	}
 	
-	window_close(pWindow, pContext);
+	window_close(p_window, p_context);
 	SDL_Quit();
 	log_close();
 	return exit_code;
@@ -153,6 +171,69 @@ void signal_handler(int signum)
 	switch (signum) {
 
 	}
+}
+
+void sdl_log_output(void *userdata, int category, SDL_LogPriority priority,
+					const char *message)
+{
+	const char *category_buf;
+	const char *priority_buf;
+
+	switch (category) {
+	case SDL_LOG_CATEGORY_APPLICATION:
+		category_buf = "APPLICATION";
+		break;
+    case SDL_LOG_CATEGORY_ERROR:
+		category_buf = "ERROR";
+		break;
+    case SDL_LOG_CATEGORY_ASSERT:
+		category_buf = "ASSERT";
+		break;
+    case SDL_LOG_CATEGORY_SYSTEM:
+	    category_buf = "SYSTEM";
+		break;
+    case SDL_LOG_CATEGORY_AUDIO:
+		category_buf = "AUDIO";
+		break;
+    case SDL_LOG_CATEGORY_VIDEO:
+		category_buf = "VIDEO";
+		break;
+    case SDL_LOG_CATEGORY_RENDER:
+		category_buf = "RENDER";
+		break;
+    case SDL_LOG_CATEGORY_INPUT:
+		category_buf = "INPUT";
+		break;
+    case SDL_LOG_CATEGORY_TEST:
+		category_buf = "TEST";
+		break;
+	default:
+		category_buf = "UNKNOWN";
+	}
+	
+	switch (priority) {
+	case SDL_LOG_PRIORITY_VERBOSE:
+		priority_buf = "VERBOSE";
+		break;
+    case SDL_LOG_PRIORITY_DEBUG:
+		priority_buf = "DEBUG";
+		break;
+	case SDL_LOG_PRIORITY_INFO:
+		priority_buf = "INFO";
+		break;
+    case SDL_LOG_PRIORITY_WARN:
+		priority_buf = "WARN";
+		break;
+    case SDL_LOG_PRIORITY_ERROR:
+		priority_buf = "ERROR";
+		break;
+    case SDL_LOG_PRIORITY_CRITICAL:
+		priority_buf = "CRITICAL";
+		break;
+	default:
+		priority_buf = "UNKNOWN";
+	}
+	log_write(LOG_LOG, "SDL:%s:%s:%s\n", category_buf, priority_buf, message);
 }
 
 // do any necessary resource management here
