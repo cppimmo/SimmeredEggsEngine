@@ -26,8 +26,14 @@ inline void r_disable(GLenum capability)
 	glDisable(capability);
 }
 
-void r_set_gl_callback(GLDEBUGPROC callback, void *userParam)
+void r_message_callback(GLDEBUGPROC callback, void *user_param)
 {
-	glDebugMessageCallback(callback, NULL);
+	glDebugMessageCallback(gl_debug_callback, user_param);
+}
+
+void r_message_control(GLenum source, GLenum type, GLenum severity,
+					   GLsizei count, const GLuint *ids, GLboolean enabled)
+{
+	glDebugMessageControl(source, type, severity, count, ids, enabled);
 }
 
