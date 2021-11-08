@@ -32,7 +32,7 @@ bool window_init(SDL_Window *p_window, SDL_GLContext *p_context,
 		return false;
 	}
 
-    /*if (glGetString(GL_VENDOR) != 0)
+    if (glGetString(GL_VENDOR) != 0)
         log_write(LOG_LOG, "GL_VENDOR=%s\n", glGetString(GL_VENDOR));
     if (glGetString(GL_RENDERER) != 0)
         log_write(LOG_LOG, "GL_RENDERER=%s\n", glGetString(GL_RENDERER));
@@ -42,20 +42,25 @@ bool window_init(SDL_Window *p_window, SDL_GLContext *p_context,
 
     if (glGetString(GL_SHADING_LANGUAGE_VERSION) != 0)
         log_write(LOG_LOG, "GL_SHADING_LANGUAGE_VERSION=%s\n",
-              glGetString(GL_SHADING_LANGUAGE_VERSION)); */
-	/* log_write(LOG_MSG, "gl3w loaded successfully; version: %s\n",
-               glewGetString(GLEW_VERSION)); */
+              glGetString(GL_SHADING_LANGUAGE_VERSION));
+	log_write(LOG_MSG, "gl3w loaded successfully; version: %s\n",
+               glewGetString(GLEW_VERSION));
 	return true;
 }
 
 bool window_attribs(int glv_major, int glv_minor, bool double_buffer)
-{
+{ // relevant documentation: https://wiki.libsdl.org/SDL_GLattr
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	// set opengl version
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, glv_major);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, glv_minor);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 	// use double buffering
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, double_buffer);
+	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
 	return true;
 }
 
