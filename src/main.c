@@ -63,15 +63,29 @@ int main(int argc, char **argv)
 	}
 	atexit(shutdown);
 	
-	SDL_Window *p_window = NULL;
-	SDL_GLContext *p_context = NULL;
-	if (!window_init(p_window, p_context, &options)) {
+	SDL_Window *p_window = SDL_CreateWindow("Starship Fleet", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+
+	/*if (!window_init(p_window, &p_context, &options)) {
 		log_write(LOG_ERR, "Window initilization failure.\n");
 		exit_code = 1;
 		return exit_code;
-	}
-	SDL_LogSetOutputFunction(&sdl_log_output, NULL);
-	
+	} */
+	// SDL_LogSetOutputFunction(&sdl_log_output, NULL);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+	SDL_GLContext context = SDL_GL_CreateContext(p_window);
+
+	SDL_GL_SetSwapInterval(1);
+  
+	glewInit();
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     { // short scope for debug context checking
 		// need to check if the current context is version 4.3 or greater
 		int context_flags;
@@ -109,22 +123,28 @@ int main(int argc, char **argv)
 	GLuint program;
 	program_create(&program, shaders, 2);
 	program_use(program);
-
+	
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
 	glEnableVertexAttribArray(0);
-    
+
+	uint64_t start_time, end_time, delta_time;
+	const uint64_t frame_delay = 1000 / options.refresh_rate;
 	bool running = true;
 	while (running) {
-		SDL_Event evt;
-		while (SDL_PollEvent(&evt) != 0) {
-		    if (evt.type == SDL_QUIT) {
-				running = false;
-			} else if (evt.type == SDL_KEYDOWN) {
-				switch (evt.key.keysym.sym) {
+		start_time = SDL_GetTicks();
+		
+		SDL_Event event;
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_QUIT) {
+                running = false;
+                break;
+            } else if (event.type = SDL_KEYDOWN) {
+			    switch (event.key.keysym.sym) {
 				case SDLK_ESCAPE:
 					running = false;
 					break;
@@ -132,19 +152,25 @@ int main(int argc, char **argv)
 					break;
 				}
 			}
-		}
-		static const float clear_color[] = { 0.0f, 1.0f, 0.0f, 1.0f,};
-		//glClearBufferfv(GL_COLOR, 0, clear_color);
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+        }		
+	    static const float clear_color[] = { 1.0f, 1.0f, 0.0f, 0.0f, };
+		glClearBufferfv(GL_COLOR, 0, clear_color);
+		glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glBindVertexArray(vao);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		SDL_GL_SwapWindow(p_window);
+		
+		end_time = SDL_GetTicks();
+		delta_time = end_time - start_time;
+		if (frame_delay > delta_time) {
+		    SDL_Delay(frame_delay - delta_time);   
+		}
 	}
 	
-	window_close(p_window, p_context);
+	// window_close(p_window, &p_context);
 	SDL_Quit();
 	log_close();
 	return exit_code;

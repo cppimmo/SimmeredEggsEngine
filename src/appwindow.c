@@ -4,24 +4,30 @@
 bool window_init(SDL_Window *p_window, SDL_GLContext *p_context,
 				 const Options *const p_options)
 {
-	window_attribs(4, 2, true);
 	p_window = SDL_CreateWindow("Starship Fleet", SDL_WINDOWPOS_UNDEFINED,
 							   SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 	if (p_window == NULL) {
 		log_write(LOG_ERR, "SDL_CreateWindow() failure: %s\n", SDL_GetError());
 		return false;
-	}
+	}	
+	//window_attribs(4, 5, true);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 	
-	p_context = SDL_GL_CreateContext(p_window);
-	if (p_context == NULL) {
+	*p_context = SDL_GL_CreateContext(p_window);
+	if (*p_context == NULL) {
 		log_write(LOG_ERR, "SDL_GL_CreateContext() failure: %s\n", SDL_GetError());
 		return false;
 	}
 
-	if (SDL_GL_MakeCurrent(p_window, p_context) < 0) {
+	/* if (SDL_GL_MakeCurrent(p_window, *p_context) < 0) {
 		log_write(LOG_ERR, "SDL_GL_MakeCurrent() failure: %s\n", SDL_GetError());
 		return false;
-	}
+	} */
 	
 	SDL_GL_SetSwapInterval(1);
 
@@ -50,19 +56,19 @@ bool window_init(SDL_Window *p_window, SDL_GLContext *p_context,
 
 bool window_attribs(int glv_major, int glv_minor, bool double_buffer)
 { // relevant documentation: https://wiki.libsdl.org/SDL_GLattr
-	SDL_GL_LoadLibrary(NULL);
-	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+	// SDL_GL_LoadLibrary(NULL);
+	// SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	// set opengl version
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, glv_major);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, glv_minor);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 	// use double buffering
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, double_buffer);
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	// SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+	// SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+	// SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+	// SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 	return true;
@@ -145,7 +151,7 @@ void window_viewport(GLint posx, GLint posy, GLint width, GLint height)
 
 inline bool window_close(SDL_Window* p_window, SDL_GLContext *p_context)
 {
-	SDL_GL_DeleteContext(p_context);
+	SDL_GL_DeleteContext(*p_context);
 	SDL_DestroyWindow(p_window);
 	return true;
 }
