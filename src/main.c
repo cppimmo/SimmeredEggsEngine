@@ -87,6 +87,7 @@ int main(int argc, char **argv)
 	}
 
 	glViewport(0, 0, 800, 600);
+	glEnable(GL_DEPTH_TEST);
 	// opengl test code
 	static const float vertices[6][2] = {
 		{-0.90f,-0.90f},
@@ -108,9 +109,8 @@ int main(int argc, char **argv)
 	GLuint program;
 	program_create(&program, shaders, 2);
 	program_use(program);
-	
-	glGenVertexArrays(1, &vao);
 
+	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	
@@ -118,15 +118,24 @@ int main(int argc, char **argv)
 	glEnableVertexAttribArray(0);
     
 	bool running = true;
-	SDL_Event evt;
 	while (running) {
+		SDL_Event evt;
 		while (SDL_PollEvent(&evt) != 0) {
 		    if (evt.type == SDL_QUIT) {
 				running = false;
+			} else if (evt.type == SDL_KEYDOWN) {
+				switch (evt.key.keysym.sym) {
+				case SDLK_ESCAPE:
+					running = false;
+					break;
+				default:
+					break;
+				}
 			}
 		}
 		static const float clear_color[] = { 0.0f, 1.0f, 0.0f, 1.0f,};
-		glClearBufferfv(GL_COLOR, 0, clear_color);
+		//glClearBufferfv(GL_COLOR, 0, clear_color);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glBindVertexArray(vao);

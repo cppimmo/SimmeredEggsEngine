@@ -20,8 +20,8 @@ bool program_create(GLuint *program, struct shader_info_t *shaders, size_t lengt
 		if (!shader_occupied(p_shader->shader)) {
 			log_write(LOG_ERR, "Failed to create shader i=%d;%s\n", i,
 					  p_shader->filename);
-			for (size_t j = length; j >= 0; j--) {
-				shader_delete(&shaders[j].shader);
+			for (size_t j = length - 1; j > 0; j--) {
+				glDeleteShader(shaders[j].shader);
 			}
 			return false;
 		}
@@ -31,8 +31,8 @@ bool program_create(GLuint *program, struct shader_info_t *shaders, size_t lengt
 			log_write(LOG_ERR, "Failed to source shader i=%d;%s\n", i,
 					  p_shader->filename);
 			// shader_delete on previously created shaders
-			for (size_t j = length; j >= 0; j--) {
-				shader_delete(&shaders[j].shader);
+			for (size_t j = length - 1; j > 0; j--) {
+				glDeleteShader(shaders[j].shader);
 			}
 			return false;
 		}
@@ -43,19 +43,19 @@ bool program_create(GLuint *program, struct shader_info_t *shaders, size_t lengt
 		glCompileShader(p_shader->shader);
 		if (!shader_compile_status(p_shader->shader)) {
 			// shader_delete on previously created shaders
-			for (size_t j = length; j >= 0; j--) {
-				shader_delete(&shaders[j].shader);
+			for (size_t j = length - 1; j > 0; j--) {
+				glDeleteShader(shaders[j].shader);
 			}
 			return false;
 		}
 		glAttachShader(*program, p_shader->shader);
 	}
-
+	
 	glLinkProgram(*program);
 	if (!program_link_status(*program)) {
 		for (size_t i = 0; i <= length - 1; ++i) {
-			shader_delete(&shaders[i].shader);
-		}
+			glDeleteShader(shaders[i].shader);
+		} 
 		return false;
 	}
 	return true;
@@ -273,10 +273,11 @@ bool shader_compile_status(GLuint shader)
 	}
 	if (!status) {
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
-
-		logbuf = (GLchar *)malloc(log_length + 1);
+		
+		logbuf = (GLchar *)malloc((log_length + 1) * sizeof(GLchar *));
 		glGetShaderInfoLog(shader, log_length, &log_length, logbuf);
 		log_write(LOG_ERR, "%s shader compilation failed: \n%s\n", typebuf, logbuf);
+		
 		free(logbuf);
 		return false;
 	}

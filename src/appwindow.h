@@ -26,6 +26,7 @@ bool window_attribs(int glv_major, int glv_minor, bool double_buffer);
 int window_get_attrib(SDL_GLattr attr);
 void window_event_handle(const SDL_Event *p_event);
 WindowState *window_get_state();
+void window_viewport(GLint posx, GLint posy, GLint width, GLint height);
 bool window_close(SDL_Window* p_window, SDL_GLContext *p_context);
 
 #endif // APPWINDOW_H

@@ -50,6 +50,8 @@ bool window_init(SDL_Window *p_window, SDL_GLContext *p_context,
 
 bool window_attribs(int glv_major, int glv_minor, bool double_buffer)
 { // relevant documentation: https://wiki.libsdl.org/SDL_GLattr
+	SDL_GL_LoadLibrary(NULL);
+	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	// set opengl version
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, glv_major);
@@ -61,6 +63,8 @@ bool window_attribs(int glv_major, int glv_minor, bool double_buffer)
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 	return true;
 }
 
@@ -84,16 +88,18 @@ void window_event_handle(const SDL_Event *p_event)
         case SDL_WINDOWEVENT_EXPOSED:		   
             break;
         case SDL_WINDOWEVENT_MOVED:
-			window_state.window_pos_x = p_event->window.data1;
-			window_state.window_pos_y = p_event->window.data2;
+			window_viewport(p_event->window.data1, p_event->window.data2,
+				window_state.window_pos_x, window_state.window_pos_y);
             break;
         case SDL_WINDOWEVENT_RESIZED:
-			window_state.window_size_x = p_event->window.data1;
-			window_state.window_size_y = p_event->window.data2;
+			window_viewport(window_state.window_pos_x,
+							window_state.window_pos_y,
+							p_event->window.data1, p_event->window.data2);
             break;
         case SDL_WINDOWEVENT_SIZE_CHANGED:
-			window_state.window_size_x = p_event->window.data1;
-			window_state.window_size_y = p_event->window.data2;
+			window_viewport(window_state.window_pos_x,
+							window_state.window_pos_y,
+							p_event->window.data1, p_event->window.data2);
             break;
         case SDL_WINDOWEVENT_MINIMIZED:
 			window_state.window_maximized = false;
@@ -126,6 +132,15 @@ void window_event_handle(const SDL_Event *p_event)
 WindowState *window_get_state()
 {
 	return &window_state;
+}
+
+void window_viewport(GLint posx, GLint posy, GLint width, GLint height)
+{
+	window_state.window_pos_x = posx;
+	window_state.window_pos_y = posy;
+	window_state.window_size_x = width;
+	window_state.window_size_y = height;
+	glViewport(posx, posy, width, height);
 }
 
 inline bool window_close(SDL_Window* p_window, SDL_GLContext *p_context)
