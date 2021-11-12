@@ -9,27 +9,27 @@ bool window_init(SDL_Window *p_window, SDL_GLContext *p_context,
 	if (p_window == NULL) {
 		log_write(LOG_ERR, "SDL_CreateWindow() failure: %s\n", SDL_GetError());
 		return false;
-	}	
-	//window_attribs(4, 5, true);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-	
-	*p_context = SDL_GL_CreateContext(p_window);
-	if (*p_context == NULL) {
-		log_write(LOG_ERR, "SDL_GL_CreateContext() failure: %s\n", SDL_GetError());
-		return false;
 	}
-
+	
+	//window_attribs(4, 5, true);
+	//SDL_GLContext context = SDL_GL_CreateContext(p_window);
+	// if (context == NULL) {
+		//log_write(LOG_ERR, "SDL_GL_CreateContext() failure: %s\n", SDL_GetError());
+		//	return false;
+		//}
 	/* if (SDL_GL_MakeCurrent(p_window, *p_context) < 0) {
 		log_write(LOG_ERR, "SDL_GL_MakeCurrent() failure: %s\n", SDL_GetError());
 		return false;
 	} */
-	
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+	SDL_GLContext context = SDL_GL_CreateContext(p_window);
 	SDL_GL_SetSwapInterval(1);
+
 
 	glewExperimental = GL_TRUE;
 	GLenum glew_error = glewInit();
@@ -58,12 +58,10 @@ bool window_attribs(int glv_major, int glv_minor, bool double_buffer)
 { // relevant documentation: https://wiki.libsdl.org/SDL_GLattr
 	// SDL_GL_LoadLibrary(NULL);
 	// SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	// set opengl version
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, glv_major);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, glv_minor);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-	// use double buffering
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	// SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 	// SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);

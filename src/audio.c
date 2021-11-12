@@ -3,8 +3,32 @@
 #include <string.h>
 // #include "audio/wave.h" // libaudio
 
+static ALCdevice *g_device = NULL;
+static ALCcontext *g_context = NULL;
+
 bool al_init()
 {
+	if (!al_device_enum_check())
+		log_write(LOG_ERR, "AL Enumeration extension not available\n");
+	al_list_devices(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
+
+    const ALchar *def_device = alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
+	
+	if (!al_create_device(&g_device, def_device)) {
+		log_write(LOG_ERR, "Failed to create ALCdevice!\n");
+		return false;
+	} else
+		log_write(LOG_LOG, "Audio Device %s\n", alcGetString(g_device, ALC_DEVICE_SPECIFIER));
+
+	if (!al_create_context(&g_device, &g_context)) {
+		log_write(LOG_ERR, "Failed to create ALCcontext!\n");
+		return false;
+	}
+
+	ALfloat listenerOri[] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
+	alListener3f(AL_POSITION, 0, 0, 1.0f);
+	alListener3f(AL_VELOCITY, 0, 0, 0);
+	alListenerfv(AL_ORIENTATION, listenerOri);
 
 	return true;
 }
@@ -15,11 +39,11 @@ bool al_destroy()
 	return true;
 }
 
-bool al_create_device(ALCdevice *pDevice)
+bool al_create_device(ALCdevice *p_device, const ALchar *name)
 {
 	al_list_devices(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
-	pDevice = alcOpenDevice(NULL);
-	if (pDevice == NULL) {
+	p_device = alcOpenDevice(name);
+	if (p_device == NULL) {
 		log_write(LOG_ERR, "");
 		return false;
 	}
@@ -49,23 +73,23 @@ void al_list_devices(const ALCchar *devices)
 	log_write(LOG_LOG, "------------------\n");
 }
 
-bool al_create_context(ALCcontext *pContext)
+bool al_create_context(ALCdevice *p_device, ALCcontext *p_context)
 {
-	if (pDevice == NULL) {
+	if (p_device == NULL) {
 		log_write(LOG_ERR, "Can't create ALCcontext, ALCdevice is null pointer!\n");
 		return false;
 	}
-	pContext = alcCreateContext(pDevice, NULL);
-	if (pContext == NULL) {
+	p_context = alcCreateContext(p_device, NULL);
+	if (p_context == NULL) {
 		log_write(LOG_ERR, "alcCreateContext() failed!\n");
 		return false;
 	}
 	return true;
 }
 
-bool al_set_context(ALCcontext *pContext)
+bool al_set_context(ALCcontext *p_context)
 {
-	if (!alcMakeContextCurrent(pContext)) {
+	if (!alcMakeContextCurrent(p_context)) {
 		log_write(LOG_ERR, "alcMakeContextCurrent() failed!\n");
 		return false;
 	}
@@ -84,7 +108,7 @@ bool al_gen_buffers(ALuint *buffers)
 	return true;
 }
 
-inline bool al_error(const char *str)
+inline bool al_error(const ALchar *str)
 {
 	ALCenum error = alGetError();
 	if (error != AL_NO_ERROR) {

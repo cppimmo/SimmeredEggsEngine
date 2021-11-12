@@ -3,14 +3,15 @@
 #include <signal.h>
 #include <string.h>
 
+#include "SDL2/SDL.h"
+#include "glerror.h"
 #include "log.h"
 #include "config.h"
 #include "appwindow.h"
+#include "input.h"
 #include "render.h"
-#include "glerror.h"
-#include "SDL2/SDL.h"
-
 #include "shader.h"
+#include "audio.h"
 
 #define APP_VERSION "1.0.0"
 
@@ -62,15 +63,18 @@ int main(int argc, char **argv)
 		return false;
 	}
 	atexit(shutdown);
-	
-	SDL_Window *p_window = SDL_CreateWindow("Starship Fleet", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-
-	/*if (!window_init(p_window, &p_context, &options)) {
+	/*if (!window_init(p_window, NULL, &options)) {
 		log_write(LOG_ERR, "Window initilization failure.\n");
-		exit_code = 1;
-		return exit_code;
-	} */
-	// SDL_LogSetOutputFunction(&sdl_log_output, NULL);
+		exit_code = 1; return exit_code; } */
+	
+	SDL_Window *p_window;
+    p_window = SDL_CreateWindow("Starship Fleet", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+	if (p_window == NULL) {
+		log_write(LOG_ERR, "SDL_CreateWindow() failure: %s\n", SDL_GetError());
+		return false;
+	}
+	SDL_LogSetOutputFunction(&sdl_log_output, NULL);
+	
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -78,10 +82,34 @@ int main(int argc, char **argv)
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 	SDL_GLContext context = SDL_GL_CreateContext(p_window);
-
+	if (context == NULL) {
+		log_write(LOG_ERR, "SDL_GL_CreateContext() failure: %s\n", SDL_GetError());
+		return false;
+	}
+	if (SDL_GL_MakeCurrent(p_window, context) < 0) {
+		log_write(LOG_ERR, "SDL_GL_MakeCurrent() failure: %s\n", SDL_GetError());
+		return false;
+	}
 	SDL_GL_SetSwapInterval(1);
   
-	glewInit();
+	glewExperimental = GL_TRUE;
+	GLenum glew_error = glewInit();
+	if (glew_error != GLEW_OK) {
+		log_write(LOG_ERR, "glewInit() error: %s\n", glewGetErrorString(glew_error));
+		return false;
+	}
+	if (glGetString(GL_VENDOR) != 0)
+        log_write(LOG_LOG, "GL_VENDOR=%s\n", glGetString(GL_VENDOR));
+    if (glGetString(GL_RENDERER) != 0)
+        log_write(LOG_LOG, "GL_RENDERER=%s\n", glGetString(GL_RENDERER));
+    if (glGetString(GL_VERSION) != 0)
+        log_write(LOG_LOG, "GL_VERSION=%s\n", glGetString(GL_VERSION));
+    if (glGetString(GL_SHADING_LANGUAGE_VERSION) != 0)
+        log_write(LOG_LOG, "GL_SHADING_LANGUAGE_VERSION=%s\n",
+              glGetString(GL_SHADING_LANGUAGE_VERSION));
+	log_write(LOG_MSG, "gl3w loaded successfully; version: %s\n",
+               glewGetString(GLEW_VERSION));
+	
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
@@ -140,22 +168,65 @@ int main(int argc, char **argv)
 		SDL_Event event;
         while (SDL_PollEvent(&event))
         {
-            if (event.type == SDL_QUIT) {
-                running = false;
-                break;
-            } else if (event.type = SDL_KEYDOWN) {
-			    switch (event.key.keysym.sym) {
-				case SDLK_ESCAPE:
+			switch (event.type) {
+			case SDL_QUIT:
+				running = false;
+				break;
+			case SDL_KEYDOWN:
+				if (event.key.keysym.sym == SDLK_ESCAPE) {
 					running = false;
-					break;
-				default:
-					break;
 				}
-			}
-        }		
-	    static const float clear_color[] = { 1.0f, 1.0f, 0.0f, 0.0f, };
-		glClearBufferfv(GL_COLOR, 0, clear_color);
-		glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
+				on_key_down(&event.key.keysym);	
+				break;
+			case SDL_KEYUP:
+				on_key_up(&event.key.keysym);
+				break;
+			case SDL_TEXTEDITING:
+				break;
+			case SDL_TEXTINPUT:
+				break;
+			case SDL_MOUSEMOTION:
+				on_mouse_motion(&event.motion);
+				break;
+			case SDL_MOUSEBUTTONDOWN:
+				on_mouse_button_down(&event.button);
+				break;
+			case SDL_MOUSEBUTTONUP:
+				on_mouse_button_up(&event.button);
+				break;
+			case SDL_MOUSEWHEEL:
+				on_mouse_wheel(&event.wheel);
+				break;
+			case SDL_CONTROLLERAXISMOTION:
+				on_controller_axis_motion(&event.caxis);
+				break;
+			case SDL_CONTROLLERBUTTONDOWN:
+				on_controller_button_down(&event.cbutton);
+				break;
+			case SDL_CONTROLLERBUTTONUP:
+				on_controller_button_up(&event.cbutton);
+				break;
+			case SDL_AUDIODEVICEADDED:
+				break;
+			case SDL_AUDIODEVICEREMOVED:
+				break;
+			case SDL_CONTROLLERDEVICEADDED:
+				on_controller_device_added(&event.cdevice);
+				break;
+			case SDL_CONTROLLERDEVICEREMOVED:
+				on_controller_device_removed(&event.cdevice);
+				break;
+			case SDL_CONTROLLERDEVICEREMAPPED:
+				on_controller_device_remapped(&event.cdevice);
+				break;
+			case SDL_USEREVENT:
+				break;
+			}         
+        }
+		
+	    // static const float clear_color[] = { 1.0f, 1.0f, 0.0f, 1.0f };
+		// glClearBufferfv(GL_COLOR, 0, clear_color);
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glBindVertexArray(vao);
