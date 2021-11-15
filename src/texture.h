@@ -8,6 +8,7 @@
 // #define STB_IMAGE_IMPLEMENTATION
 // #include "stb_image.h"
 
+GLuint texture_2d_load(const char *filename);
 GLuint texture_cubemap_load(const char *filenames[]);
 
 #endif // TEXTURE_H
