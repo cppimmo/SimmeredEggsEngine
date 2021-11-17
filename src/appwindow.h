@@ -20,13 +20,13 @@ typedef struct {
 } WindowState;
 static WindowState window_state;
 
-bool window_init(SDL_Window *p_window, SDL_GLContext *p_context,
-				 const Options *const p_options);
-bool window_attribs(int glv_major, int glv_minor, bool double_buffer);
+bool window_init(SDL_Window **pp_window, const Options *const p_options);
+bool window_attribs(const int glv_major, const int glv_minor,
+					bool double_buffer);
 int window_get_attrib(SDL_GLattr attr);
 void window_event_handle(const SDL_Event *p_event);
 WindowState *window_get_state();
 void window_viewport(GLint posx, GLint posy, GLint width, GLint height);
-bool window_close(SDL_Window* p_window, SDL_GLContext *p_context);
+bool window_close(SDL_Window **pp_window);
 
 #endif // APPWINDOW_H

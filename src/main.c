@@ -35,8 +35,6 @@ AppState app_state = {false,false,false,false,false,};
 int main(int argc, char **argv)
 {
 	cmdargs(argc, argv);
-	/* SIGABRT, SIGFPE,	SIGILL,
-	SIGINT,	SIGSEGV, SIGTERM */
 	if (!log_open(LOG_FILE, verbose)) {
 		fprintf(stderr, "Failed to open log file for writing, %s", LOG_FILE);
 	}
@@ -58,62 +56,13 @@ int main(int argc, char **argv)
 	log_write(LOG_MSG, "Configuration parsed successfully.\n");
 	log_write(LOG_MSG, "Initialization complete. Elapsed time: %ds\n", 0);
 
-	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-		log_write(LOG_ERR, "SDL_Init failure: %s\n", SDL_GetError());
-		return false;
+	SDL_Window *window;
+	if (!window_init(&window, &options)) {
+		log_write(LOG_ERR, "Window initilization failure.\n");
+		exit_code = 1;
+		return exit_code;
 	}
 	atexit(shutdown);
-	/*if (!window_init(p_window, NULL, &options)) {
-		log_write(LOG_ERR, "Window initilization failure.\n");
-		exit_code = 1; return exit_code; } */
-	
-	SDL_Window *p_window;
-    p_window = SDL_CreateWindow("Starship Fleet", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-	if (p_window == NULL) {
-		log_write(LOG_ERR, "SDL_CreateWindow() failure: %s\n", SDL_GetError());
-		return false;
-	}
-	SDL_LogSetOutputFunction(&sdl_log_output, NULL);
-	
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-	SDL_GLContext context = SDL_GL_CreateContext(p_window);
-	if (context == NULL) {
-		log_write(LOG_ERR, "SDL_GL_CreateContext() failure: %s\n", SDL_GetError());
-		return false;
-	}
-	if (SDL_GL_MakeCurrent(p_window, context) < 0) {
-		log_write(LOG_ERR, "SDL_GL_MakeCurrent() failure: %s\n", SDL_GetError());
-		return false;
-	}
-	SDL_GL_SetSwapInterval(1);
-  
-	glewExperimental = GL_TRUE;
-	GLenum glew_error = glewInit();
-	if (glew_error != GLEW_OK) {
-		log_write(LOG_ERR, "glewInit() error: %s\n", glewGetErrorString(glew_error));
-		return false;
-	}
-	if (glGetString(GL_VENDOR) != 0)
-        log_write(LOG_LOG, "GL_VENDOR=%s\n", glGetString(GL_VENDOR));
-    if (glGetString(GL_RENDERER) != 0)
-        log_write(LOG_LOG, "GL_RENDERER=%s\n", glGetString(GL_RENDERER));
-    if (glGetString(GL_VERSION) != 0)
-        log_write(LOG_LOG, "GL_VERSION=%s\n", glGetString(GL_VERSION));
-    if (glGetString(GL_SHADING_LANGUAGE_VERSION) != 0)
-        log_write(LOG_LOG, "GL_SHADING_LANGUAGE_VERSION=%s\n",
-              glGetString(GL_SHADING_LANGUAGE_VERSION));
-	log_write(LOG_MSG, "gl3w loaded successfully; version: %s\n",
-               glewGetString(GLEW_VERSION));
-	
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     { // short scope for debug context checking
 		// need to check if the current context is version 4.3 or greater
 		int context_flags;
@@ -128,9 +77,10 @@ int main(int argc, char **argv)
 							  GL_TRUE);
 	}
 
-	glViewport(0, 0, 800, 600);
 	glEnable(GL_DEPTH_TEST);
-	// opengl test code
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	static const float vertices[6][2] = {
 		{-0.90f,-0.90f},
 		{ 0.85f,-0.90f},
@@ -221,6 +171,9 @@ int main(int argc, char **argv)
 				break;
 			case SDL_USEREVENT:
 				break;
+			case SDL_WINDOWEVENT:
+				window_event_handle(&event);
+				break;
 			}         
         }
 		
@@ -232,7 +185,7 @@ int main(int argc, char **argv)
 		glBindVertexArray(vao);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		SDL_GL_SwapWindow(p_window);
+		SDL_GL_SwapWindow(window);
 		
 		end_time = SDL_GetTicks();
 		delta_time = end_time - start_time;
@@ -240,8 +193,8 @@ int main(int argc, char **argv)
 		    SDL_Delay(frame_delay - delta_time);   
 		}
 	}
-	
-	// window_close(p_window, &p_context);
+	log_write(LOG_MSG, "Exiting application...\n");
+	window_close(&p_window);
 	SDL_Quit();
 	log_close();
 	return exit_code;

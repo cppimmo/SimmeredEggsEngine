@@ -1,35 +1,36 @@
 #include "appwindow.h"
 #include "log.h"
 
-bool window_init(SDL_Window *p_window, SDL_GLContext *p_context,
-				 const Options *const p_options)
+#define WINDOW_ICON "assets/icon.bmp"
+
+static SDL_GLContext g_context;
+
+bool window_init(SDL_Window **pp_window, const Options *const p_options)
 {
-	p_window = SDL_CreateWindow("Starship Fleet", SDL_WINDOWPOS_UNDEFINED,
-							   SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-	if (p_window == NULL) {
-		log_write(LOG_ERR, "SDL_CreateWindow() failure: %s\n", SDL_GetError());
+	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+		log_write(LOG_ERR, "SDL_Init failure: %s\n", SDL_GetError());
 		return false;
 	}
 	
-	//window_attribs(4, 5, true);
-	//SDL_GLContext context = SDL_GL_CreateContext(p_window);
-	// if (context == NULL) {
-		//log_write(LOG_ERR, "SDL_GL_CreateContext() failure: %s\n", SDL_GetError());
-		//	return false;
-		//}
-	/* if (SDL_GL_MakeCurrent(p_window, *p_context) < 0) {
+	*pp_window = SDL_CreateWindow(p_options->window_title, SDL_WINDOWPOS_UNDEFINED,
+								SDL_WINDOWPOS_UNDEFINED, p_options->window_size_x, p_options->window_size_y,
+								SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+	if (*pp_window == NULL) {
+		log_write(LOG_ERR, "SDL_CreateWindow() failure: %s\n", SDL_GetError());
+		return false;
+	}
+
+	window_attribs(4, 2, true);
+    g_context = SDL_GL_CreateContext(*pp_window);
+	if (g_context == NULL) {
+		log_write(LOG_ERR, "SDL_GL_CreateContext() failure: %s\n", SDL_GetError());
+		return false;
+	}
+	if (SDL_GL_MakeCurrent(*pp_window, g_context) < 0) {
 		log_write(LOG_ERR, "SDL_GL_MakeCurrent() failure: %s\n", SDL_GetError());
 		return false;
-	} */
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-	SDL_GLContext context = SDL_GL_CreateContext(p_window);
-	SDL_GL_SetSwapInterval(1);
-
+	}
+	SDL_GL_SetSwapInterval(((p_options->vsync_enabled) ? 1 : 0));
 
 	glewExperimental = GL_TRUE;
 	GLenum glew_error = glewInit();
@@ -37,15 +38,14 @@ bool window_init(SDL_Window *p_window, SDL_GLContext *p_context,
 		log_write(LOG_ERR, "glewInit() error: %s\n", glewGetErrorString(glew_error));
 		return false;
 	}
-
-    if (glGetString(GL_VENDOR) != 0)
+	window_viewport(0, 0, p_options->window_size_x, p_options->window_size_y);
+	
+	if (glGetString(GL_VENDOR) != 0)
         log_write(LOG_LOG, "GL_VENDOR=%s\n", glGetString(GL_VENDOR));
     if (glGetString(GL_RENDERER) != 0)
         log_write(LOG_LOG, "GL_RENDERER=%s\n", glGetString(GL_RENDERER));
-
     if (glGetString(GL_VERSION) != 0)
         log_write(LOG_LOG, "GL_VERSION=%s\n", glGetString(GL_VERSION));
-
     if (glGetString(GL_SHADING_LANGUAGE_VERSION) != 0)
         log_write(LOG_LOG, "GL_SHADING_LANGUAGE_VERSION=%s\n",
               glGetString(GL_SHADING_LANGUAGE_VERSION));
@@ -54,21 +54,20 @@ bool window_init(SDL_Window *p_window, SDL_GLContext *p_context,
 	return true;
 }
 
-bool window_attribs(int glv_major, int glv_minor, bool double_buffer)
+inline bool window_attribs(const int glv_major, const int glv_minor, bool double_buffer)
 { // relevant documentation: https://wiki.libsdl.org/SDL_GLattr
-	// SDL_GL_LoadLibrary(NULL);
-	// SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, glv_major);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, glv_minor);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	// SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-	// SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-	// SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-	// SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+	SDL_GL_LoadLibrary(NULL);
+	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, double_buffer);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+	//SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+	//SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+	//SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+	//SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
 	return true;
 }
 
@@ -81,55 +80,53 @@ int window_get_attrib(SDL_GLattr attr)
 
 void window_event_handle(const SDL_Event *p_event)
 {
-	if (p_event->type == SDL_WINDOWEVENT) {
-		switch (p_event->window.event) {
-		case SDL_WINDOWEVENT_SHOWN:
-	        window_state.is_visible = true;
-            break;
-        case SDL_WINDOWEVENT_HIDDEN:
-			window_state.is_visible = false;
-            break;
-        case SDL_WINDOWEVENT_EXPOSED:		   
-            break;
-        case SDL_WINDOWEVENT_MOVED:
-			window_viewport(p_event->window.data1, p_event->window.data2,
-				window_state.window_pos_x, window_state.window_pos_y);
-            break;
-        case SDL_WINDOWEVENT_RESIZED:
-			window_viewport(window_state.window_pos_x,
-							window_state.window_pos_y,
-							p_event->window.data1, p_event->window.data2);
-            break;
-        case SDL_WINDOWEVENT_SIZE_CHANGED:
-			window_viewport(window_state.window_pos_x,
-							window_state.window_pos_y,
-							p_event->window.data1, p_event->window.data2);
-            break;
-        case SDL_WINDOWEVENT_MINIMIZED:
-			window_state.window_maximized = false;
-			window_state.window_minimized = true;
-            break;
-        case SDL_WINDOWEVENT_MAXIMIZED:
-			window_state.window_minimized = false;
-			window_state.window_maximized = true;
-            break;
-        case SDL_WINDOWEVENT_RESTORED:
-            break;
-        case SDL_WINDOWEVENT_ENTER:
-			window_state.is_mouse_in_window = true;
-            break;
-        case SDL_WINDOWEVENT_LEAVE:
-			window_state.is_mouse_in_window = false;
-            break;
-        case SDL_WINDOWEVENT_FOCUS_GAINED:
-			window_state.is_window_focus = true;
-            break;
-        case SDL_WINDOWEVENT_FOCUS_LOST:
-			window_state.is_window_focus = false;
-			break;
-        case SDL_WINDOWEVENT_CLOSE:
-            break;
-		}
+	switch (p_event->window.event) {
+	case SDL_WINDOWEVENT_SHOWN:
+	    window_state.is_visible = true;
+        break;
+    case SDL_WINDOWEVENT_HIDDEN:
+		window_state.is_visible = false;
+        break;
+    case SDL_WINDOWEVENT_EXPOSED:		   
+        break;
+    case SDL_WINDOWEVENT_MOVED:
+		// window_viewport(p_event->window.data1, p_event->window.data2,
+		//	window_state.window_pos_x, window_state.window_pos_y);
+        break;
+    case SDL_WINDOWEVENT_RESIZED:
+		window_viewport(window_state.window_pos_x,
+						window_state.window_pos_y,
+						p_event->window.data1, p_event->window.data2);
+        break;
+    case SDL_WINDOWEVENT_SIZE_CHANGED:
+		window_viewport(window_state.window_pos_x,
+						window_state.window_pos_y,
+						p_event->window.data1, p_event->window.data2);
+        break;
+    case SDL_WINDOWEVENT_MINIMIZED:
+		window_state.window_maximized = false;
+		window_state.window_minimized = true;
+        break;
+    case SDL_WINDOWEVENT_MAXIMIZED:
+		window_state.window_minimized = false;
+		window_state.window_maximized = true;
+        break;
+    case SDL_WINDOWEVENT_RESTORED:
+        break;
+    case SDL_WINDOWEVENT_ENTER:
+		window_state.is_mouse_in_window = true;
+        break;
+    case SDL_WINDOWEVENT_LEAVE:
+		window_state.is_mouse_in_window = false;
+        break;
+    case SDL_WINDOWEVENT_FOCUS_GAINED:
+		window_state.is_window_focus = true;
+        break;
+    case SDL_WINDOWEVENT_FOCUS_LOST:
+		window_state.is_window_focus = false;
+		break;
+    case SDL_WINDOWEVENT_CLOSE:
+        break;
 	}
 }
 
@@ -147,9 +144,9 @@ void window_viewport(GLint posx, GLint posy, GLint width, GLint height)
 	glViewport(posx, posy, width, height);
 }
 
-inline bool window_close(SDL_Window* p_window, SDL_GLContext *p_context)
+inline bool window_close(SDL_Window** pp_window)
 {
-	SDL_GL_DeleteContext(*p_context);
-	SDL_DestroyWindow(p_window);
+	SDL_GL_DeleteContext(g_context);
+	SDL_DestroyWindow(*pp_window);
 	return true;
 }
