@@ -3,11 +3,11 @@ PROGNAME?=starshipfleet
 LIB_DIR?=./lib
 BUILD_DIR?=./build
 SRC_DIRS?=./src
-CFLAGS=-O2 -g -Wall -W -std=c11 \
-    -I$(LIB_DIR)/glew-2.1.0/include \
-	-I$(LIB_DIR)/cglm-0.8.4/include \
-	-I$(LIB_DIR)/SDL2-2.0.16/include \
-	-I$(LIB_DIR)/openal-soft-1.21.1
+CFLAGS=-O2 -g -Wall -W -std=c11
+#    -I$(LIB_DIR)/glew-2.1.0/include \
+#	-I$(LIB_DIR)/cglm-0.8.4/include \
+#	-I$(LIB_DIR)/SDL2-2.0.16/include \
+#	-I$(LIB_DIR)/openal-soft-1.21.1
 LDFLAGS=-lSDL2 -lGL -lGLEW -lopenal -lSDL_ttf -lm
 SRCS:=$(shell find $(SRC_DIRS) -name *.cpp -or -name *.c -or -name *.s)
 OBJS:=$(SRCS:%=$(BUILD_DIR)/%.o)
