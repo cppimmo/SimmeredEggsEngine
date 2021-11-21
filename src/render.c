@@ -26,6 +26,14 @@ inline void r_disable(GLenum capability)
 	glDisable(capability);
 }
 
+inline void r_wireframe(const bool value)
+{
+	if (value)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	else
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
 void r_message_callback(GLDEBUGPROC callback, void *user_param)
 {
 	glDebugMessageCallback(gl_debug_callback, user_param);

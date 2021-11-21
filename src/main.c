@@ -81,13 +81,13 @@ int main(int argc, char **argv)
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	static const float vertices[6][2] = {
-		{-0.90f,-0.90f},
-		{ 0.85f,-0.90f},
-		{-0.90f, 0.85f},
-		{ 0.90f,-0.85f},
-		{ 0.90f, 0.90f},
-		{-0.85f, 0.90f},
+	static const GLfloat vertices[6][5] = {
+		{-0.90f,-0.90f, 1.0f, 0.0f, 0.0f},
+		{ 0.85f,-0.90f, 0.0f, 1.0f, 0.0f},
+		{-0.90f, 0.85f, 0.0f, 0.0f, 1.0f},
+		{ 0.90f,-0.85f, 1.0f, 0.0f, 0.0f},
+		{ 0.90f, 0.90f, 0.0f, 1.0f, 0.0f},
+		{-0.85f, 0.90f, 0.0f, 0.0f, 1.0f},
 	};
 
 	GLuint vbo, vao;
@@ -106,8 +106,11 @@ int main(int argc, char **argv)
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, BUFFER_OFFSET(0, GLfloat));
 	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, BUFFER_OFFSET(2, GLfloat));
+	glEnableVertexAttribArray(1);
 
 	uint64_t start_time, end_time, delta_time;
 	const uint64_t frame_delay = 1000 / options.refresh_rate;
@@ -182,9 +185,16 @@ int main(int argc, char **argv)
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		r_wireframe(false);
+		glLineWidth(1.0f);
+		
 		glBindVertexArray(vao);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
+		r_wireframe(true);
+		glLineWidth(5.0f);
+		
+		glDrawArrays(GL_TRIANGLES, 3, 6);
 		SDL_GL_SwapWindow(window);
 		
 		end_time = SDL_GetTicks();
@@ -194,7 +204,7 @@ int main(int argc, char **argv)
 		}
 	}
 	log_write(LOG_MSG, "Exiting application...\n");
-	window_close(&p_window);
+	window_close(&window);
 	SDL_Quit();
 	log_close();
 	return exit_code;
