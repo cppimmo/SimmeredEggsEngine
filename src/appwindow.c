@@ -20,6 +20,11 @@ bool window_init(SDL_Window **pp_window, const Options *const p_options)
 		return false;
 	}
 
+	SDL_Surface *icon = SDL_LoadBMP(WINDOW_ICON);
+	if (icon != NULL)
+		SDL_SetWindowIcon(*pp_window, icon);
+	SDL_FreeSurface(icon);
+	
 	window_attribs(4, 2, true);
     g_context = SDL_GL_CreateContext(*pp_window);
 	if (g_context == NULL) {
