@@ -17,19 +17,17 @@ typedef struct scene_state_t SceneState;
 
 struct scene_t {
 	const char *name;
-	SceneState scene_state;
-	SceneStartPtr p_scene_start;
-	SceneUpdatePtr p_scene_update;
-	SceneDestroyPtr p_scene_destroy;
+	SceneState state;
+	SceneStartPtr p_start;
+	SceneUpdatePtr p_update;
+	SceneDestroyPtr p_destroy;
 };
 typedef struct scene_t Scene;
 typedef Scene *ScenePtr; 
 
-static ScenePtr p_active_scene = NULL;
-
-bool scene_init(SceneStartPtr p_scene_start);
-bool scene_update(SceneUpdatePtr p_scene_update);
-bool scene_destroy(SceneDestroyPtr p_scene_destroy);
+bool scene_init(ScenePtr p_start);
+bool scene_update(ScenePtr p_update);
+bool scene_destroy(ScenePtr p_destroy);
 ScenePtr scene_active();
 bool scene_change(ScenePtr p_scene);
 
