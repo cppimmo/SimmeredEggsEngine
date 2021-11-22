@@ -45,6 +45,7 @@ int main(int argc, char **argv)
         .window_title = "Starship Fleet",
 		.window_size_x = 800,
 		.window_size_y = 600,
+		.is_fullscreen = false,
 		.refresh_rate = 60,
 		.vsync_enabled = true,
 		.graphics_quality = 6,
@@ -135,8 +136,10 @@ int main(int argc, char **argv)
 				on_key_up(&event.key.keysym);
 				break;
 			case SDL_TEXTEDITING:
+				on_text_edit(&event.edit);
 				break;
 			case SDL_TEXTINPUT:
+				on_text_input(&event.text);
 				break;
 			case SDL_MOUSEMOTION:
 				on_mouse_motion(&event.motion);
@@ -160,8 +163,10 @@ int main(int argc, char **argv)
 				on_controller_button_up(&event.cbutton);
 				break;
 			case SDL_AUDIODEVICEADDED:
+				
 				break;
 			case SDL_AUDIODEVICEREMOVED:
+				
 				break;
 			case SDL_CONTROLLERDEVICEADDED:
 				on_controller_device_added(&event.cdevice);
