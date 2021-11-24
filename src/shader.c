@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+static const GLchar *shader_source(const char *filename);
+static bool shader_compile_status(GLuint shader);
+static bool program_link_status(GLuint program);
+
 bool program_create(GLuint *program, struct shader_info_t *shaders, size_t length)
 {
 	if (shaders == NULL) {
@@ -239,7 +243,7 @@ bool get_uniform_mat4(GLuint program, const char *name, const mat4 *value)
 }
 
 // returns true on success, false on failure
-bool shader_compile_status(GLuint shader)
+static bool shader_compile_status(GLuint shader)
 {
 	int status;
 	char typebuf[25];
@@ -285,7 +289,7 @@ bool shader_compile_status(GLuint shader)
 }
 
 // returns true on success, false on failure
-bool program_link_status(GLuint program)
+static bool program_link_status(GLuint program)
 {
 	int status;
 	GLsizei log_length = 0;

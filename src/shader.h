@@ -6,6 +6,12 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+struct shader_uniform_t {
+	GLuint location;
+	const GLchar *name;
+};
+typedef struct shader_uniform_t ShaderUniform;
+
 struct shader_info_t {
 	GLenum type;
 	const char *filename;
@@ -17,7 +23,6 @@ typedef struct shader_info_t ShaderInfo;
 bool program_create(GLuint *program, struct shader_info_t *shaders, size_t length);
 // if return is zero then error
 GLuint shader_create(GLenum type);
-static const char *shader_source(const char *filename);
 // check to see if shader already exists
 bool shader_occupied(GLuint shader);
 void shader_delete(GLuint *p_shader);
@@ -48,9 +53,5 @@ bool get_uniform_vec4(GLuint program, const char *name, const vec4 *value);
 bool get_uniform_mat2(GLuint program, const char *name, const mat2 *value);
 bool get_uniform_mat3(GLuint program, const char *name, const mat3 *value);
 bool get_uniform_mat4(GLuint program, const char *name, const mat4 *value);
-
-// returns true on success, false on failure
-static bool shader_compile_status(GLuint shader);
-static bool program_link_status(GLuint program);
 	
 #endif // SHADER_H
