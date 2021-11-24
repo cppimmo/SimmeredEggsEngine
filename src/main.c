@@ -215,13 +215,24 @@ int main(int argc, char **argv)
 	return exit_code;
 }
 
+#define ARGUMENT_QUIET "--quiet"
+#define ARGUMENT_NOLOG "--nolog"
+#define ARGUMENT_WIDTH "--window-width"
+#define ARGUMENT_HEIGHT "--window-height"
+
 void cmdargs(int argc, char **argv)
 {
 	// use continue; to shift arguments for option values
 	for (int i = 1; i <= argc - 1; ++i) {
 	    printf("Testing argument[%d]: %s\n", i, argv[i]);
-		if (strcmp(argv[i], "-q") == 0 || strcmp(argv[i], "--quiet") == 0) {
+		if (strcmp(argv[i], ARGUMENT_QUIET) == 0) {
 			verbose = false;
+		} else if (strcmp(argv[i], ARGUMENT_NOLOG) == 0) {
+			// disable log file output
+		} else if (strcmp(argv[i], ARGUMENT_WIDTH) == 0) {
+			// set window width
+	    } else if (strcmp(argv[i], ARGUMENT_HEIGHT) == 0) {
+			// set window height
 		} else {
 			if (argc > 1)
 				usage();
