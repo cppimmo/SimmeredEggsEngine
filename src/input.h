@@ -29,7 +29,7 @@ struct keyboard_t {
 };
 typedef struct keyboard_t Keyboard;
 
-static struct controller_axis_t {
+struct controller_axis_t {
 	Uint16 x;
 	Uint16 y;
 };
