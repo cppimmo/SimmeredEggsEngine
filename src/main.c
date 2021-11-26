@@ -12,6 +12,8 @@
 #include "render.h"
 #include "shader.h"
 #include "audio.h"
+#include "vaobject.h"
+#include "vbuffer.h"
 
 #define APP_VERSION "1.0.0"
 
@@ -77,7 +79,6 @@ int main(int argc, char **argv)
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL,
 							  GL_TRUE);
 	}
-
 	glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
@@ -90,10 +91,14 @@ int main(int argc, char **argv)
 		{ 0.90f, 0.90f, 0.0f, 1.0f, 0.0f},
 		{-0.85f, 0.90f, 0.0f, 0.0f, 1.0f},
 	};
-
-	GLuint vbo, vao;
-	glCreateBuffers(1, &vbo);
-	glNamedBufferStorage(vbo, sizeof(vertices), vertices, 0);
+	
+	VertexArray vao;
+	if (!vao_create(&vao))
+		log_write(LOG_LOG, "FAILED TO CREATE VAO");
+	VertexBuffer vbo;
+	if (!vbo_create(&vbo, GL_ARRAY_BUFFER, GL_FALSE))
+		log_write(LOG_LOG, "FAILED TO CREATE VBO");
+    vbo_buffer_storage(&vbo, sizeof(vertices), vertices);
 
 	ShaderInfo shaders[] = {
 		{GL_VERTEX_SHADER,"assets/shaders/triangle_vs.glsl",0},
@@ -103,16 +108,14 @@ int main(int argc, char **argv)
 	program_create(&program, shaders, 2);
 	program_use(program);
 	
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	vao_bind(&vao);	
+	vbo_bind(&vbo);
+
+	vao_attrib_ptr(&vao, &vbo, 0, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, BUFFER_OFFSET(0, GLfloat));
+	vao_attrib_enable(0);
+	vao_attrib_ptr(&vao, &vbo, 1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, BUFFER_OFFSET(2, GLfloat));
+	vao_attrib_enable(1);
 	
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, BUFFER_OFFSET(0, GLfloat));
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, BUFFER_OFFSET(2, GLfloat));
-	glEnableVertexAttribArray(1);
-
 	uint64_t start_time, end_time, delta_time;
 	const uint64_t frame_delay = 1000 / options.refresh_rate;
 	bool running = true;
@@ -120,8 +123,7 @@ int main(int argc, char **argv)
 		start_time = SDL_GetTicks();
 		
 		SDL_Event event;
-        while (SDL_PollEvent(&event))
-        {
+        while (SDL_PollEvent(&event)) {
 			switch (event.type) {
 			case SDL_QUIT:
 				running = false;
@@ -183,17 +185,18 @@ int main(int argc, char **argv)
 				window_event_handle(&event);
 				break;
 			}         
-        }
-		
-	    // static const float clear_color[] = { 1.0f, 1.0f, 0.0f, 1.0f };
-		// glClearBufferfv(GL_COLOR, 0, clear_color);
+        }		
+	    /* static const GLfloat clear_color[] = { 1.0f, 1.0f, 0.0f, 0.0f };
+		GLint drawbuf_id = 0;
+		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &drawbuf_id);
+		glClearBufferfv(GL_COLOR, 0, clear_color); */
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		r_wireframe(false);
 		glLineWidth(1.0f);
 		
-		glBindVertexArray(vao);
+		vao_bind(&vao);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		r_wireframe(true);
@@ -209,6 +212,9 @@ int main(int argc, char **argv)
 		}
 	}
 	log_write(LOG_MSG, "Exiting application...\n");
+	program_delete(program);
+	vao_delete(&vao);
+	vbo_delete(&vbo);
 	window_close(&window);
 	SDL_Quit();
 	log_close();
