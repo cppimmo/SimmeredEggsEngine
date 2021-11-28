@@ -1,13 +1,12 @@
-#include "glerror.h"
+#include "d_glerror.h"
 #include "log.h"
 #include <string.h>
 
-GLenum gl_check_error(const char *filename, int line)
-{
-	GLenum error_code;
-	while ((error_code = glGetError()) != GL_NO_ERROR) {
+GLenum D_glCheckError(const char *filename, int line) {
+	GLenum errcode;
+	while ((errcode = glGetError()) != GL_NO_ERROR) {
 		char errbuf[50];
-		switch (error_code) {
+		switch (errcode) {
 		case GL_INVALID_ENUM:
 			strcpy(errbuf, "INVALID_ENUM");
 			break;
@@ -32,90 +31,89 @@ GLenum gl_check_error(const char *filename, int line)
 		}
 		log_write(LOG_ERR, "%s|%s(%d)\n", errbuf, filename, line);
 	}
-	return error_code;
+	return errcode;
 }
 
-void gl_debug_callback(GLenum source,
-					GLenum type,
-					GLuint id,
-					GLenum severity,
-					GLsizei length,
-					const GLchar *message,
-					const void *user_param)
-{
-	const char *source_buf;
-	const char *type_buf;
-	const char *severity_buf;
-	
+void D_glDebugCallback(GLenum source,
+					   GLenum type,
+					   GLuint id,
+					   GLenum severity,
+					   GLsizei length,
+					   const GLchar *message,
+					   const void *userparam) {
+	const char *sourcebuf;
+	const char *typebuf;
+	const char *severitybuf;
+
     switch (source) {
     case GL_DEBUG_SOURCE_API:
-		source_buf = "API";
+		sourcebuf = "API";
         break;
     case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
-		source_buf = "WINDOW_SYSTEM";
+		sourcebuf = "WINDOW_SYSTEM";
         break;
     case GL_DEBUG_SOURCE_SHADER_COMPILER:
-		source_buf = "SHADER_COMPILER";
+		sourcebuf = "SHADER_COMPILER";
         break;
     case GL_DEBUG_SOURCE_THIRD_PARTY:
-		source_buf = "THIRD_PARTY";
+		sourcebuf = "THIRD_PARTY";
         break;
     case GL_DEBUG_SOURCE_APPLICATION:
-		source_buf = "APPLICATION";
+		sourcebuf = "APPLICATION";
         break;
     case GL_DEBUG_SOURCE_OTHER:
-		source_buf = "SOURCE_OTHER";
+		sourcebuf = "SOURCE_OTHER";
         break;
     default:
-		source_buf = "";
+		sourcebuf = "";
         break;
     }
 
     switch (type) {
     case GL_DEBUG_TYPE_ERROR:
-		type_buf = "ERROR";
+		typebuf = "ERROR";
         break;
     case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-		type_buf = "DEPRECATED_BEHAVIOR";
+		typebuf = "DEPRECATED_BEHAVIOR";
         break;
     case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-		type_buf = "UNDEFINED_BEHAVIOR";
+		typebuf = "UNDEFINED_BEHAVIOR";
         break;
     case GL_DEBUG_TYPE_PERFORMANCE:
-		type_buf = "TYPE_PERFORMANCE";
+		typebuf = "TYPE_PERFORMANCE";
         break;
     case GL_DEBUG_TYPE_PORTABILITY:
-		type_buf = "TYPE_PORTABILITY";
+		typebuf = "TYPE_PORTABILITY";
         break;
     case GL_DEBUG_TYPE_MARKER:
-		type_buf = "TYPE_MARKER";
+		typebuf = "TYPE_MARKER";
         break;
     case GL_DEBUG_TYPE_PUSH_GROUP:
-		type_buf = "PUSH_GROUP";
+		typebuf = "PUSH_GROUP";
         break;
     case GL_DEBUG_TYPE_POP_GROUP:
-		type_buf = "POP_GROUP";
+		typebuf = "POP_GROUP";
         break;
     case GL_DEBUG_TYPE_OTHER:
-		type_buf = "OTHER";
+		typebuf = "OTHER";
         break;
     default:
-		type_buf = "UNKNOWN";
+		typebuf = "UNKNOWN";
         break;
     }
 
     switch (severity) {
 	case GL_DEBUG_SEVERITY_HIGH:
-		severity_buf = "HIGH";
-		log_write(LOG_ERR, "GL_DEBUG(%d):%s:%s:%s:%s\n", id, severity_buf,
-				  source_buf, type_buf, message);
+		severitybuf = "HIGH";
+		log_write(LOG_ERR, "GL_DEBUG(%d):%s:%s:%s:%s\n", id, severitybuf,
+				  sourcebuf, typebuf, message);
 		break;
 	case GL_DEBUG_SEVERITY_MEDIUM:
 	case GL_DEBUG_SEVERITY_LOW:
 	case GL_DEBUG_SEVERITY_NOTIFICATION:
-		severity_buf = "NOTIFICATION";
-		log_write(LOG_MSG, "GL_DEBUG(%d):%s:%s:%s:%s\n", id, severity_buf,
-				  source_buf, type_buf, message);
+		severitybuf = "NOTIFICATION";
+		log_write(LOG_MSG, "GL_DEBUG(%d):%s:%s:%s:%s\n", id, severitybuf,
+				  sourcebuf, typebuf, message);
         //log_write(LOG_MSG, "GL_DEBUG:%s\n", message);
 		break;
 	}

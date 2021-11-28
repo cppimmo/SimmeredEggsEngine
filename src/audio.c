@@ -3,15 +3,15 @@
 #include <string.h>
 // #include "audio/wave.h" // libaudio
 
-static bool al_create_device(ALCdevice *p_device, const ALchar *name);
-static bool al_device_enum_check();
+static boolean al_create_device(ALCdevice *p_device, const ALchar *name);
+static boolean al_device_enum_check();
 static void al_list_devices(const ALCchar *devices);
-static bool al_error(const ALchar *str);
+static boolean al_error(const ALchar *str);
 
 static ALCdevice *g_device = NULL;
 static ALCcontext *g_context = NULL;
 
-bool al_init()
+boolean al_init()
 {
 	if (!al_device_enum_check())
 		log_write(LOG_ERR, "AL Enumeration extension not available\n");
@@ -38,13 +38,13 @@ bool al_init()
 	return true;
 }
 
-bool al_destroy()
+boolean al_destroy()
 {
 
 	return true;
 }
 
-static bool al_create_device(ALCdevice *p_device, const ALchar *name)
+static boolean al_create_device(ALCdevice *p_device, const ALchar *name)
 {
 	al_list_devices(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
 	p_device = alcOpenDevice(name);
@@ -55,7 +55,7 @@ static bool al_create_device(ALCdevice *p_device, const ALchar *name)
 	return true;
 }
 
-static bool al_device_enum_check()
+static boolean al_device_enum_check()
 { // check if the impl support enumerating devices
 	ALboolean enumeration;
 	enumeration = alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT");
@@ -78,7 +78,7 @@ static void al_list_devices(const ALCchar *devices)
 	log_write(LOG_LOG, "------------------\n");
 }
 
-bool al_create_context(ALCdevice *p_device, ALCcontext *p_context)
+boolean al_create_context(ALCdevice *p_device, ALCcontext *p_context)
 {
 	if (p_device == NULL) {
 		log_write(LOG_ERR, "Can't create ALCcontext, ALCdevice is null pointer!\n");
@@ -92,7 +92,7 @@ bool al_create_context(ALCdevice *p_device, ALCcontext *p_context)
 	return true;
 }
 
-bool al_set_context(ALCcontext *p_context)
+boolean al_set_context(ALCcontext *p_context)
 {
 	if (!alcMakeContextCurrent(p_context)) {
 		log_write(LOG_ERR, "alcMakeContextCurrent() failed!\n");
@@ -101,19 +101,19 @@ bool al_set_context(ALCcontext *p_context)
 	return true;
 }
 
-bool al_gen_sources(ALuint *sources)
+boolean al_gen_sources(ALuint *sources)
 {
 
 	return true;
 }
 
-bool al_gen_buffers(ALuint *buffers)
+boolean al_gen_buffers(ALuint *buffers)
 {
 
 	return true;
 }
 
-inline bool al_error(const ALchar *str)
+inline boolean al_error(const ALchar *str)
 {
 	ALCenum error = alGetError();
 	if (error != AL_NO_ERROR) {

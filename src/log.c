@@ -1,9 +1,9 @@
 #include "log.h"
 
-static bool verbose_stdout;
+static boolean verbose_stdout;
 static FILE *p_log_file = NULL;
 
-bool log_open(const char *filename, bool verbose)
+boolean log_open(const char *filename, boolean verbose)
 {
 	verbose_stdout = verbose;
 	p_log_file = fopen(filename, "w");
@@ -38,7 +38,7 @@ void log_write(enum LOG_TYPE type, const char *fmt, ...)
 	va_end(args);
 }
 
-bool log_close()
+boolean log_close()
 {
 	if (fclose(p_log_file))
 		return true;

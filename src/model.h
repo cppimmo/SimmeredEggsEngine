@@ -6,6 +6,7 @@
  */
 #include "GL/glew.h"
 #include "cglm/cglm.h"
+#include "u_utility.h"
 
 #define MDL_MAX_TRIANGLES 2048
 #define MDL_MAX_VERTICES 1024
@@ -37,14 +38,12 @@ struct mdl_header_t {
 	int flags;      // state flag
 	float size;
 };
-typedef struct mdl_header_t MDLHeader;
 
 // skin
 struct mdl_skin_t {
 	int group;
 	GLubyte *data;
 };
-typedef struct mdl_skin_t MDLSkin;
 
 // group of textures
 struct mdl_groupskin_t {
@@ -53,7 +52,6 @@ struct mdl_groupskin_t {
 	float *time;    // time duration of each texture
 	GLubyte **data; // texture data
 };
-typedef struct mdl_groupskin_t MDLGroupSkin;
 // num_skins of mdl_skin_t or mdl_groupskin_t
 
 // texture coordinates
@@ -62,20 +60,17 @@ struct mdl_texcoord_t {
 	int s;
 	int t;
 };
-typedef struct mdl_texcoord_t MDLTexCoord;
 
 struct mdl_triangle_t {
 	int facesfront; // 0 = backface, 1 = frontface
 	int vertex[3];  // vertex indices
 };
-typedef struct mdl_triangle_t MDLTriangle;
 
 // compressed vertex
 struct mdl_vertex_t {
 	unsigned char vertex[3];
 	unsigned char normalIndex;
 };
-typedef struct mdl_vertex_t MDLVertex;
 
 // simple frame
 struct mdl_simpleframe_t {
@@ -84,14 +79,12 @@ struct mdl_simpleframe_t {
 	char name[16];
 	struct mdl_vertex_t *verts;
 };
-typedef struct mdl_simpleframe_t MDLSimpleFrame;
 
 // model frame
 struct mdl_frame_t {
 	int type; // 0 = simple, not 0 = group
 	struct mdl_simpleframe_t frame; // this program can't read models composed of group frames!
 };
-typedef struct mdl_frame_t MDLFrame;
 
 // group of simple frames
 struct mdl_groupframe_t {
@@ -101,7 +94,6 @@ struct mdl_groupframe_t {
 	float *time;
 	struct mdl_simpleframe_t *frames;
 };
-typedef struct mdl_simpleframe_t MDLSimpleFrame;
 
 struct mdl_model_t {
 	struct mdl_header_t header;
@@ -114,12 +106,11 @@ struct mdl_model_t {
 	GLuint *tex_id;
 	int iskin;
 };
-typedef struct mdl_model_t MDLModel;
 
-bool mdl_load(const char *filename, struct mdl_model_t *p_model);
+boolean mdl_load(const char *filename, struct mdl_model_t *p_model);
 void mdl_destroy(struct mdl_model_t *p_model);
 
-bool obj_load(const char *filename);
+boolean obj_load(const char *filename);
 void obj_destroy();
 
 #endif // MODEL_H

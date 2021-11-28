@@ -1,42 +1,42 @@
-#include "appwindow.h"
+#include "g_window.h"
 #include "log.h"
 
 #define WINDOW_ICON "assets/icon.bmp"
 
-static WindowState window_state;
-static SDL_GLContext g_context;
+static struct windowstate_t windowstate;
+static SDL_GLContext context;
 
-bool window_init(SDL_Window **pp_window, const Options *const p_options)
-{
+boolean G_WindowInit(SDL_Window **window, struct config_t *const config) {
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
 		log_write(LOG_ERR, "SDL_Init failure: %s\n", SDL_GetError());
 		return false;
 	}
 
-	*pp_window = SDL_CreateWindow(p_options->window_title, SDL_WINDOWPOS_UNDEFINED,
-								SDL_WINDOWPOS_UNDEFINED, p_options->window_size_x, p_options->window_size_y,
-								SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-	if (*pp_window == NULL) {
+	*window = SDL_CreateWindow(config->title, SDL_WINDOWPOS_UNDEFINED,
+							   SDL_WINDOWPOS_UNDEFINED, config->sizex,
+							   config->sizey,
+							   SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+	if (*window == NULL) {
 		log_write(LOG_ERR, "SDL_CreateWindow() failure: %s\n", SDL_GetError());
 		return false;
 	}
 
 	SDL_Surface *icon = SDL_LoadBMP(WINDOW_ICON);
 	if (icon != NULL)
-		SDL_SetWindowIcon(*pp_window, icon);
+		SDL_SetWindowIcon(*window, icon);
 	SDL_FreeSurface(icon);
 
-	window_attribs(4, 2, true);
-    g_context = SDL_GL_CreateContext(*pp_window);
-	if (g_context == NULL) {
+	G_WindowAttribs(4, 2, true);
+    context = SDL_GL_CreateContext(*window);
+	if (context == NULL) {
 		log_write(LOG_ERR, "SDL_GL_CreateContext() failure: %s\n", SDL_GetError());
 		return false;
 	}
-	if (SDL_GL_MakeCurrent(*pp_window, g_context) < 0) {
+	if (SDL_GL_MakeCurrent(*window, context) < 0) {
 		log_write(LOG_ERR, "SDL_GL_MakeCurrent() failure: %s\n", SDL_GetError());
 		return false;
 	}
-	SDL_GL_SetSwapInterval(((p_options->vsync_enabled) ? 1 : 0));
+	SDL_GL_SetSwapInterval(((config->vsync) ? 1 : 0));
 
 	glewExperimental = GL_TRUE;
 	GLenum glew_error = glewInit();
@@ -44,7 +44,7 @@ bool window_init(SDL_Window **pp_window, const Options *const p_options)
 		log_write(LOG_ERR, "glewInit() error: %s\n", glewGetErrorString(glew_error));
 		return false;
 	}
-	window_viewport(0, 0, p_options->window_size_x, p_options->window_size_y);
+	G_WindowViewport(0, 0, config->sizex, config->sizey);
 
 	if (glGetString(GL_VENDOR) != 0)
         log_write(LOG_LOG, "GL_VENDOR=%s\n", glGetString(GL_VENDOR));
@@ -60,14 +60,15 @@ bool window_init(SDL_Window **pp_window, const Options *const p_options)
 	return true;
 }
 
-inline bool window_attribs(const int glv_major, const int glv_minor, bool double_buffer)
-{ // relevant documentation: https://wiki.libsdl.org/SDL_GLattr
+inline boolean G_WindowAttribs(const int glmajor, const int glminor,
+							   boolean doublebuffer) {
+	// relevant documentation: https://wiki.libsdl.org/SDL_GLattr
 	SDL_GL_LoadLibrary(NULL);
 	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, glmajor);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, glminor);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, double_buffer);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, doublebuffer);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 	//SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -77,83 +78,82 @@ inline bool window_attribs(const int glv_major, const int glv_minor, bool double
 	return true;
 }
 
-int window_get_attrib(SDL_GLattr attr)
-{
+int G_WindowGetAttrib(SDL_GLattr attrib) {
 	int temp;
-    SDL_GL_GetAttribute(attr, &temp);
+    SDL_GL_GetAttribute(attrib, &temp);
 	return temp;
 }
 
-void window_event_handle(const SDL_Event *p_event)
-{
-	switch (p_event->window.event) {
+void G_WindowHandleEvent(const SDL_Event *event) {
+	switch (event->window.event) {
 	case SDL_WINDOWEVENT_SHOWN:
-	    window_state.is_visible = true;
+	    windowstate.visible = true;
         break;
     case SDL_WINDOWEVENT_HIDDEN:
-		window_state.is_visible = false;
+		windowstate.visible = false;
         break;
     case SDL_WINDOWEVENT_EXPOSED:
         break;
     case SDL_WINDOWEVENT_MOVED:
-		// window_viewport(p_event->window.data1, p_event->window.data2,
-		//	window_state.window_pos_x, window_state.window_pos_y);
+		// G_WindowViewport(event->window.data1, event->window.data2,
+		//	windowstate.posx, windowstate.posy);
         break;
     case SDL_WINDOWEVENT_RESIZED:
-		window_viewport(window_state.window_pos_x,
-						window_state.window_pos_y,
-						p_event->window.data1, p_event->window.data2);
+		G_WindowViewport(windowstate.posx,
+						windowstate.posy,
+						event->window.data1, event->window.data2);
         break;
     case SDL_WINDOWEVENT_SIZE_CHANGED:
-		window_viewport(window_state.window_pos_x,
-						window_state.window_pos_y,
-						p_event->window.data1, p_event->window.data2);
+		G_WindowViewport(windowstate.posx,
+						windowstate.posy,
+						event->window.data1, event->window.data2);
         break;
     case SDL_WINDOWEVENT_MINIMIZED:
-		window_state.window_maximized = false;
-		window_state.window_minimized = true;
+		windowstate.maximized = false;
+		windowstate.minimized = true;
         break;
     case SDL_WINDOWEVENT_MAXIMIZED:
-		window_state.window_minimized = false;
-		window_state.window_maximized = true;
+		windowstate.minimized = false;
+		windowstate.maximized = true;
         break;
     case SDL_WINDOWEVENT_RESTORED:
         break;
     case SDL_WINDOWEVENT_ENTER:
-		window_state.is_mouse_in_window = true;
+		windowstate.mouseover = true;
         break;
     case SDL_WINDOWEVENT_LEAVE:
-		window_state.is_mouse_in_window = false;
+		windowstate.mouseover = false;
         break;
     case SDL_WINDOWEVENT_FOCUS_GAINED:
-		window_state.is_window_focus = true;
+		windowstate.focused = true;
         break;
     case SDL_WINDOWEVENT_FOCUS_LOST:
-		window_state.is_window_focus = false;
+		windowstate.focused = false;
 		break;
     case SDL_WINDOWEVENT_CLOSE:
         break;
 	}
 }
 
-WindowState *window_get_state()
-{
-	return &window_state;
+struct windowstate_t *G_WindowGetState() {
+	return &windowstate;
 }
 
-void window_viewport(GLint posx, GLint posy, GLint width, GLint height)
-{
-	window_state.window_pos_x = posx;
-	window_state.window_pos_y = posy;
-	window_state.window_size_x = width;
-	window_state.window_size_y = height;
+void G_WindowViewport(GLint posx, GLint posy, GLint width, GLint height) {
+	windowstate.posx = posx;
+	windowstate.posy = posy;
+	windowstate.sizex = width;
+	windowstate.sizey = height;
 	glViewport(posx, posy, width, height);
 }
 
-inline bool window_close(SDL_Window** pp_window)
-{
-	SDL_GL_DeleteContext(g_context);
-	SDL_DestroyWindow(*pp_window);
+void G_WindowSwap(SDL_Window **window) {
+	SDL_GL_SwapWindow(*window);
+}
+
+inline boolean G_WindowClose(SDL_Window** window) {
+	SDL_GL_DeleteContext(context);
+	SDL_DestroyWindow(*window);
 	return true;
 }
 

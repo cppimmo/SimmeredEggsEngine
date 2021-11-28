@@ -4,12 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-static const GLchar *shader_source(const char *filename);
-static bool shader_compile_status(GLuint shader);
-static bool program_link_status(GLuint program);
+static const GLchar *ShaderSource(const char *filename);
+static boolean ShaderCompileStatus(GLuint shader);
+static boolean ProgramLinkStatus(GLuint program);
 
-bool program_create(GLuint *program, struct shader_info_t *shaders, size_t length)
-{
+boolean R_CreateProgram(GLuint *program, struct shader_info_t *shaders,
+						size_t length) {
 	if (shaders == NULL) {
 		log_write(LOG_ERR, "You didn't pass in a shader array!\n");
 		return false;
@@ -17,23 +17,23 @@ bool program_create(GLuint *program, struct shader_info_t *shaders, size_t lengt
 	*program = glCreateProgram();
 
 	for (size_t i = 0; i <= length - 1; ++i) {
-		struct shader_info_t *p_shader = &shaders[i];
-		p_shader->shader = shader_create(p_shader->type);
-		
+		struct shader_info_t *shader = &shaders[i];
+		shader->shader = R_CreateShader(shader->type);
+
 		// check if the shader was actually created
-		if (!shader_occupied(p_shader->shader)) {
+		if (!R_IsShader(shader->shader)) {
 			log_write(LOG_ERR, "Failed to create shader i=%d;%s\n", i,
-					  p_shader->filename);
+					  shader->filename);
 			for (size_t j = length - 1; j > 0; j--) {
 				glDeleteShader(shaders[j].shader);
 			}
 			return false;
 		}
 
-		const GLchar *source = shader_source(p_shader->filename);
+		const GLchar *source = ShaderSource(shader->filename);
 		if (source == NULL) {
 			log_write(LOG_ERR, "Failed to source shader i=%d;%s\n", i,
-					  p_shader->filename);
+					  shader->filename);
 			// shader_delete on previously created shaders
 			for (size_t j = length - 1; j > 0; j--) {
 				glDeleteShader(shaders[j].shader);
@@ -41,38 +41,36 @@ bool program_create(GLuint *program, struct shader_info_t *shaders, size_t lengt
 			return false;
 		}
 
-		glShaderSource(p_shader->shader, 1, &source, NULL);
+		glShaderSource(shader->shader, 1, &source, NULL);
 		free(source);
 
-		glCompileShader(p_shader->shader);
-		if (!shader_compile_status(p_shader->shader)) {
+		glCompileShader(shader->shader);
+		if (!ShaderCompileStatus(shader->shader)) {
 			// shader_delete on previously created shaders
 			for (size_t j = length - 1; j > 0; j--) {
 				glDeleteShader(shaders[j].shader);
 			}
 			return false;
 		}
-		glAttachShader(*program, p_shader->shader);
+		glAttachShader(*program, shader->shader);
 	}
-	
+
 	glLinkProgram(*program);
-	if (!program_link_status(*program)) {
+	if (!ProgramLinkStatus(*program)) {
 		for (size_t i = 0; i <= length - 1; ++i) {
 			glDeleteShader(shaders[i].shader);
-		} 
+		}
 		return false;
 	}
 	return true;
 }
 
 // if return is zero then error
-GLuint shader_create(GLenum type)
-{
+inline GLuint R_CreateShader(GLenum type) {
 	return glCreateShader(type);
 }
 
-static const GLchar *shader_source(const char *filename)
-{
+const GLchar *ShaderSource(const char *filename) {
 	FILE *p_handle = fopen(filename, "rb");
 	if (!p_handle) {
 		log_write(LOG_ERR, "Failure loading shader source from %s!\n", filename);
@@ -82,7 +80,7 @@ static const GLchar *shader_source(const char *filename)
 	fseek(p_handle, 0, SEEK_END);
 	size_t length = ftell(p_handle);
 	fseek(p_handle, 0, SEEK_SET);
-	
+
 	GLchar *source = (GLchar *)malloc(length + 1);
 
 	fread(source, 1, length, p_handle);
@@ -97,163 +95,142 @@ static const GLchar *shader_source(const char *filename)
 }
 
 // check to see if shader already exists
-bool shader_occupied(GLuint shader)
-{
+boolean R_IsShader(GLuint shader) {
 	return glIsShader(shader);
 }
 
 // check to see if program already exists
-bool program_occupied(GLuint program)
-{
+boolean R_IsProgram(GLuint program) {
 	return glIsProgram(program);
 }
 
-void shader_delete(GLuint *p_shader)
-{
-	glDeleteShader(*p_shader);
+void R_DeleteShader(GLuint *shader) {
+	glDeleteShader(*shader);
 	// set value of shader to zero
-	*p_shader = 0;
+	*shader = 0;
 }
 
-void program_use(GLuint program)
-{
+void R_UseProgram(GLuint program) {
 	glUseProgram(program);
 }
 
-void program_delete(GLuint program)
-{
+void R_DeleteProgram(GLuint program) {
 	glDeleteProgram(program);
 }
 
-bool uniform_bool(GLuint program, const char *name, bool value)
-{
-	if (!program_occupied(program))
+boolean R_UniformBoolean(GLuint program, const char *name, boolean value) {
+	if (!R_IsProgram(program))
 		return false;
 	glUniform1i(glGetUniformLocation(program, name), (int)value);
 	return true;
 }
 
-bool uniform_float(GLuint program, const char *name, float value)
-{
-	if (!program_occupied(program))
+boolean R_UniformFloat(GLuint program, const char *name, float value) {
+	if (!R_IsProgram(program))
 		return false;
 	glUniform1f(glGetUniformLocation(program, name), value);
 	return true;
 }
 
-bool uniform_int(GLuint program, const char *name, int value)
-{
-	if (!program_occupied(program))
+boolean R_UniformInt(GLuint program, const char *name, int value) {
+	if (!R_IsProgram(program))
 		return false;
 	glUniform1i(glGetUniformLocation(program, name), value);
 	return true;
 }
 
-bool uniform_vec2(GLuint program, const char *name, const vec2 value)
-{
-	if (!program_occupied(program))
+boolean R_UniformVec2(GLuint program, const char *name, const vec2 value) {
+	if (!R_IsProgram(program))
 		return false;
 	glUniform2fv(glGetUniformLocation(program, name), 1, value);
 	return true;
 }
 
-bool uniform_vec3(GLuint program, const char *name, const vec3 value)
-{
-	if (!program_occupied(program))
+boolean R_UniformVec3(GLuint program, const char *name, const vec3 value) {
+	if (!R_IsProgram(program))
 		return false;
 	glUniform3fv(glGetUniformLocation(program, name), 1, value);
 	return true;
 }
 
-bool uniform_vec4(GLuint program, const char *name, const vec4 value)
-{
-	if (!program_occupied(program))
+boolean R_UniformVec4(GLuint program, const char *name, const vec4 value) {
+	if (!R_IsProgram(program))
 		return false;
 	glUniform4fv(glGetUniformLocation(program, name), 1, value);
 	return true;
 }
 
-bool uniform_mat2(GLuint program, const char *name, const mat2 value)
-{
-	if (!program_occupied(program))
+boolean R_UniformMat2(GLuint program, const char *name, const mat2 value) {
+	if (!R_IsProgram(program))
 		return false;
-	glUniformMatrix2fv(glGetUniformLocation(program, name), 1, GL_FALSE, value[0]);
+	glUniformMatrix2fv(glGetUniformLocation(program, name), 1, GL_FALSE,
+					   value[0]);
 	return true;
 }
 
-bool uniform_mat3(GLuint program, const char *name, const mat3 value)
-{
-	if (!program_occupied(program))
+boolean R_UniformMat3(GLuint program, const char *name, const mat3 value) {
+	if (!R_IsProgram(program))
 		return false;
-	glUniformMatrix3fv(glGetUniformLocation(program, name), 1, GL_FALSE, value[0]);
+	glUniformMatrix3fv(glGetUniformLocation(program, name), 1, GL_FALSE,
+					   value[0]);
 	return true;
 }
 
-bool uniform_mat4(GLuint program, const char *name, const mat4 value)
-{
-	if (!program_occupied(program))
+boolean R_UniformMat4(GLuint program, const char *name, const mat4 value) {
+	if (!R_IsProgram(program))
 		return false;
-	glUniformMatrix4fv(glGetUniformLocation(program, name), 1, GL_FALSE, value[0]);
+	glUniformMatrix4fv(glGetUniformLocation(program, name), 1, GL_FALSE,
+					   value[0]);
 	return true;
 }
 
-bool get_uniform_bool(GLuint program, const char *name, bool *value)
-{
+boolean R_GetUniformBoolean(GLuint program, const char *name, boolean *value) {
 	return true;
 }
 
-bool get_uniform_float(GLuint program, const char *name, float *value)
-{
+boolean R_GetUniformFloat(GLuint program, const char *name, float *value) {
 	return true;
 }
 
-bool get_uniform_int(GLuint program, const char *name, int *value)
-{
+boolean R_GetUniformInt(GLuint program, const char *name, int *value) {
 	return true;
 }
 
-bool get_uniform_vec2(GLuint program, const char *name, const vec2 *value)
-{
+boolean R_GetUniformVec2(GLuint program, const char *name, const vec2 *value) {
 	return true;
 }
 
-bool get_uniform_vec3(GLuint program, const char *name, const vec3 *value)
-{
+boolean R_GetUniformVec3(GLuint program, const char *name, const vec3 *value) {
 	return true;
 }
 
-bool get_uniform_vec4(GLuint program, const char *name, const vec4 *value)
-{
+boolean R_GetUniformVec4(GLuint program, const char *name, const vec4 *value) {
 	return true;
 }
 
-bool get_uniform_mat2(GLuint program, const char *name, const mat2 *value)
-{
+boolean R_GetUniformMat2(GLuint program, const char *name, const mat2 *value) {
 	return true;
 }
 
-bool get_uniform_mat3(GLuint program, const char *name, const mat3 *value)
-{
+boolean R_GetUniformMat3(GLuint program, const char *name, const mat3 *value) {
 	return true;
 }
 
-bool get_uniform_mat4(GLuint program, const char *name, const mat4 *value)
-{
+boolean R_GetUniformMat4(GLuint program, const char *name, const mat4 *value) {
 	return true;
 }
 
 // returns true on success, false on failure
-static bool shader_compile_status(GLuint shader)
-{
+static boolean ShaderCompileStatus(GLuint shader) {
 	int status;
 	char typebuf[25];
-	GLsizei log_length = 0;
+	GLsizei length = 0;
 	GLchar *logbuf = NULL;
 
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-	int shader_type;
-	glGetShaderiv(shader, GL_SHADER_TYPE, &shader_type);
-	switch (shader_type) {
+	int type;
+	glGetShaderiv(shader, GL_SHADER_TYPE, &type);
+	switch (type) {
 	case GL_VERTEX_SHADER:
 		strcpy(typebuf, "VERTEX");
 		break;
@@ -276,12 +253,12 @@ static bool shader_compile_status(GLuint shader)
 		strcpy(typebuf, "UNKNOWN");
 	}
 	if (!status) {
-		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
-		
-		logbuf = (GLchar *)malloc((log_length + 1) * sizeof(GLchar *));
-		glGetShaderInfoLog(shader, log_length, &log_length, logbuf);
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
+
+		logbuf = (GLchar *)malloc((length + 1) * sizeof(GLchar *));
+		glGetShaderInfoLog(shader, length, &length, logbuf);
 		log_write(LOG_ERR, "%s shader compilation failed: \n%s\n", typebuf, logbuf);
-		
+
 		free(logbuf);
 		return false;
 	}
@@ -289,18 +266,17 @@ static bool shader_compile_status(GLuint shader)
 }
 
 // returns true on success, false on failure
-static bool program_link_status(GLuint program)
-{
+static boolean ProgramLinkStatus(GLuint program) {
 	int status;
-	GLsizei log_length = 0;
+	GLsizei length = 0;
 	GLchar *logbuf = NULL;
 	glGetProgramiv(program, GL_LINK_STATUS, &status);
 	if (!status) {
-		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &log_length);
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
 
-		logbuf = (GLchar *)malloc(log_length + 1);
-		glGetProgramInfoLog(program, log_length, &log_length, logbuf);
-		log_write(LOG_ERR, "Shader program LINK failed: \n%s\n", logbuf);	
+		logbuf = (GLchar *)malloc(length + 1);
+		glGetProgramInfoLog(program, length, &length, logbuf);
+		log_write(LOG_ERR, "Shader program LINK failed: \n%s\n", logbuf);
 		free(logbuf);
 		return false;
 	}

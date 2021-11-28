@@ -5,7 +5,7 @@
 #include <math.h>
 #include "log.h"
 
-/* bool mdl_load(const char *filename, struct mdl_model_t *p_model)
+/* boolean mdl_load(const char *filename, struct mdl_model_t *p_model)
 {
 	FILE *file_handle = NULL;
 	int i;

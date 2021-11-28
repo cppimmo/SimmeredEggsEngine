@@ -18,12 +18,19 @@ Create a new branch and format all code similar to the Doom source code
 I prefix for input
 U prefix for utility
 W prefix for window
-A prefix for application
+G prefix for application/game/window stuff
 R prefix for renderer
 P prefix for scene
 P prefix for gameplay
 S prefix for sound
+D prefix for debug
 HU prefix for HUD
 PU prefix for pause menu
 Change variable formatting to lowercase few underscoresi
 Change all parenthesis to occur on the same line
+No change to preprocessor
+Remove g_ and p_ prefixes from variabes
+
+Renaming candidates:
+    Cluster Electra, Flagship Electra, Flagship Cosmos,
+    Flagship Centauri

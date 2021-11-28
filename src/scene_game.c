@@ -1,24 +1,24 @@
 #include "scene_game.h"
 
-bool game_start()
+boolean game_start()
 {
 
 	return true;
 }
 
-bool game_update(GLfloat delta_time)
+boolean game_update(GLfloat delta_time)
 {
 
 	return true;
 }
 
-bool game_render(GLfloat delta_time)
+boolean game_render(GLfloat delta_time)
 {
 
 	return true;
 }
 
-bool game_destroy()
+boolean game_destroy()
 {
 
 	return true;

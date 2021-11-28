@@ -4,18 +4,18 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_types.h"
 #include <stdlib.h>
-#include <stdbool.h>
+#include "u_utility.h"
 
 struct mouse_t {
 	Sint32 x; // x-coord relative to window
 	Sint32 y;
 	Sint32 xrel; // relative motion in horizontal direction
 	Sint32 yrel;
-	bool button_l; // left button and so on
-	bool button_m; // true if pressed
-	bool button_r;
-	bool button_x1;
-	bool button_x2;
+	boolean button_l; // left button and so on
+	boolean button_m; // true if pressed
+	boolean button_r;
+	boolean button_x1;
+	boolean button_x2;
 	struct mouse_wheel_t { // postivie=right, negative=left
 		Sint32 x; // horizontal scroll
 		Sint32 y; // vertical scroll
@@ -67,8 +67,8 @@ void on_controller_device_added(const SDL_ControllerDeviceEvent *event);
 void on_controller_device_removed(const SDL_ControllerDeviceEvent *event);
 void on_controller_device_remapped(const SDL_ControllerDeviceEvent *event);
 
-bool is_key_down();
-bool is_mb_down();
+boolean is_key_down();
+boolean is_mb_down();
 // these functions control buffer input
 void key_mark();
 char *key_peek();

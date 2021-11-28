@@ -57,9 +57,9 @@ void scene_setup()
 	active_scene = SCENE_GAME;
 }
 
-bool scene_init(const enum scene_avail_t scene)
+boolean scene_init(const enum scene_avail_t scene)
 {
-	bool result;
+	boolean result;
 	result = g_scenes[scene].p_start();
 	if (!result)
 		return result;
@@ -80,7 +80,7 @@ bool scene_init(const enum scene_avail_t scene)
 		for (size_t i = 0; i < SCENE_MAX_THREADS; ++i) {
 			if (g_scenes[scene].p_start_sub[i] == NULL)
 				continue;
-			bool join_result;
+			boolean join_result;
 			if (pthread_join(threads[i], (void**)&join_result) != 0) {
 				log_write(LOG_ERR, "Failed to join SceneStartsubroutine thread!"
 						  "index[%d]", i);
@@ -97,23 +97,23 @@ bool scene_init(const enum scene_avail_t scene)
 	return result;
 }
 
-bool scene_update(const enum scene_avail_t scene, GLfloat delta_time)
+boolean scene_update(const enum scene_avail_t scene, GLfloat delta_time)
 {
-	bool result;
+	boolean result;
 	result = g_scenes[scene].p_update(delta_time);
 	return result;
 }
 
-bool scene_render(const enum scene_avail_t scene, GLfloat delta_time)
+boolean scene_render(const enum scene_avail_t scene, GLfloat delta_time)
 {
-	bool result;
+	boolean result;
 	result = g_scenes[scene].p_render(delta_time);
 	return result;
 }
 
-bool scene_destroy(const enum scene_avail_t scene)
+boolean scene_destroy(const enum scene_avail_t scene)
 {
-	bool result;
+	boolean result;
 	result = g_scenes[scene].p_destroy();
 	g_scenes[scene].state.destroyed = true;
 	return result;
@@ -129,9 +129,9 @@ inline ScenePtr scene_active_ptr()
 	return &g_scenes[active_scene];
 }
 
-bool scene_change(const enum scene_avail_t scene)
+boolean scene_change(const enum scene_avail_t scene)
 {
-	bool result;
+	boolean result;
 	if (g_scenes[active_scene].state.initialized)
 		scene_destroy(active_scene);
 	active_scene = scene;

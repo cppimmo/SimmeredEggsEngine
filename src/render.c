@@ -1,5 +1,5 @@
 #include "render.h"
-#include "glerror.h"
+#include "d_glerror.h"
 
 void r_clearcolor(const GLfloat *value)
 {
@@ -26,7 +26,7 @@ inline void r_disable(GLenum capability)
 	glDisable(capability);
 }
 
-inline void r_wireframe(const bool value)
+inline void r_wireframe(const boolean value)
 {
 	if (value)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -34,9 +34,9 @@ inline void r_wireframe(const bool value)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void r_message_callback(GLDEBUGPROC callback, void *user_param)
+void r_message_callback(GLDEBUGPROC callback, void *userparam)
 {
-	glDebugMessageCallback(gl_debug_callback, user_param);
+	glDebugMessageCallback(D_glDebugCallback, userparam);
 }
 
 void r_message_control(GLenum source, GLenum type, GLenum severity,

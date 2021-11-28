@@ -2,7 +2,7 @@
 
 #define KEY_BUFFER_SIZE 1024
 
-static bool is_key_mark = false;
+static boolean is_key_mark = false;
 static char key_buffer[KEY_BUFFER_SIZE];
 static struct mouse_t g_mouse = {
 	.x = 0,
@@ -188,12 +188,12 @@ void on_controller_device_remapped(const SDL_ControllerDeviceEvent *event)
 
 }
 
-bool is_key_down()
+boolean is_key_down()
 {
 	return true;
 }
 
-bool is_mb_down()
+boolean is_mb_down()
 {
 	return true;
 }

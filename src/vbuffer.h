@@ -2,7 +2,7 @@
 #define VBUFFER_H
 
 #include "GL/glew.h"
-#include <stdbool.h>
+#include "u_utility.h"
 #include <stdlib.h>
 
 struct vertex_buffer_t {
@@ -12,9 +12,9 @@ struct vertex_buffer_t {
 };
 typedef struct vertex_buffer_t VertexBuffer;
 
-bool vbo_create(struct vertex_buffer_t *p_vbo, GLenum target, GLboolean dynamic);
+boolean vbo_create(struct vertex_buffer_t *p_vbo, GLenum target, GLboolean dynamic);
 void vbo_delete(struct vertex_buffer_t *p_vbo);
-bool vbo_create_arr(struct vertex_buffer_t **p_vbo, size_t count, GLenum target,
+boolean vbo_create_arr(struct vertex_buffer_t **p_vbo, size_t count, GLenum target,
 				    GLboolean dynamic);
 void vbo_delete_arr(struct vertex_buffer_t **p_vbo, size_t count);
 void vbo_bind(struct vertex_buffer_t *p_vbo);

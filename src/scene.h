@@ -3,21 +3,21 @@
 
 #include "GL/glew.h"
 #include <stdlib.h>
-#include <stdbool.h>
+#include "u_utility.h"
 
 #define SCENE_MAX_THREADS 12
 #define SCENE_NAME_MAX_LENGTH 75
 
-typedef bool (*SceneStartPtr)(void);
-typedef bool (*SceneStartSubRountinePtr)(void);
-typedef bool (*SceneUpdatePtr)(GLfloat);
-typedef bool (*SceneRenderPtr)(GLfloat);
-typedef bool (*SceneDestroyPtr)(void);
+typedef boolean (*SceneStartPtr)(void);
+typedef boolean (*SceneStartSubRountinePtr)(void);
+typedef boolean (*SceneUpdatePtr)(GLfloat);
+typedef boolean (*SceneRenderPtr)(GLfloat);
+typedef boolean (*SceneDestroyPtr)(void);
 
 struct scene_state_t {
-	bool initialized;
-	bool destroyed;
-	bool active;
+	boolean initialized;
+	boolean destroyed;
+	boolean active;
 };
 typedef struct scene_state_t SceneState;
 
@@ -42,12 +42,12 @@ typedef Scene *ScenePtr;
 
 // configure the scenes recognized by scene_avail_t
 void scene_setup();
-bool scene_init(const enum scene_avail_t scene);
-bool scene_update(const enum scene_avail_t scene, GLfloat delta_time);
-bool scene_render(const enum scene_avail_t scene, GLfloat delta_time);
-bool scene_destroy(const enum scene_avail_t scene);
+boolean scene_init(const enum scene_avail_t scene);
+boolean scene_update(const enum scene_avail_t scene, GLfloat delta_time);
+boolean scene_render(const enum scene_avail_t scene, GLfloat delta_time);
+boolean scene_destroy(const enum scene_avail_t scene);
 enum scene_avail_t scene_active();
 ScenePtr scene_active_ptr();
-bool scene_change(const enum scene_avail_t scene);
+boolean scene_change(const enum scene_avail_t scene);
 
 #endif // SCENE_H

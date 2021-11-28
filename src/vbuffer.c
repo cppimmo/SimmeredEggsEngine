@@ -1,6 +1,6 @@
 #include "vbuffer.h"
 
-bool vbo_create(struct vertex_buffer_t *p_vbo, GLenum target, GLboolean dynamic)
+boolean vbo_create(struct vertex_buffer_t *p_vbo, GLenum target, GLboolean dynamic)
 {
 	p_vbo->target = target;
 	p_vbo->dynamic = dynamic;
@@ -15,7 +15,7 @@ void vbo_delete(struct vertex_buffer_t *p_vbo)
 	glDeleteBuffers(1, &p_vbo->id);
 }
 
-bool vbo_create_arr(struct vertex_buffer_t **p_vbo, size_t count, GLenum target,
+boolean vbo_create_arr(struct vertex_buffer_t **p_vbo, size_t count, GLenum target,
 					GLboolean dynamic)
 {
 	for (size_t i = 0; i < count; ++i) {

@@ -1,6 +1,6 @@
 #include "vaobject.h"
 
-bool vao_create(struct vertex_array_t *p_vao)
+boolean vao_create(struct vertex_array_t *p_vao)
 {
 	glCreateVertexArrays(1, &p_vao->id);
 	if (!glIsVertexArray(p_vao->id))
@@ -9,7 +9,7 @@ bool vao_create(struct vertex_array_t *p_vao)
 }
 
 // creating vertex arrays from arrays. needs work
-bool vao_create_arr(struct vertex_array_t **p_vao, size_t count)
+boolean vao_create_arr(struct vertex_array_t **p_vao, size_t count)
 {
 	for (size_t i = 0; i < count; ++i) {
 		glCreateVertexArrays(count, &p_vao[i]->id);

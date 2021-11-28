@@ -2,7 +2,7 @@
 #define LOG_H
 
 #include <stdio.h>
-#include <stdbool.h>
+#include "u_utility.h"
 #include <stdarg.h>
 
 #define LOG_FILE "log.txt"
@@ -13,9 +13,9 @@ enum LOG_TYPE {
 	LOG_ERR,
 };
 
-bool log_open(const char *filename, bool verbose);
+boolean log_open(const char *filename, boolean verbose);
 // wrapper function for fprintf
 void log_write(enum LOG_TYPE type, const char *fmt, ...);
-bool log_close();
+boolean log_close();
 
 #endif // LOG_H

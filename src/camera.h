@@ -4,7 +4,7 @@
 #include "GL/glew.h"
 #include "SDL2/SDL.h"
 #include "cglm/cglm.h"
-#include <stdbool.h>
+#include "u_utility.h"
 
 /* default structure values to be used if no configuration is given */
 #define CAMERA_YAW_DEFAULT -90.0f
@@ -34,7 +34,7 @@ struct camera_t {
 	GLfloat speed_strafe;
 	GLfloat field_of_view; // zoom level
 	GLfloat sensitivity;
-	bool is_locked; // is camera the priority of the mouse?
+	boolean is_locked; // is camera the priority of the mouse?
 };
 typedef struct camera_t Camera;
 

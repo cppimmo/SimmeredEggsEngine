@@ -4,9 +4,9 @@
 #include "GL/glew.h"
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
-#include <stdbool.h>
+#include "u_utility.h"
 
-bool font_init();
+boolean font_init();
 void font_info();
 char *font_get_error();
 TTF_Font *font_open(const char *filename, int size);

@@ -1,7 +1,7 @@
 #include "font.h"
 #include "log.h"
 
-bool font_init()
+boolean font_init()
 {
 	return (TTF_Init() == -1) ? false : true;
 }
