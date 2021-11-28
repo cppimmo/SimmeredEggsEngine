@@ -28,9 +28,12 @@ HU prefix for HUD
 PU prefix for pause menu
 Change variable formatting to lowercase few underscoresi
 Change all parenthesis to occur on the same line
+Place void in the parameter list for all no-argument functions
 No change to preprocessor
 Remove g_ and p_ prefixes from variabes
 
 Renaming candidates:
     Cluster Electra, Flagship Electra, Flagship Cosmos,
     Flagship Centauri
+
+Change audio.h to sound.h

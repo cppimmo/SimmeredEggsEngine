@@ -10,8 +10,8 @@
 #include "g_window.h"
 #include "input.h"
 #include "render.h"
-#include "shader.h"
-#include "audio.h"
+#include "r_shader.h"
+#include "s_sound.h"
 #include "vaobject.h"
 #include "vbuffer.h"
 #include "scene.h"
@@ -19,10 +19,10 @@
 #define GAME_VERSION "1.0.0"
 
 static void ProcessArguments(int argc, char **argv);
-static void ShowUsage();
+static void ShowUsage(void);
 static void HandleSignal(int signum);
 static void SDL_LogOutput(void *userdata, int category, SDL_LogPriority priority, const char *message);
-static void Shutdown();
+static void Shutdown(void);
 static int exit_code = 0;
 static boolean verbose = true;
 
@@ -258,7 +258,7 @@ void ProcessArguments(int argc, char **argv)
 	}
 }
 
-inline void ShowUsage()
+inline void ShowUsage(void)
 {
 	printf("Starship Fleet v"GAME_VERSION"\n"
 		   "Starship Fleet is a spaceship fleet battle game.\n\n"
@@ -340,7 +340,7 @@ void SDL_LogOutput(void *userdata, int category, SDL_LogPriority priority,
 }
 
 // do any necessary resource management here
-void Shutdown()
+void Shutdown(void)
 {
 	SDL_Quit();
 }

@@ -1,31 +1,30 @@
-#include "audio.h"
+#include "s_sound.h"
 #include "log.h"
 #include <string.h>
 // #include "audio/wave.h" // libaudio
 
-static boolean al_create_device(ALCdevice *p_device, const ALchar *name);
-static boolean al_device_enum_check();
-static void al_list_devices(const ALCchar *devices);
-static boolean al_error(const ALchar *str);
+static boolean AL_CreateDevice(ALCdevice *p_device, const ALchar *name);
+static boolean AL_DeviceEnumCheck(void);
+static void AL_ListDevices(const ALCchar *devices);
+static boolean AL_Error(const ALchar *str);
 
-static ALCdevice *g_device = NULL;
-static ALCcontext *g_context = NULL;
+static ALCdevice *aldevice = NULL;
+static ALCcontext *alcontext = NULL;
 
-boolean al_init()
-{
-	if (!al_device_enum_check())
+boolean S_SoundInit(void) {
+	if (!AL_DeviceEnumCheck())
 		log_write(LOG_ERR, "AL Enumeration extension not available\n");
-	al_list_devices(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
+	AL_ListDevices(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
 
-    const ALchar *def_device = alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
+    const ALchar *defdevice = alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
 
-	if (!al_create_device(&g_device, def_device)) {
+	if (!AL_CreateDevice(&aldevice, defdevice)) {
 		log_write(LOG_ERR, "Failed to create ALCdevice!\n");
 		return false;
 	} else
-		log_write(LOG_LOG, "Audio Device %s\n", alcGetString(g_device, ALC_DEVICE_SPECIFIER));
+		log_write(LOG_LOG, "Audio Device %s\n", alcGetString(aldevice, ALC_DEVICE_SPECIFIER));
 
-	if (!al_create_context(&g_device, &g_context)) {
+	if (!S_CreateContext(&aldevice, &alcontext)) {
 		log_write(LOG_ERR, "Failed to create ALCcontext!\n");
 		return false;
 	}
@@ -38,32 +37,29 @@ boolean al_init()
 	return true;
 }
 
-boolean al_destroy()
-{
+boolean S_SoundDestroy(void) {
 
 	return true;
 }
 
-static boolean al_create_device(ALCdevice *p_device, const ALchar *name)
-{
-	al_list_devices(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
-	p_device = alcOpenDevice(name);
-	if (p_device == NULL) {
+static boolean AL_CreateDevice(ALCdevice *device, const ALchar *name) {
+	AL_ListDevices(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
+	device = alcOpenDevice(name);
+	if (device == NULL) {
 		log_write(LOG_ERR, "");
 		return false;
 	}
 	return true;
 }
 
-static boolean al_device_enum_check()
-{ // check if the impl support enumerating devices
+static boolean AL_DeviceEnumCheck(void) { 
+    // check if the impl support enumerating devices
 	ALboolean enumeration;
 	enumeration = alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT");
 	return (enumeration == AL_FALSE) ? false : true;
 }
 
-static void al_list_devices(const ALCchar *devices)
-{
+static void AL_ListDevices(const ALCchar *devices) {
 	const ALCchar *device = devices, *next = devices + 1;
 	size_t len = 0;
 
@@ -78,43 +74,38 @@ static void al_list_devices(const ALCchar *devices)
 	log_write(LOG_LOG, "------------------\n");
 }
 
-boolean al_create_context(ALCdevice *p_device, ALCcontext *p_context)
-{
-	if (p_device == NULL) {
+boolean S_CreateContext(ALCdevice *device, ALCcontext *context) {
+	if (device == NULL) {
 		log_write(LOG_ERR, "Can't create ALCcontext, ALCdevice is null pointer!\n");
 		return false;
 	}
-	p_context = alcCreateContext(p_device, NULL);
-	if (p_context == NULL) {
+    context = alcCreateContext(device, NULL);
+	if (context == NULL) {
 		log_write(LOG_ERR, "alcCreateContext() failed!\n");
 		return false;
 	}
 	return true;
 }
 
-boolean al_set_context(ALCcontext *p_context)
-{
-	if (!alcMakeContextCurrent(p_context)) {
+boolean S_SetContext(ALCcontext *context) {
+	if (!alcMakeContextCurrent(context)) {
 		log_write(LOG_ERR, "alcMakeContextCurrent() failed!\n");
 		return false;
 	}
 	return true;
 }
 
-boolean al_gen_sources(ALuint *sources)
-{
+boolean S_GenSources(ALuint *sources) {
 
 	return true;
 }
 
-boolean al_gen_buffers(ALuint *buffers)
-{
+boolean S_GenBuffers(ALuint *buffers) {
 
 	return true;
 }
 
-inline boolean al_error(const ALchar *str)
-{
+inline boolean AL_Error(const ALchar *str) {
 	ALCenum error = alGetError();
 	if (error != AL_NO_ERROR) {
 		log_write(LOG_ERR, str);
