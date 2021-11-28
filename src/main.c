@@ -14,7 +14,7 @@
 #include "s_sound.h"
 #include "vaobject.h"
 #include "vbuffer.h"
-#include "scene.h"
+#include "p_scene.h"
 
 #define GAME_VERSION "1.0.0"
 
@@ -82,8 +82,8 @@ int main(int argc, char **argv)
 	}
 
 	// configure scenes
-	scene_setup();
-	if (!scene_init(SCENE_GAME)) {
+	P_SceneSetup();
+	if (!P_SceneInit(SCENE_GAME)) {
 		log_write(LOG_ERR, "Failed to init scene!\n");
 	}
 
@@ -198,8 +198,8 @@ int main(int argc, char **argv)
 		GLint drawbuf_id = 0;
 		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &drawbuf_id);
 		glClearBufferfv(GL_COLOR, 0, clear_color); */
-		scene_update(scene_active(), (GLfloat)delta_time);
-		scene_render(scene_active(), (GLfloat)delta_time);
+		P_SceneUpdate(P_GetActiveScene(), (GLfloat)delta_time);
+		P_SceneRender(P_GetActiveScene(), (GLfloat)delta_time);
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -226,7 +226,7 @@ int main(int argc, char **argv)
 	R_DeleteProgram(program);
 	vao_delete(&vao);
 	vbo_delete(&vbo);
-	scene_destroy(scene_active());
+	P_SceneDestroy(P_GetActiveScene());
 	G_WindowClose(&window);
 	SDL_Quit();
 	log_close();

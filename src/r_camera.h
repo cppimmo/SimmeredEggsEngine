@@ -1,5 +1,5 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#ifndef __R_CAMERA_H__
+#define __R_CAMERA_H__
 
 #include "GL/glew.h"
 #include "SDL2/SDL.h"
@@ -20,29 +20,27 @@ enum camera_direction_t {
 	LEFT,
 	RIGHT,
 };
-typedef enum camera_direction_t CameraDirection;
 
 struct camera_t {
 	vec3 position;
 	vec3 front;
 	vec3 up;
 	vec3 right;
-	vec3 world_up;
+	vec3 worldup;
 	GLfloat yaw;
 	GLfloat pitch;
-	GLfloat speed_forward; // movement speed
-	GLfloat speed_strafe;
-	GLfloat field_of_view; // zoom level
+	GLfloat speedforward; // movement speed
+	GLfloat speedstrafe;
+	GLfloat fov; // zoom level
 	GLfloat sensitivity;
-	boolean is_locked; // is camera the priority of the mouse?
+	boolean locked; // is camera the priority of the mouse?
 };
-typedef struct camera_t Camera;
 
-void camera_init(struct camera_t *p_camera);
-void camera_view_matrix(struct camera_t *p_camera, mat4 *p_view);
-void camera_freemouse();
-void camera_lockmouse();
-void camera_move();
-void camera_update(GLfloat delta_time);
+void R_CameraInit(struct camera_t *p_camera);
+void R_CameraViewMatrix(struct camera_t *p_camera, mat4 *p_view);
+void R_CameraFreeMouse();
+void R_CameraLockMouse();
+void R_CameraMove();
+void R_CameraUpdate(GLfloat delta_time);
 
-#endif // CAMERA_H
+#endif

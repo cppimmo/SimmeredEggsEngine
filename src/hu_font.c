@@ -1,44 +1,39 @@
-#include "font.h"
+#include "hu_font.h"
 #include "log.h"
 
-boolean font_init()
-{
+boolean HU_FontInit(void) {
 	return (TTF_Init() == -1) ? false : true;
 }
 
-void font_info()
-{
+void HU_FontInfo(void) {
 	/* SDL_version compile_version;
 	const SDL_version *link_version = TFF_Linked_Version();
 	SDL_TFF_VERSION(&compile_version); */
-	log_write(LOG_LOG, "SDL_ttf compiled version: %d.%d.%d\n", SDL_TTF_MAJOR_VERSION,
-			  SDL_TTF_MINOR_VERSION, SDL_TTF_PATCHLEVEL);
+	log_write(LOG_LOG, "SDL_ttf compiled version: %d.%d.%d\n",
+			  SDL_TTF_MAJOR_VERSION, SDL_TTF_MINOR_VERSION, SDL_TTF_PATCHLEVEL);
 	/* log_write(LOG_LOG, "SDL_ttf running version: ", link_version->major,
 	   link_version->minor, link_version->patch); */
 }
 
-inline char *font_get_error()
-{
+inline const char *HU_GetFontError(void) {
 	return TTF_GetError();
 }
 
-TTF_Font *font_open(const char *filename, int size)
-{
+TTF_Font *HU_FontOpen(const char *filename, int size) {
 	return TTF_OpenFont(filename, size);
 }
 
 // generated surfaces must be freed!
-inline SDL_Surface *font_render_solid(TTF_Font *font, const char *text, SDL_Color fg)
-{
+inline SDL_Surface *HU_FontRenderSolid(TTF_Font *font, const char *text,
+									   SDL_Color fg) {
 	return TTF_RenderText_Solid(font, text, fg);
 }
 
-inline void font_close(TTF_Font *font)
-{
+inline void HU_FontClose(TTF_Font *font) {
 	TTF_CloseFont(font);
 }
 
-inline void font_quit()
-{
+inline void HU_FontQuit(void) {
 	TTF_Quit();
 }
+
