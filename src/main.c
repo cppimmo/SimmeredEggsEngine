@@ -14,6 +14,7 @@
 #include "audio.h"
 #include "vaobject.h"
 #include "vbuffer.h"
+#include "scene.h"
 
 #define APP_VERSION "1.0.0"
 
@@ -79,6 +80,13 @@ int main(int argc, char **argv)
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL,
 							  GL_TRUE);
 	}
+
+	// configure scenes
+	scene_setup();
+	if (!scene_init(SCENE_GAME)) {
+		log_write(LOG_ERR, "Failed to init scene!\n");
+	}
+
 	glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
@@ -91,7 +99,7 @@ int main(int argc, char **argv)
 		{ 0.90f, 0.90f, 0.0f, 1.0f, 0.0f},
 		{-0.85f, 0.90f, 0.0f, 0.0f, 1.0f},
 	};
-	
+
 	VertexArray vao;
 	if (!vao_create(&vao))
 		log_write(LOG_LOG, "FAILED TO CREATE VAO");
@@ -107,21 +115,21 @@ int main(int argc, char **argv)
 	GLuint program;
 	program_create(&program, shaders, 2);
 	program_use(program);
-	
-	vao_bind(&vao);	
+
+	vao_bind(&vao);
 	vbo_bind(&vbo);
 
 	vao_attrib_ptr(&vao, &vbo, 0, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, BUFFER_OFFSET(0, GLfloat));
 	vao_attrib_enable(0);
 	vao_attrib_ptr(&vao, &vbo, 1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, BUFFER_OFFSET(2, GLfloat));
 	vao_attrib_enable(1);
-	
+
 	uint64_t start_time, end_time, delta_time;
 	const uint64_t frame_delay = 1000 / options.refresh_rate;
 	bool running = true;
 	while (running) {
 		start_time = SDL_GetTicks();
-		
+
 		SDL_Event event;
         while (SDL_PollEvent(&event)) {
 			switch (event.type) {
@@ -132,7 +140,7 @@ int main(int argc, char **argv)
 				if (event.key.keysym.sym == SDLK_ESCAPE) {
 					running = false;
 				}
-				on_key_down(&event.key.keysym);	
+				on_key_down(&event.key.keysym);
 				break;
 			case SDL_KEYUP:
 				on_key_up(&event.key.keysym);
@@ -165,10 +173,10 @@ int main(int argc, char **argv)
 				on_controller_button_up(&event.cbutton);
 				break;
 			case SDL_AUDIODEVICEADDED:
-				
+
 				break;
 			case SDL_AUDIODEVICEREMOVED:
-				
+
 				break;
 			case SDL_CONTROLLERDEVICEADDED:
 				on_controller_device_added(&event.cdevice);
@@ -184,37 +192,40 @@ int main(int argc, char **argv)
 			case SDL_WINDOWEVENT:
 				window_event_handle(&event);
 				break;
-			}         
-        }		
+			}
+        }
 	    /* static const GLfloat clear_color[] = { 1.0f, 1.0f, 0.0f, 0.0f };
 		GLint drawbuf_id = 0;
 		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &drawbuf_id);
 		glClearBufferfv(GL_COLOR, 0, clear_color); */
+		scene_update(scene_active(), (GLfloat)delta_time);
+		scene_render(scene_active(), (GLfloat)delta_time);
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		r_wireframe(false);
 		glLineWidth(1.0f);
-		
+
 		vao_bind(&vao);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		r_wireframe(true);
 		glLineWidth(5.0f);
-		
+
 		glDrawArrays(GL_TRIANGLES, 3, 6);
 		SDL_GL_SwapWindow(window);
-		
+
 		end_time = SDL_GetTicks();
 		delta_time = end_time - start_time;
 		if (frame_delay > delta_time) {
-		    SDL_Delay(frame_delay - delta_time);   
+		    SDL_Delay(frame_delay - delta_time);
 		}
 	}
 	log_write(LOG_MSG, "Exiting application...\n");
 	program_delete(program);
 	vao_delete(&vao);
 	vbo_delete(&vbo);
+	scene_destroy(scene_active());
 	window_close(&window);
 	SDL_Quit();
 	log_close();

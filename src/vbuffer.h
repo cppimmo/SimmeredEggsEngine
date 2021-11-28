@@ -22,5 +22,5 @@ void vbo_unbind(struct vertex_buffer_t *p_vbo);
 void vbo_buffer_storage(struct vertex_buffer_t *p_vbo, GLsizeiptr size,
 						const void *data);
 void vbo_buffer_data(struct vertex_buffer_t *p_vbo, GLsizeiptr size, const void *data);
-	
+
 #endif // VBUFFER_H

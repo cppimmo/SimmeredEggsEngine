@@ -3,6 +3,7 @@
 
 #define WINDOW_ICON "assets/icon.bmp"
 
+static WindowState window_state;
 static SDL_GLContext g_context;
 
 bool window_init(SDL_Window **pp_window, const Options *const p_options)
@@ -11,7 +12,7 @@ bool window_init(SDL_Window **pp_window, const Options *const p_options)
 		log_write(LOG_ERR, "SDL_Init failure: %s\n", SDL_GetError());
 		return false;
 	}
-	
+
 	*pp_window = SDL_CreateWindow(p_options->window_title, SDL_WINDOWPOS_UNDEFINED,
 								SDL_WINDOWPOS_UNDEFINED, p_options->window_size_x, p_options->window_size_y,
 								SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
@@ -24,7 +25,7 @@ bool window_init(SDL_Window **pp_window, const Options *const p_options)
 	if (icon != NULL)
 		SDL_SetWindowIcon(*pp_window, icon);
 	SDL_FreeSurface(icon);
-	
+
 	window_attribs(4, 2, true);
     g_context = SDL_GL_CreateContext(*pp_window);
 	if (g_context == NULL) {
@@ -44,7 +45,7 @@ bool window_init(SDL_Window **pp_window, const Options *const p_options)
 		return false;
 	}
 	window_viewport(0, 0, p_options->window_size_x, p_options->window_size_y);
-	
+
 	if (glGetString(GL_VENDOR) != 0)
         log_write(LOG_LOG, "GL_VENDOR=%s\n", glGetString(GL_VENDOR));
     if (glGetString(GL_RENDERER) != 0)
@@ -92,7 +93,7 @@ void window_event_handle(const SDL_Event *p_event)
     case SDL_WINDOWEVENT_HIDDEN:
 		window_state.is_visible = false;
         break;
-    case SDL_WINDOWEVENT_EXPOSED:		   
+    case SDL_WINDOWEVENT_EXPOSED:
         break;
     case SDL_WINDOWEVENT_MOVED:
 		// window_viewport(p_event->window.data1, p_event->window.data2,
@@ -155,3 +156,4 @@ inline bool window_close(SDL_Window** pp_window)
 	SDL_DestroyWindow(*pp_window);
 	return true;
 }
+

@@ -58,16 +58,16 @@ void on_mouse_button_down(const SDL_MouseButtonEvent *event)
 		g_mouse.button_l = true;
 		break;
     case SDL_BUTTON_MIDDLE:
-		g_mouse.button_m = true;		
+		g_mouse.button_m = true;
 		break;
 	case SDL_BUTTON_RIGHT:
-		g_mouse.button_r = true;		
+		g_mouse.button_r = true;
 		break;
 	case SDL_BUTTON_X1:
-		g_mouse.button_x1 = true;		
+		g_mouse.button_x1 = true;
 		break;
 	case SDL_BUTTON_X2:
-		g_mouse.button_x2 = true;		
+		g_mouse.button_x2 = true;
 		break;
 	}
 }
@@ -81,16 +81,16 @@ void on_mouse_button_up(const SDL_MouseButtonEvent *event)
 		g_mouse.button_l = false;
 		break;
     case SDL_BUTTON_MIDDLE:
-		g_mouse.button_m = false;		
+		g_mouse.button_m = false;
 		break;
 	case SDL_BUTTON_RIGHT:
-		g_mouse.button_r = false;		
+		g_mouse.button_r = false;
 		break;
 	case SDL_BUTTON_X1:
-		g_mouse.button_x1 = false;		
+		g_mouse.button_x1 = false;
 		break;
 	case SDL_BUTTON_X2:
-		g_mouse.button_x2 = false;		
+		g_mouse.button_x2 = false;
 		break;
 	}
 }
@@ -107,13 +107,13 @@ void on_key_down(const SDL_Keysym *key)
 	if (is_key_mark) {
 		if (key->sym == SDLK_BACKSPACE) {
 			// remove the last character from the buffer
-			
+
 		} else if (key->sym == SDLK_c && SDL_GetModState() & KMOD_CTRL) {
 			// SDL_SetClipboardText( some const char *);
-			
+
 		} else if (key->sym == SDLK_v && SDL_GetModState() & KMOD_CTRL) {
 			// buffer = SDL_GetClipboardText();
-			
+
 		}
 	}
 }
@@ -125,7 +125,7 @@ void on_key_up(const SDL_Keysym *key)
 
 void on_text_edit(const SDL_TextEditingEvent *event)
 {
-	
+
 }
 
 void on_text_input(const SDL_TextInputEvent *event)
@@ -133,15 +133,13 @@ void on_text_input(const SDL_TextInputEvent *event)
 	if (!(SDL_GetModState() & KMOD_CTRL && (event->text[0] == 'c' ||
 		event->text[0] == 'C' || event->text[0] == 'v' ||
 	    event->text[0] == 'V'))) {
-		
+
 	}
 }
 
 void on_controller_axis_motion(const SDL_ControllerAxisEvent *event)
 {
 	switch (event->axis) {
-	case SDL_CONTROLLER_AXIS_INVALID:		
-		break;
 	case SDL_CONTROLLER_AXIS_LEFTX:
 		g_controller.axis_l.x = event->value;
 		break;
@@ -192,12 +190,12 @@ void on_controller_device_remapped(const SDL_ControllerDeviceEvent *event)
 
 bool is_key_down()
 {
-	
+	return true;
 }
 
 bool is_mb_down()
 {
-	
+	return true;
 }
 
 // start taking text input

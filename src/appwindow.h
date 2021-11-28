@@ -18,7 +18,6 @@ typedef struct {
 	bool is_mouse_in_window;
 	bool is_window_focus;
 } WindowState;
-static WindowState window_state;
 
 bool window_init(SDL_Window **pp_window, const Options *const p_options);
 bool window_attribs(const int glv_major, const int glv_minor,

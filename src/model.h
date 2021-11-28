@@ -119,5 +119,7 @@ typedef struct mdl_model_t MDLModel;
 bool mdl_load(const char *filename, struct mdl_model_t *p_model);
 void mdl_destroy(struct mdl_model_t *p_model);
 
+bool obj_load(const char *filename);
+void obj_destroy();
 
 #endif // MODEL_H

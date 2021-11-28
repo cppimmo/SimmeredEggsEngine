@@ -3,6 +3,11 @@
 #include <string.h>
 // #include "audio/wave.h" // libaudio
 
+static bool al_create_device(ALCdevice *p_device, const ALchar *name);
+static bool al_device_enum_check();
+static void al_list_devices(const ALCchar *devices);
+static bool al_error(const ALchar *str);
+
 static ALCdevice *g_device = NULL;
 static ALCcontext *g_context = NULL;
 
@@ -13,7 +18,7 @@ bool al_init()
 	al_list_devices(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
 
     const ALchar *def_device = alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
-	
+
 	if (!al_create_device(&g_device, def_device)) {
 		log_write(LOG_ERR, "Failed to create ALCdevice!\n");
 		return false;
@@ -35,11 +40,11 @@ bool al_init()
 
 bool al_destroy()
 {
-	
+
 	return true;
 }
 
-bool al_create_device(ALCdevice *p_device, const ALchar *name)
+static bool al_create_device(ALCdevice *p_device, const ALchar *name)
 {
 	al_list_devices(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
 	p_device = alcOpenDevice(name);
@@ -50,14 +55,14 @@ bool al_create_device(ALCdevice *p_device, const ALchar *name)
 	return true;
 }
 
-bool al_device_enum_check()
+static bool al_device_enum_check()
 { // check if the impl support enumerating devices
 	ALboolean enumeration;
 	enumeration = alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT");
 	return (enumeration == AL_FALSE) ? false : true;
 }
 
-void al_list_devices(const ALCchar *devices)
+static void al_list_devices(const ALCchar *devices)
 {
 	const ALCchar *device = devices, *next = devices + 1;
 	size_t len = 0;

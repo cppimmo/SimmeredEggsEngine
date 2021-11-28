@@ -13,3 +13,17 @@ Complete shader interaction/loading code.
 Make function and data structure for loading spheres and cubes for creation of
 syboxes.
 
+Change all functions to format BumpyCase(); with prefix if needed
+Create a new branch and format all code similar to the Doom source code
+I prefix for input
+U prefix for utility
+W prefix for window
+A prefix for application
+R prefix for renderer
+P prefix for scene
+P prefix for gameplay
+S prefix for sound
+HU prefix for HUD
+PU prefix for pause menu
+Change variable formatting to lowercase few underscoresi
+Change all parenthesis to occur on the same line

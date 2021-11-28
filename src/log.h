@@ -6,10 +6,9 @@
 #include <stdarg.h>
 
 #define LOG_FILE "log.txt"
-static FILE *pLogFile = NULL;
 
 enum LOG_TYPE {
-	LOG_MSG,
+	LOG_MSG = 0,
 	LOG_LOG,
 	LOG_ERR,
 };
