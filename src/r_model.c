@@ -1,9 +1,9 @@
-#include "model.h"
+#include "r_model.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "log.h"
+#include "u_log.h"
 
 /* boolean mdl_load(const char *filename, struct mdl_model_t *p_model)
 {
@@ -12,7 +12,7 @@
 
 	file_handle = fopen(filename, "rb");
 	if (file_handle == NULL) {
-		log_write(LOG_ERR, "mdl_load(): Failed to open %s\n", filename);
+		U_LogWrite(LOG_ERR, "mdl_load(): Failed to open %s\n", filename);
 		return false;
 	}
 	// read header
@@ -20,7 +20,7 @@
 
 	if ((p_model->header.ident != 1330660425) ||
 		(p_model->header.version != 6)) {
-		log_write(LOG_ERR, "mdl_load(): bad version or identifier\n");
+		U_LogWrite(LOG_ERR, "mdl_load(): bad version or identifier\n");
 		fclose(file_handle);
 		return false;
 	}

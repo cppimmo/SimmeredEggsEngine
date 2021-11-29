@@ -1,5 +1,5 @@
 #include "d_glerror.h"
-#include "log.h"
+#include "u_log.h"
 #include <string.h>
 
 GLenum D_glCheckError(const char *filename, int line) {
@@ -29,7 +29,7 @@ GLenum D_glCheckError(const char *filename, int line) {
 			strcpy(errbuf, "INVALID_FRAMEBUFFER_OPERATION");
 			break;
 		}
-		log_write(LOG_ERR, "%s|%s(%d)\n", errbuf, filename, line);
+		U_LogWrite(LOG_ERR, "%s|%s(%d)\n", errbuf, filename, line);
 	}
 	return errcode;
 }
@@ -105,16 +105,16 @@ void D_glDebugCallback(GLenum source,
     switch (severity) {
 	case GL_DEBUG_SEVERITY_HIGH:
 		severitybuf = "HIGH";
-		log_write(LOG_ERR, "GL_DEBUG(%d):%s:%s:%s:%s\n", id, severitybuf,
+		U_LogWrite(LOG_ERR, "GL_DEBUG(%d):%s:%s:%s:%s\n", id, severitybuf,
 				  sourcebuf, typebuf, message);
 		break;
 	case GL_DEBUG_SEVERITY_MEDIUM:
 	case GL_DEBUG_SEVERITY_LOW:
 	case GL_DEBUG_SEVERITY_NOTIFICATION:
 		severitybuf = "NOTIFICATION";
-		log_write(LOG_MSG, "GL_DEBUG(%d):%s:%s:%s:%s\n", id, severitybuf,
+		U_LogWrite(LOG_MSG, "GL_DEBUG(%d):%s:%s:%s:%s\n", id, severitybuf,
 				  sourcebuf, typebuf, message);
-        //log_write(LOG_MSG, "GL_DEBUG:%s\n", message);
+        //U_LogWrite(LOG_MSG, "GL_DEBUG:%s\n", message);
 		break;
 	}
 }

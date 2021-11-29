@@ -1,5 +1,5 @@
 #include "p_scene.h"
-#include "log.h"
+#include "u_log.h"
 #include "p_scenemenu.h"
 #include "p_scenegame.h"
 
@@ -74,7 +74,7 @@ boolean P_SceneInit(enum sceneavail_t scene) {
 				continue;
 			if (pthread_create(&threads[i], NULL,
 							   scenes[scene].startsub[i], NULL) != 0) {
-				log_write(LOG_ERR, "Failed to create SceneStartSubRoutine"
+				U_LogWrite(LOG_ERR, "Failed to create SceneStartSubRoutine"
 						  "thread! index[%d]", i);
 			}
 		}
@@ -83,11 +83,11 @@ boolean P_SceneInit(enum sceneavail_t scene) {
 				continue;
 			boolean join_result;
 			if (pthread_join(threads[i], (void**)&join_result) != 0) {
-				log_write(LOG_ERR, "Failed to join SceneStartsubroutine thread!"
+				U_LogWrite(LOG_ERR, "Failed to join SceneStartsubroutine thread!"
 						  "index[%d]", i);
 			}
 			if (join_result == false) {
-				log_write(LOG_ERR, "SceneStartSubrountine failed! index[%d]", i);
+				U_LogWrite(LOG_ERR, "SceneStartSubrountine failed! index[%d]", i);
 				result = join_result;
 				break;
 			}

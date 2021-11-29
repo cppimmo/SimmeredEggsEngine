@@ -1,4 +1,4 @@
-#include "input.h"
+#include "g_input.h"
 
 #define KEY_BUFFER_SIZE 1024
 

@@ -1,5 +1,5 @@
 #include "g_window.h"
-#include "log.h"
+#include "u_log.h"
 
 #define WINDOW_ICON "assets/icon.bmp"
 
@@ -8,7 +8,7 @@ static SDL_GLContext context;
 
 boolean G_WindowInit(SDL_Window **window, struct config_t *const config) {
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-		log_write(LOG_ERR, "SDL_Init failure: %s\n", SDL_GetError());
+		U_LogWrite(LOG_ERR, "SDL_Init failure: %s\n", SDL_GetError());
 		return false;
 	}
 
@@ -17,7 +17,7 @@ boolean G_WindowInit(SDL_Window **window, struct config_t *const config) {
 							   config->sizey,
 							   SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 	if (*window == NULL) {
-		log_write(LOG_ERR, "SDL_CreateWindow() failure: %s\n", SDL_GetError());
+		U_LogWrite(LOG_ERR, "SDL_CreateWindow() failure: %s\n", SDL_GetError());
 		return false;
 	}
 
@@ -29,11 +29,11 @@ boolean G_WindowInit(SDL_Window **window, struct config_t *const config) {
 	G_WindowAttribs(4, 2, true);
     context = SDL_GL_CreateContext(*window);
 	if (context == NULL) {
-		log_write(LOG_ERR, "SDL_GL_CreateContext() failure: %s\n", SDL_GetError());
+		U_LogWrite(LOG_ERR, "SDL_GL_CreateContext() failure: %s\n", SDL_GetError());
 		return false;
 	}
 	if (SDL_GL_MakeCurrent(*window, context) < 0) {
-		log_write(LOG_ERR, "SDL_GL_MakeCurrent() failure: %s\n", SDL_GetError());
+		U_LogWrite(LOG_ERR, "SDL_GL_MakeCurrent() failure: %s\n", SDL_GetError());
 		return false;
 	}
 	SDL_GL_SetSwapInterval(((config->vsync) ? 1 : 0));
@@ -41,21 +41,21 @@ boolean G_WindowInit(SDL_Window **window, struct config_t *const config) {
 	glewExperimental = GL_TRUE;
 	GLenum glew_error = glewInit();
 	if (glew_error != GLEW_OK) {
-		log_write(LOG_ERR, "glewInit() error: %s\n", glewGetErrorString(glew_error));
+		U_LogWrite(LOG_ERR, "glewInit() error: %s\n", glewGetErrorString(glew_error));
 		return false;
 	}
 	G_WindowViewport(0, 0, config->sizex, config->sizey);
 
 	if (glGetString(GL_VENDOR) != 0)
-        log_write(LOG_LOG, "GL_VENDOR=%s\n", glGetString(GL_VENDOR));
+        U_LogWrite(LOG_LOG, "GL_VENDOR=%s\n", glGetString(GL_VENDOR));
     if (glGetString(GL_RENDERER) != 0)
-        log_write(LOG_LOG, "GL_RENDERER=%s\n", glGetString(GL_RENDERER));
+        U_LogWrite(LOG_LOG, "GL_RENDERER=%s\n", glGetString(GL_RENDERER));
     if (glGetString(GL_VERSION) != 0)
-        log_write(LOG_LOG, "GL_VERSION=%s\n", glGetString(GL_VERSION));
+        U_LogWrite(LOG_LOG, "GL_VERSION=%s\n", glGetString(GL_VERSION));
     if (glGetString(GL_SHADING_LANGUAGE_VERSION) != 0)
-        log_write(LOG_LOG, "GL_SHADING_LANGUAGE_VERSION=%s\n",
+        U_LogWrite(LOG_LOG, "GL_SHADING_LANGUAGE_VERSION=%s\n",
               glGetString(GL_SHADING_LANGUAGE_VERSION));
-	log_write(LOG_MSG, "gl3w loaded successfully; version: %s\n",
+	U_LogWrite(LOG_MSG, "gl3w loaded successfully; version: %s\n",
                glewGetString(GLEW_VERSION));
 	return true;
 }

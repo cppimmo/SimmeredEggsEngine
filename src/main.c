@@ -5,15 +5,15 @@
 
 #include "SDL2/SDL.h"
 #include "d_glerror.h"
-#include "log.h"
+#include "u_log.h"
 #include "g_config.h"
 #include "g_window.h"
-#include "input.h"
-#include "render.h"
+#include "g_input.h"
+#include "r_render.h"
 #include "r_shader.h"
 #include "s_sound.h"
-#include "vaobject.h"
-#include "vbuffer.h"
+#include "r_vertexarray.h"
+#include "r_vertexbuffer.h"
 #include "p_scene.h"
 
 #define GAME_VERSION "1.0.0"
@@ -21,28 +21,28 @@
 static void ProcessArguments(int argc, char **argv);
 static void ShowUsage(void);
 static void HandleSignal(int signum);
-static void SDL_LogOutput(void *userdata, int category, SDL_LogPriority priority, const char *message);
+static void SDL_LogOutput(void *userdata, int category,
+                          SDL_LogPriority priority, const char *message);
 static void Shutdown(void);
-static int exit_code = 0;
+static int exitcode = 0;
 static boolean verbose = true;
 
-typedef struct {
+struct gamestate_t {
 	boolean configloaded;
 	boolean logopened;
 	boolean logclosed;
 	boolean configclosed;
 	boolean windowcreated;
-} GameState;
-GameState gamestate = {false,false,false,false,false,};
+};
+struct gamestate_t gamestate = {false,false,false,false,false,};
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 	ProcessArguments(argc, argv);
-	if (!log_open(LOG_FILE, verbose)) {
+	if (!U_LogOpen(LOG_FILE, verbose)) {
 		fprintf(stderr, "Failed to open log file for writing, %s", LOG_FILE);
 	}
-	log_write(LOG_MSG, "Initializing Starship Fleet...\n");
-	log_write(LOG_MSG, "Loading configuration file...\n");
+	U_LogWrite(LOG_MSG, "Initializing Starship Fleet...\n");
+	U_LogWrite(LOG_MSG, "Loading configuration file...\n");
 
 	struct config_t config = {
         .title = "Starship Fleet",
@@ -54,17 +54,17 @@ int main(int argc, char **argv)
 		.quality = 6,
 	};
 	if (!G_ConfigLoad(CONFIG_FILE, &config)) {
-		log_write(LOG_MSG, "Configuration parsing error. Using reasonable set of defaults.\n");
+		U_LogWrite(LOG_MSG, "Configuration parsing error. Using reasonable set of defaults.\n");
 	}
 	G_ConfigClose();
-	log_write(LOG_MSG, "Configuration parsed successfully.\n");
-	log_write(LOG_MSG, "Initialization complete. Elapsed time: %ds\n", 0);
+	U_LogWrite(LOG_MSG, "Configuration parsed successfully.\n");
+	U_LogWrite(LOG_MSG, "Initialization complete. Elapsed time: %ds\n", 0);
 
 	SDL_Window *window;
 	if (!G_WindowInit(&window, &config)) {
-		log_write(LOG_ERR, "Window initilization failure.\n");
-		exit_code = 1;
-		return exit_code;
+		U_LogWrite(LOG_ERR, "Window initilization failure.\n");
+		exitcode = 1;
+		return exitcode;
 	}
 	atexit(Shutdown);
     { // short scope for debug context checking
@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 		int context_flags;
 		glGetIntegerv(GL_CONTEXT_FLAGS, &context_flags);
 		if (context_flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
-			log_write(LOG_MSG, "OpenGL Debug Context Enabled Successfully.\n");
+			U_LogWrite(LOG_MSG, "OpenGL Debug Context Enabled Successfully.\n");
 		}
 		glEnable(GL_DEBUG_OUTPUT);
 		// glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 	// configure scenes
 	P_SceneSetup();
 	if (!P_SceneInit(SCENE_GAME)) {
-		log_write(LOG_ERR, "Failed to init scene!\n");
+		U_LogWrite(LOG_ERR, "Failed to init scene!\n");
 	}
 
 	glEnable(GL_DEPTH_TEST);
@@ -100,13 +100,13 @@ int main(int argc, char **argv)
 		{-0.85f, 0.90f, 0.0f, 0.0f, 1.0f},
 	};
 
-	VertexArray vao;
-	if (!vao_create(&vao))
-		log_write(LOG_LOG, "FAILED TO CREATE VAO");
-	VertexBuffer vbo;
-	if (!vbo_create(&vbo, GL_ARRAY_BUFFER, GL_FALSE))
-		log_write(LOG_LOG, "FAILED TO CREATE VBO");
-    vbo_buffer_storage(&vbo, sizeof(vertices), vertices);
+	struct vertexarray_t vao;
+	if (!R_CreateVertexArray(&vao))
+		U_LogWrite(LOG_LOG, "FAILED TO CREATE VAO");
+	struct vertexbuffer_t vbo;
+	if (!R_CreateVertexBuffer(&vbo, GL_ARRAY_BUFFER, GL_FALSE))
+		U_LogWrite(LOG_LOG, "FAILED TO CREATE VBO");
+    R_VertexBufferStorage(&vbo, sizeof(vertices), vertices);
 
 	struct shader_info_t shaders[] = {
 		{GL_VERTEX_SHADER,"assets/shaders/triangle_vs.glsl",0},
@@ -116,13 +116,13 @@ int main(int argc, char **argv)
 	R_CreateProgram(&program, shaders, 2);
     R_UseProgram(program);
 
-	vao_bind(&vao);
-	vbo_bind(&vbo);
+	R_BindVertexArray(&vao);
+	R_BindVertexBuffer(&vbo);
 
-	vao_attrib_ptr(&vao, &vbo, 0, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, BUFFER_OFFSET(0, GLfloat));
-	vao_attrib_enable(0);
-	vao_attrib_ptr(&vao, &vbo, 1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, BUFFER_OFFSET(2, GLfloat));
-	vao_attrib_enable(1);
+	R_VertexAttribPtr(&vao, &vbo, 0, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, BUFFER_OFFSET(0, GLfloat));
+	R_VertexAttribEnable(0);
+	R_VertexAttribPtr(&vao, &vbo, 1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, BUFFER_OFFSET(2, GLfloat));
+	R_VertexAttribEnable(1);
 
 	uint64_t start_time, end_time, delta_time;
 	const uint64_t frame_delay = 1000 / config.refreshrate;
@@ -203,13 +203,13 @@ int main(int argc, char **argv)
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		r_wireframe(false);
+		R_Wireframe(false);
 		glLineWidth(1.0f);
 
-		vao_bind(&vao);
+		R_BindVertexArray(&vao);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
-		r_wireframe(true);
+		R_Wireframe(true);
 		glLineWidth(5.0f);
 
 		glDrawArrays(GL_TRIANGLES, 3, 6);
@@ -222,15 +222,15 @@ int main(int argc, char **argv)
 		    SDL_Delay(frame_delay - delta_time);
 		}
 	}
-	log_write(LOG_MSG, "Exiting application...\n");
+	U_LogWrite(LOG_MSG, "Exiting application...\n");
 	R_DeleteProgram(program);
-	vao_delete(&vao);
-	vbo_delete(&vbo);
+	R_DeleteVertexArray(&vao);
+	R_DeleteVertexBuffer(&vbo);
 	P_SceneDestroy(P_GetActiveScene());
 	G_WindowClose(&window);
 	SDL_Quit();
-	log_close();
-	return exit_code;
+	U_LogClose();
+	return exitcode;
 }
 
 #define ARGUMENT_QUIET "--quiet"
@@ -238,8 +238,7 @@ int main(int argc, char **argv)
 #define ARGUMENT_WIDTH "--window-width"
 #define ARGUMENT_HEIGHT "--window-height"
 
-void ProcessArguments(int argc, char **argv)
-{
+void ProcessArguments(int argc, char **argv) {
 	// use continue; to shift arguments for option values
 	for (int i = 1; i <= argc - 1; ++i) {
 	    printf("Testing argument[%d]: %s\n", i, argv[i]);
@@ -258,8 +257,7 @@ void ProcessArguments(int argc, char **argv)
 	}
 }
 
-inline void ShowUsage(void)
-{
+inline void ShowUsage(void) {
 	printf("Starship Fleet v"GAME_VERSION"\n"
 		   "Starship Fleet is a spaceship fleet battle game.\n\n"
 		   "usage:\n\tstarshipfleet [FLAGS] [OPTIONS]\n\n"
@@ -269,16 +267,14 @@ inline void ShowUsage(void)
 	exit(1); // okay to exit no initialization done
 }
 
-void HandleSignal(int signum)
-{
+void HandleSignal(int signum) {
 	switch (signum) {
 
 	}
 }
 
 void SDL_LogOutput(void *userdata, int category, SDL_LogPriority priority,
-					const char *message)
-{
+				   const char *message) {
 	const char *categorybuf;
 	const char *prioritybuf;
 
@@ -336,12 +332,11 @@ void SDL_LogOutput(void *userdata, int category, SDL_LogPriority priority,
 	default:
 		prioritybuf = "UNKNOWN";
 	}
-	log_write(LOG_LOG, "SDL:%s:%s:%s\n", categorybuf, prioritybuf, message);
+	U_LogWrite(LOG_LOG, "SDL:%s:%s:%s\n", categorybuf, prioritybuf, message);
 }
 
 // do any necessary resource management here
-void Shutdown(void)
-{
+void Shutdown(void) {
 	SDL_Quit();
 }
 

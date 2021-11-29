@@ -22,6 +22,7 @@ G prefix for application/game/window stuff
 R prefix for renderer
 P prefix for scene
 P prefix for gameplay
+A prefix for artifical intelligence
 S prefix for sound
 D prefix for debug
 HU prefix for HUD

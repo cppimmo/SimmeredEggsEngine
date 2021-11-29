@@ -1,5 +1,5 @@
-#ifndef MODEL_H
-#define MODEL_H
+#ifndef __R_MODEL_H__
+#define __R_MODEL_H__
 
 /* MDL Quake model loader code from:
  * http://tfc.duke.free.fr/coding/mdl-specs-en.html
@@ -113,4 +113,4 @@ void mdl_destroy(struct mdl_model_t *p_model);
 boolean obj_load(const char *filename);
 void obj_destroy();
 
-#endif // MODEL_H
+#endif

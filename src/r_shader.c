@@ -1,5 +1,5 @@
 #include "r_shader.h"
-#include "log.h"
+#include "u_log.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,7 +11,7 @@ static boolean ProgramLinkStatus(GLuint program);
 boolean R_CreateProgram(GLuint *program, struct shader_info_t *shaders,
 						size_t length) {
 	if (shaders == NULL) {
-		log_write(LOG_ERR, "You didn't pass in a shader array!\n");
+		U_LogWrite(LOG_ERR, "You didn't pass in a shader array!\n");
 		return false;
 	}
 	*program = glCreateProgram();
@@ -22,7 +22,7 @@ boolean R_CreateProgram(GLuint *program, struct shader_info_t *shaders,
 
 		// check if the shader was actually created
 		if (!R_IsShader(shader->shader)) {
-			log_write(LOG_ERR, "Failed to create shader i=%d;%s\n", i,
+			U_LogWrite(LOG_ERR, "Failed to create shader i=%d;%s\n", i,
 					  shader->filename);
 			for (size_t j = length - 1; j > 0; j--) {
 				glDeleteShader(shaders[j].shader);
@@ -32,7 +32,7 @@ boolean R_CreateProgram(GLuint *program, struct shader_info_t *shaders,
 
 		const GLchar *source = ShaderSource(shader->filename);
 		if (source == NULL) {
-			log_write(LOG_ERR, "Failed to source shader i=%d;%s\n", i,
+			U_LogWrite(LOG_ERR, "Failed to source shader i=%d;%s\n", i,
 					  shader->filename);
 			// shader_delete on previously created shaders
 			for (size_t j = length - 1; j > 0; j--) {
@@ -73,7 +73,7 @@ inline GLuint R_CreateShader(GLenum type) {
 const GLchar *ShaderSource(const char *filename) {
 	FILE *p_handle = fopen(filename, "rb");
 	if (!p_handle) {
-		log_write(LOG_ERR, "Failure loading shader source from %s!\n", filename);
+		U_LogWrite(LOG_ERR, "Failure loading shader source from %s!\n", filename);
 		return NULL;
 	}
 
@@ -85,7 +85,7 @@ const GLchar *ShaderSource(const char *filename) {
 
 	fread(source, 1, length, p_handle);
 	if (fclose(p_handle) == EOF) {
-		log_write(LOG_ERR, "Failure closing shader file: %s!", filename);
+		U_LogWrite(LOG_ERR, "Failure closing shader file: %s!", filename);
 		free(source);
 		return NULL;
 	}
@@ -257,7 +257,7 @@ static boolean ShaderCompileStatus(GLuint shader) {
 
 		logbuf = (GLchar *)malloc((length + 1) * sizeof(GLchar *));
 		glGetShaderInfoLog(shader, length, &length, logbuf);
-		log_write(LOG_ERR, "%s shader compilation failed: \n%s\n", typebuf, logbuf);
+		U_LogWrite(LOG_ERR, "%s shader compilation failed: \n%s\n", typebuf, logbuf);
 
 		free(logbuf);
 		return false;
@@ -276,7 +276,7 @@ static boolean ProgramLinkStatus(GLuint program) {
 
 		logbuf = (GLchar *)malloc(length + 1);
 		glGetProgramInfoLog(program, length, &length, logbuf);
-		log_write(LOG_ERR, "Shader program LINK failed: \n%s\n", logbuf);
+		U_LogWrite(LOG_ERR, "Shader program LINK failed: \n%s\n", logbuf);
 		free(logbuf);
 		return false;
 	}

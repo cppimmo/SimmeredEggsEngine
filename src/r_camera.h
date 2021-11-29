@@ -38,9 +38,9 @@ struct camera_t {
 
 void R_CameraInit(struct camera_t *p_camera);
 void R_CameraViewMatrix(struct camera_t *p_camera, mat4 *p_view);
-void R_CameraFreeMouse();
-void R_CameraLockMouse();
-void R_CameraMove();
+void R_CameraFreeMouse(void);
+void R_CameraLockMouse(void);
+void R_CameraMove(void);
 void R_CameraUpdate(GLfloat delta_time);
 
 #endif
