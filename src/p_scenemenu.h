@@ -6,11 +6,10 @@
 struct scenemenu_t {
 
 };
-typedef struct scenemenu_t SceneMenu;
 
 boolean P_MenuStart(void);
-boolean P_MenuUpdate(GLfloat delta_time);
-boolean P_MenuRender(GLfloat delta_time);
+boolean P_MenuUpdate(GLfloat deltatime);
+boolean P_MenuRender(GLfloat deltatime);
 boolean P_MenuDestroy(void);
 
 #endif

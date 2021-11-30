@@ -18,16 +18,16 @@ boolean S_SoundInit(void) {
 
     const ALchar *defdevice = alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
 
-	if (!AL_CreateDevice(&aldevice, defdevice)) {
+	if (!AL_CreateDevice(aldevice, defdevice)) {
 		U_LogWrite(LOG_ERR, "Failed to create ALCdevice!\n");
 		return false;
 	} else
 		U_LogWrite(LOG_LOG, "Audio Device %s\n", alcGetString(aldevice, ALC_DEVICE_SPECIFIER));
 
-	if (!S_CreateContext(&aldevice, &alcontext)) {
+	/* if (!S_CreateContext(aldevice, alcontext)) {
 		U_LogWrite(LOG_ERR, "Failed to create ALCcontext!\n");
 		return false;
-	}
+	} */
 
 	ALfloat listenerOri[] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
 	alListener3f(AL_POSITION, 0, 0, 1.0f);
@@ -46,7 +46,7 @@ static boolean AL_CreateDevice(ALCdevice *device, const ALchar *name) {
 	AL_ListDevices(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
 	device = alcOpenDevice(name);
 	if (device == NULL) {
-		U_LogWrite(LOG_ERR, "");
+		U_LogWrite(LOG_ERR, "alcOpenDevice() failed!\n");
 		return false;
 	}
 	return true;

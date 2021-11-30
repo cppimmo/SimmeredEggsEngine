@@ -1,5 +1,5 @@
-#ifndef UTILITY_H
-#define UTILITY_H
+#ifndef __U_UTILITY_H__
+#define __U_UTILITY_H__
 
 // phooey on you GCC!
 #undef bool
@@ -14,4 +14,4 @@ enum boolean_t {
 };
 typedef enum boolean_t boolean;
 
-#endif // UTILITY_H
+#endif

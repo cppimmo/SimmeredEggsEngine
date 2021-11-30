@@ -2,8 +2,12 @@
 #define __P_SCENE_H__
 
 #include "GL/glew.h"
-#include <stdlib.h>
 #include "u_utility.h"
+#include "u_log.h"
+#include "r_render.h"
+#include "r_shader.h"
+
+#include <stdlib.h>
 
 #define SCENE_MAX_THREADS 12
 #define SCENE_NAME_MAX_LENGTH 75
@@ -41,8 +45,8 @@ typedef struct scene_t* ScenePtr;
 // configure the scenes recognized by scene_avail_t
 void P_SceneSetup(void);
 boolean P_SceneInit(enum sceneavail_t scene);
-boolean P_SceneUpdate(enum sceneavail_t scene, GLfloat delta_time);
-boolean P_SceneRender(enum sceneavail_t scene, GLfloat delta_time);
+boolean P_SceneUpdate(enum sceneavail_t scene, GLfloat deltatime);
+boolean P_SceneRender(enum sceneavail_t scene, GLfloat deltatime);
 boolean P_SceneDestroy(enum sceneavail_t scene);
 enum sceneavail_t P_GetActiveScene(void);
 struct scene_t *P_GetActiveScenePtr(void);

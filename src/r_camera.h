@@ -14,11 +14,16 @@
 #define CAMERA_FOV_DEFAULT 45.0f
 #define CAMERA_SENSIVITY_DEFAULT 0.1f
 
-enum camera_direction_t {
-	FORWARD,
-	BACKWARD,
-	LEFT,
-	RIGHT,
+enum cameradirection_t {
+	CAMERA_FORWARD,
+	CAMERA_BACKWARD,
+	CAMERA_LEFT,
+	CAMERA_RIGHT,
+};
+
+enum cameratype_t {
+	CAMERA_TYPE_FIRST_PERSON,
+	CAMERA_TYPE_ORBIT,
 };
 
 struct camera_t {
@@ -34,13 +39,18 @@ struct camera_t {
 	GLfloat fov; // zoom level
 	GLfloat sensitivity;
 	boolean locked; // is camera the priority of the mouse?
+	enum cameratype_t type;
 };
 
-void R_CameraInit(struct camera_t *p_camera);
-void R_CameraViewMatrix(struct camera_t *p_camera, mat4 *p_view);
+void R_CameraInit(struct camera_t *camera);
+void R_CameraViewMatrix(struct camera_t *camera, mat4 *view);
 void R_CameraFreeMouse(void);
 void R_CameraLockMouse(void);
+void R_CameraSetPos(vec3 position);
+void R_CameraSetSensitity(GLfloat sensitivity);
+void R_CameraSetSpeed(GLfloat forward, GLfloat strafe);
+void R_CameraSetFOV(GLfloat fov);
 void R_CameraMove(void);
-void R_CameraUpdate(GLfloat delta_time);
+void R_CameraUpdate(GLfloat deltatime);
 
 #endif

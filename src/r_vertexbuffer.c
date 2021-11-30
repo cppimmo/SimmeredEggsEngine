@@ -43,7 +43,7 @@ inline void R_UnbindVertexBuffer(struct vertexbuffer_t *vbo) {
 void R_VertexBufferStorage(struct vertexbuffer_t *vbo, GLsizeiptr size,
 						   const void *data) {
 	GLbitfield flags = (vbo->dynamic == GL_TRUE)? GL_DYNAMIC_STORAGE_BIT : 0;
-	glNamedBufferStorage(vbo->id, size, data, 0);
+	glNamedBufferStorage(vbo->id, size, data, flags);
 }
 
 void R_VertexBufferData(struct vertexbuffer_t *vbo, GLsizeiptr size,
@@ -51,7 +51,7 @@ void R_VertexBufferData(struct vertexbuffer_t *vbo, GLsizeiptr size,
 	// possibly offset and count parameters instead of size
 	R_BindVertexBuffer(vbo);
 	glBufferData(vbo->target, size, data,
-				 (vbo->dynamic) ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+				 (vbo->dynamic)? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 	//R_UnbindVertexBuffer(vbo);
 }
 

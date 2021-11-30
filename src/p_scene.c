@@ -98,15 +98,15 @@ boolean P_SceneInit(enum sceneavail_t scene) {
 	return result;
 }
 
-boolean P_SceneUpdate(enum sceneavail_t scene, GLfloat delta_time) {
+boolean P_SceneUpdate(enum sceneavail_t scene, GLfloat deltatime) {
 	boolean result;
-	result = scenes[scene].update(delta_time);
+	result = scenes[scene].update(deltatime);
 	return result;
 }
 
-boolean P_SceneRender(enum sceneavail_t scene, GLfloat delta_time) {
+boolean P_SceneRender(enum sceneavail_t scene, GLfloat deltatime) {
 	boolean result;
-	result = scenes[scene].render(delta_time);
+	result = scenes[scene].render(deltatime);
 	return result;
 }
 

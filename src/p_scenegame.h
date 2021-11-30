@@ -6,7 +6,6 @@
 struct scenegame_t {
 
 };
-typedef struct scenegame_t SceneGame;
 
 boolean P_GameStart(void);
 boolean P_GameUpdate(GLfloat delta_time);

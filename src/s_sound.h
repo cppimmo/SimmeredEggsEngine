@@ -3,17 +3,17 @@
 
 #include "AL/al.h"
 #include "AL/alc.h"
-#include <stdlib.h>
 #include "u_utility.h"
 
-// implement dynamic context, source, & buffer interface
+#include <stdlib.h>
 
+// implement dynamic context, source, & buffer interface
 boolean S_SoundInit(void);
 boolean S_SoundDestroy(void);
 boolean S_CreateContext(ALCdevice *device, ALCcontext *context);
 boolean S_SetContext(ALCcontext *context);
 ALCcontext *S_GetContextCurrent(void);
-// boolean al_create_listener(ALClistener *pListener);
+// boolean S_CreateListener(ALClistener *pListener);
 boolean S_GenSources(ALuint *sources);
 boolean S_GenBuffers(ALuint *buffers);
 void S_DeleteSources(ALuint *sources, ALuint count);

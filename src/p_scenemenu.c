@@ -4,11 +4,11 @@ boolean P_MenuStart(void) {
 	return true;
 }
 
-boolean P_MenuUpdate(GLfloat delta_time) {
+boolean P_MenuUpdate(GLfloat deltatime) {
 	return true;
 }
 
-boolean P_MenuRender(GLfloat delta_time) {
+boolean P_MenuRender(GLfloat deltatime) {
 	return true;
 }
 

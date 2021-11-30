@@ -38,3 +38,12 @@ Renaming candidates:
     Flagship Centauri
 
 Change audio.h to sound.h
+
+Add SDL_AUDIODEVICEADDED/REMOVED handlers to s_sound.h
+
+Add Subroutine handling to r_shader.h
+Create asssociation enumerations and arrays for shaders and programs available
+in applicaition and set them up in R_ProgramSetup()
+
+Delete length of log_write output to check for possible duplicates mute output
+after three consecutive string of equal length Use static local variables

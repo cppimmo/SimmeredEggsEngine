@@ -36,7 +36,7 @@ void U_LogWrite(enum logtype_t type, const char *fmt, ...) {
 	va_end(args);
 }
 
-boolean U_LogClose() {
+boolean U_LogClose(void) {
 	if (fclose(loghandle))
 		return true;
 	return false;

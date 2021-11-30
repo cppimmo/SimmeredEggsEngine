@@ -8,7 +8,7 @@ static const GLchar *ShaderSource(const char *filename);
 static boolean ShaderCompileStatus(GLuint shader);
 static boolean ProgramLinkStatus(GLuint program);
 
-boolean R_CreateProgram(GLuint *program, struct shader_info_t *shaders,
+boolean R_CreateProgram(GLuint *program, struct shaderinfo_t *shaders,
 						size_t length) {
 	if (shaders == NULL) {
 		U_LogWrite(LOG_ERR, "You didn't pass in a shader array!\n");
@@ -17,7 +17,7 @@ boolean R_CreateProgram(GLuint *program, struct shader_info_t *shaders,
 	*program = glCreateProgram();
 
 	for (size_t i = 0; i <= length - 1; ++i) {
-		struct shader_info_t *shader = &shaders[i];
+		struct shaderinfo_t *shader = &shaders[i];
 		shader->shader = R_CreateShader(shader->type);
 
 		// check if the shader was actually created

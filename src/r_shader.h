@@ -6,19 +6,19 @@
 #include <stdlib.h>
 #include "u_utility.h"
 
-struct shader_uniform_t {
+struct shaderuniform_t {
 	GLuint location;
 	const GLchar *name;
 };
 
-struct shader_info_t {
+struct shaderinfo_t {
 	GLenum type;
 	const char *filename;
 	GLuint shader;
 };
 
 // load program from an array of shader_info_t
-boolean R_CreateProgram(GLuint *program, struct shader_info_t *shaders, size_t length);
+boolean R_CreateProgram(GLuint *program, struct shaderinfo_t *shaders, size_t length);
 // if return is zero then error
 GLuint R_CreateShader(GLenum type);
 // check to see if shader already exists

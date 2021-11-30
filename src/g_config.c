@@ -22,8 +22,7 @@ boolean G_ConfigLoad(const char *filename, struct config_t *const config) {
 	return true;
 }
 
-void G_ConfigClose()
-{
+void G_ConfigClose(void) {
 	if (confhandle != NULL) {
 		fclose(confhandle);
 	}

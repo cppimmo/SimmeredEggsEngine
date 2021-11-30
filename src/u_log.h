@@ -16,6 +16,6 @@ enum logtype_t {
 
 boolean U_LogOpen(const char *filename, boolean verbose);
 void U_LogWrite(enum logtype_t type, const char *fmt, ...);
-boolean U_LogClose();
+boolean U_LogClose(void);
 
 #endif

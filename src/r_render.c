@@ -1,11 +1,15 @@
 #include "r_render.h"
 #include "d_glerror.h"
 
-void R_ClearColor(const GLfloat *value) {
-
+inline void R_Clear(const GLbitfield mask) {
+	glClear(mask);
 }
 
-void R_Viewport(GLint x, GLint y, GLint width, GLint height) {
+inline void R_ClearColor(const GLfloat *value) {
+	glClearColor(value[0], value[1], value[2], value[3]);
+}
+
+inline void R_Viewport(GLint x, GLint y, GLint width, GLint height) {
 	glViewport(x, y, width, height);
 }
 
@@ -26,6 +30,19 @@ inline void R_Wireframe(const boolean value) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
+inline void R_LineWidth(GLfloat width) {
+	glLineWidth(width);
+}
+
+inline void R_DrawArrays(GLenum mode, GLint first, GLsizei count) {
+	glDrawArrays(mode, first, count);
+}
+
+inline void R_DrawIndexed(GLenum mode, GLsizei count, GLenum type,
+						  const GLvoid *indices) {
+	glDrawElements(mode, count, type, indices);
 }
 
 void R_MessageCallback(GLDEBUGPROC callback, void *userparam) {

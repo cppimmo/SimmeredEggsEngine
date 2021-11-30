@@ -18,6 +18,6 @@ struct config_t {
 };
 
 boolean G_ConfigLoad(const char *filename, struct config_t *const options);
-void G_ConfigClose();
+void G_ConfigClose(void);
 
 #endif

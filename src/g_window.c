@@ -52,9 +52,11 @@ boolean G_WindowInit(SDL_Window **window, struct config_t *const config) {
         U_LogWrite(LOG_LOG, "GL_RENDERER=%s\n", glGetString(GL_RENDERER));
     if (glGetString(GL_VERSION) != 0)
         U_LogWrite(LOG_LOG, "GL_VERSION=%s\n", glGetString(GL_VERSION));
-    if (glGetString(GL_SHADING_LANGUAGE_VERSION) != 0)
+    if (glGetString(GL_SHADING_LANGUAGE_VERSION) != 0) {
         U_LogWrite(LOG_LOG, "GL_SHADING_LANGUAGE_VERSION=%s\n",
-              glGetString(GL_SHADING_LANGUAGE_VERSION));
+				   glGetString(GL_SHADING_LANGUAGE_VERSION));
+	}
+
 	U_LogWrite(LOG_MSG, "gl3w loaded successfully; version: %s\n",
                glewGetString(GLEW_VERSION));
 	return true;

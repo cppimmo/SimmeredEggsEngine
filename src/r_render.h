@@ -11,13 +11,15 @@
 // offset, and type
 #define BUFFER_OFFSET(X, Y) ((void*)(X* sizeof(Y)))
 
+void R_Clear(const GLbitfield mask);
 void R_ClearColor(const GLfloat *value);
 void R_Viewport(GLint x, GLint y, GLint width, GLint height);
 GLboolean R_IsEnabled(GLenum capability);
 void R_Enable(GLenum capability);
 void R_Disable(GLenum capability);
 void R_Wireframe(const boolean value);
-void R_Draw(GLenum mode, GLint first, GLsizei count);
+void R_LineWidth(GLfloat width);
+void R_DrawArrays(GLenum mode, GLint first, GLsizei count);
 void R_DrawIndexed(GLenum mode, GLsizei count, GLenum type,
 					const GLvoid *indices);
 void R_MessageCallback(GLDEBUGPROC callback, void *userparam);

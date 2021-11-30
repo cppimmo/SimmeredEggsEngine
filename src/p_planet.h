@@ -1,6 +1,6 @@
-#ifndef PLANET_H
-#define PLANET_H
+#ifndef __P_PLANET_H__
+#define __PLANET_H__
 
 
 
-#endif // PLANET_H
+#endif

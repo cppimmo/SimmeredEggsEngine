@@ -1,10 +1,11 @@
-#ifndef INPUT_H
-#define INPUT_H
+#ifndef __G_INPUT_H__
+#define __G_INPUT_H__
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_types.h"
-#include <stdlib.h>
 #include "u_utility.h"
+
+#include <stdlib.h>
 
 struct mouse_t {
 	Sint32 x; // x-coord relative to window
@@ -22,12 +23,10 @@ struct mouse_t {
 		Uint32 direction; // see Remarks on SDL_MouseWheelEvent
 	} wheel;
 };
-typedef struct mouse_t Mouse;
 
 struct keyboard_t {
 
 };
-typedef struct keyboard_t Keyboard;
 
 struct controller_axis_t {
 	Uint16 x;
@@ -50,28 +49,27 @@ struct controller_t { // axis range -32768 to 32767
 	 SDL_CONTROLLER_BUTTON_DPAD_LEFT 14, SDL_CONTROLLER_BUTTON_DPAD_RIGHT 15
 	 SDL_CONTROLLER_BUTTON_MAX */
 };
-typedef struct controller_t Controller;
 
-void on_mouse_motion(const SDL_MouseMotionEvent *event);
-void on_mouse_button_down(const SDL_MouseButtonEvent *event);
-void on_mouse_button_up(const SDL_MouseButtonEvent *event);
-void on_mouse_wheel(const SDL_MouseWheelEvent *event);
-void on_key_down(const SDL_Keysym *key);
-void on_key_up(const SDL_Keysym *key);
-void on_text_edit(const SDL_TextEditingEvent *event);
-void on_text_input(const SDL_TextInputEvent *event);
-void on_controller_axis_motion(const SDL_ControllerAxisEvent *event);
-void on_controller_button_down(const SDL_ControllerButtonEvent *event);
-void on_controller_button_up(const SDL_ControllerButtonEvent *event);
-void on_controller_device_added(const SDL_ControllerDeviceEvent *event);
-void on_controller_device_removed(const SDL_ControllerDeviceEvent *event);
-void on_controller_device_remapped(const SDL_ControllerDeviceEvent *event);
+void G_OnMouseMotion(const SDL_MouseMotionEvent *event);
+void G_OnMouseButtonDown(const SDL_MouseButtonEvent *event);
+void G_OnMouseButtonUp(const SDL_MouseButtonEvent *event);
+void G_OnMouseWheel(const SDL_MouseWheelEvent *event);
+void G_OnKeyDown(const SDL_Keysym *key);
+void G_OnKeyUp(const SDL_Keysym *key);
+void G_OnTextEdit(const SDL_TextEditingEvent *event);
+void G_OnTextInput(const SDL_TextInputEvent *event);
+void G_OnControllerAxisMotion(const SDL_ControllerAxisEvent *event);
+void G_OnControllerButtonDown(const SDL_ControllerButtonEvent *event);
+void G_OnControllerButtonUp(const SDL_ControllerButtonEvent *event);
+void G_OnControllerDeviceAdded(const SDL_ControllerDeviceEvent *event);
+void G_OnControllerDeviceRemoved(const SDL_ControllerDeviceEvent *event);
+void G_OnControllerDeviceRemapped(const SDL_ControllerDeviceEvent *event);
 
-boolean is_key_down();
-boolean is_mb_down();
+boolean G_IsKeyDown(void);
+boolean G_IsMouseButtonDown(void);
 // these functions control buffer input
-void key_mark();
-char *key_peek();
-void key_unmark();
+void G_KeyMark(void);
+char *G_KeyPeek(void);
+void G_KeyUnmark(void);
 
-#endif // INPUT_H
+#endif
