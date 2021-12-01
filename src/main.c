@@ -8,7 +8,7 @@
 #include "u_log.h"
 #include "g_config.h"
 #include "g_window.h"
-#include "g_input.h"
+#include "i_input.h"
 #include "r_render.h"
 #include "r_shader.h"
 #include "s_sound.h"
@@ -66,7 +66,8 @@ int main(int argc, char **argv) {
 	U_LogWrite(LOG_MSG, "Initialization complete. Elapsed time: %ds\n", 0);
 
 	SDL_Window *window;
-	if (!G_WindowInit(&window, &config)) {
+    G_SetWindowPtr(&window);
+	if (!G_WindowInit(&config)) {
 		U_LogWrite(LOG_ERR, "Window initilization failure.\n");
 		GAME_EXIT(GAME_EXIT_FAILURE);
 	}
@@ -109,38 +110,40 @@ int main(int argc, char **argv) {
 			case SDL_KEYDOWN:
 				if (event.key.keysym.sym == SDLK_ESCAPE) {
 					running = false;
+				} else if (event.key.keysym.sym == SDLK_F11) {
+					G_WindowSetFullscreen(true);
 				}
-				G_OnKeyDown(&event.key.keysym);
+				I_OnKeyDown(&event.key.keysym);
 				break;
 			case SDL_KEYUP:
-				G_OnKeyUp(&event.key.keysym);
+				I_OnKeyUp(&event.key.keysym);
 				break;
 			case SDL_TEXTEDITING:
-				G_OnTextEdit(&event.edit);
+				I_OnTextEdit(&event.edit);
 				break;
 			case SDL_TEXTINPUT:
-				G_OnTextInput(&event.text);
+				I_OnTextInput(&event.text);
 				break;
 			case SDL_MOUSEMOTION:
-				G_OnMouseMotion(&event.motion);
+				I_OnMouseMotion(&event.motion);
 				break;
 			case SDL_MOUSEBUTTONDOWN:
-				G_OnMouseButtonDown(&event.button);
+				I_OnMouseButtonDown(&event.button);
 				break;
 			case SDL_MOUSEBUTTONUP:
-				G_OnMouseButtonUp(&event.button);
+				I_OnMouseButtonUp(&event.button);
 				break;
 			case SDL_MOUSEWHEEL:
-				G_OnMouseWheel(&event.wheel);
+				I_OnMouseWheel(&event.wheel);
 				break;
 			case SDL_CONTROLLERAXISMOTION:
-				G_OnControllerAxisMotion(&event.caxis);
+				I_OnControllerAxisMotion(&event.caxis);
 				break;
 			case SDL_CONTROLLERBUTTONDOWN:
-				G_OnControllerButtonDown(&event.cbutton);
+				I_OnControllerButtonDown(&event.cbutton);
 				break;
 			case SDL_CONTROLLERBUTTONUP:
-				G_OnControllerButtonUp(&event.cbutton);
+				I_OnControllerButtonUp(&event.cbutton);
 				break;
 			case SDL_AUDIODEVICEADDED:
 
@@ -149,13 +152,13 @@ int main(int argc, char **argv) {
 
 				break;
 			case SDL_CONTROLLERDEVICEADDED:
-				G_OnControllerDeviceAdded(&event.cdevice);
+				I_OnControllerDeviceAdded(&event.cdevice);
 				break;
 			case SDL_CONTROLLERDEVICEREMOVED:
-				G_OnControllerDeviceRemoved(&event.cdevice);
+				I_OnControllerDeviceRemoved(&event.cdevice);
 				break;
 			case SDL_CONTROLLERDEVICEREMAPPED:
-				G_OnControllerDeviceRemapped(&event.cdevice);
+				I_OnControllerDeviceRemapped(&event.cdevice);
 				break;
 			case SDL_USEREVENT:
 				break;
@@ -164,14 +167,9 @@ int main(int argc, char **argv) {
 				break;
 			}
         }
-	    /* static const GLfloat clear_color[] = { 1.0f, 1.0f, 0.0f, 0.0f };
-		GLint drawbuf_id = 0;
-		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &drawbuf_id);
-		glClearBufferfv(GL_COLOR, 0, clear_color); */
 		P_SceneUpdate(P_GetActiveScene(), (GLfloat)deltatime);
 		P_SceneRender(P_GetActiveScene(), (GLfloat)deltatime);
-
-		G_WindowSwap(&window);
+		G_WindowSwap();
 
 		endtime = SDL_GetTicks();
 		deltatime = endtime - starttime;
@@ -183,7 +181,7 @@ int main(int argc, char **argv) {
 	// destroy the last active scene
 	P_SceneDestroy(P_GetActiveScene());
 	S_SoundDestroy();
-	G_WindowClose(&window);
+	G_WindowClose();
 	SDL_Quit();
 	U_LogClose();
 	return exitcode;

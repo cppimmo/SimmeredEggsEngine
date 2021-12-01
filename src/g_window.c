@@ -2,46 +2,60 @@
 #include "u_log.h"
 
 #define WINDOW_ICON "assets/icon.bmp"
+#define WINDOW_NOT_NULL(RETURN_TYPE) \
+	if (window == NULL) } \
+		return; } \
 
 static struct windowstate_t windowstate;
+static SDL_Window *currentwindow;
 static SDL_GLContext context;
 
-boolean G_WindowInit(SDL_Window **window, struct config_t *const config) {
+inline void G_SetWindowPtr(SDL_Window **window) {
+	currentwindow = *window;
+}
+
+boolean G_WindowInit(struct config_t *const config) {
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
 		U_LogWrite(LOG_ERR, "SDL_Init failure: %s\n", SDL_GetError());
 		return false;
 	}
 
-	*window = SDL_CreateWindow(config->title, SDL_WINDOWPOS_UNDEFINED,
+	currentwindow = SDL_CreateWindow(config->title, SDL_WINDOWPOS_UNDEFINED,
 							   SDL_WINDOWPOS_UNDEFINED, config->sizex,
 							   config->sizey,
 							   SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-	if (*window == NULL) {
+	if (currentwindow == NULL) {
 		U_LogWrite(LOG_ERR, "SDL_CreateWindow() failure: %s\n", SDL_GetError());
 		return false;
 	}
 
 	SDL_Surface *icon = SDL_LoadBMP(WINDOW_ICON);
 	if (icon != NULL)
-		SDL_SetWindowIcon(*window, icon);
+		SDL_SetWindowIcon(currentwindow, icon);
 	SDL_FreeSurface(icon);
 
 	G_WindowAttribs(4, 2, true);
-    context = SDL_GL_CreateContext(*window);
+    context = SDL_GL_CreateContext(currentwindow);
 	if (context == NULL) {
-		U_LogWrite(LOG_ERR, "SDL_GL_CreateContext() failure: %s\n", SDL_GetError());
+		U_LogWrite(LOG_ERR, "SDL_GL_CreateContext() failure: %s\n",
+				   SDL_GetError());
 		return false;
 	}
-	if (SDL_GL_MakeCurrent(*window, context) < 0) {
-		U_LogWrite(LOG_ERR, "SDL_GL_MakeCurrent() failure: %s\n", SDL_GetError());
+	if (SDL_GL_MakeCurrent(currentwindow, context) < 0) {
+		U_LogWrite(LOG_ERR, "SDL_GL_MakeCurrent() failure: %s\n",
+				   SDL_GetError());
 		return false;
 	}
-	SDL_GL_SetSwapInterval(((config->vsync) ? 1 : 0));
+	if (SDL_GL_SetSwapInterval(((config->vsync) ? 1 : 0)) < 0) {
+		U_LogWrite(LOG_ERR, "SDL_GL_SetSwapInterval() failure: %s\n",
+				   SDL_GetError());
+	}
 
 	glewExperimental = GL_TRUE;
-	GLenum glew_error = glewInit();
-	if (glew_error != GLEW_OK) {
-		U_LogWrite(LOG_ERR, "glewInit() error: %s\n", glewGetErrorString(glew_error));
+	GLenum glewerr = glewInit();
+	if (glewerr != GLEW_OK) {
+		U_LogWrite(LOG_ERR, "glewInit() error: %s\n",
+				   glewGetErrorString(glewerr));
 		return false;
 	}
 	G_WindowViewport(0, 0, config->sizex, config->sizey);
@@ -137,7 +151,7 @@ void G_WindowHandleEvent(const SDL_Event *event) {
 	}
 }
 
-struct windowstate_t *G_WindowGetState() {
+struct windowstate_t *G_WindowGetState(void) {
 	return &windowstate;
 }
 
@@ -149,13 +163,37 @@ void G_WindowViewport(GLint posx, GLint posy, GLint width, GLint height) {
 	glViewport(posx, posy, width, height);
 }
 
-void G_WindowSwap(SDL_Window **window) {
-	SDL_GL_SwapWindow(*window);
+void G_WindowSetFullscreen(boolean fullscreen) {
+	windowstate.fullscreen = !fullscreen;
+	SDL_DisplayMode mode;
+	SDL_GetWindowDisplayMode(currentwindow, &mode);
+
+	SDL_SetWindowFullscreen(currentwindow, fullscreen);
+	G_WindowShowCursor(fullscreen);
 }
 
-inline boolean G_WindowClose(SDL_Window** window) {
+inline void G_WindowSetTitle(const char *title) {
+	SDL_SetWindowTitle(currentwindow, title);
+}
+
+inline void G_WindowSetSize(int width, int height) {
+	windowstate.sizex = width;
+	windowstate.sizey = height;
+	SDL_SetWindowSize(currentwindow, width, height);
+	G_WindowViewport(0, 0, width, height);
+}
+
+inline void G_WindowShowCursor(boolean cursor) {
+	SDL_ShowCursor((cursor)? SDL_ENABLE : SDL_DISABLE);
+}
+
+inline void G_WindowSwap(void) {
+	SDL_GL_SwapWindow(currentwindow);
+}
+
+inline boolean G_WindowClose(void) {
 	SDL_GL_DeleteContext(context);
-	SDL_DestroyWindow(*window);
+	SDL_DestroyWindow(currentwindow);
 	return true;
 }
 

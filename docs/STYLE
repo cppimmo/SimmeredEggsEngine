@@ -1,0 +1,25 @@
+This file explains the code styling/format of the C code.
+
+Paranthesis use Java styling.
+Avoid using underscores in variable names and types.
+Enum and Struct types are followed by a trailing _t.
+Name function pointers with prefix, PascalCase, and trailing Ptr.
+Right align pointer symbols.
+Use wrappers for malloc and free.
+Liberally insert a new line after every 80 characters.
+Use void parameter in all argumentless function definitions/declarations.
+Do not use spaces between argument/parameter lists except after commas.
+Use PascalCase for all functions.
+Make all preprocessor defines in UPPER_CASE_SNAKE_CASE.
+
+Do not use prefixes for static functions.
+Function Prefixes:
+D_ for debug
+G_ for application related
+HU_ for heads up display
+I_ for input
+P_ for gameplay
+R_ for renderer
+S_ for sound
+U_ for utility
+

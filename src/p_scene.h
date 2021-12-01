@@ -4,6 +4,7 @@
 #include "GL/glew.h"
 #include "u_utility.h"
 #include "u_log.h"
+#include "i_input.h"
 #include "r_render.h"
 #include "r_shader.h"
 

@@ -47,3 +47,6 @@ in applicaition and set them up in R_ProgramSetup()
 
 Delete length of log_write output to check for possible duplicates mute output
 after three consecutive string of equal length Use static local variables
+
+Use #ifndef NDEBUG to create debug only source
+

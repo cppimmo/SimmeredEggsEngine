@@ -14,19 +14,25 @@ struct windowstate_t {
 	int sizey;
 	boolean maximized;
 	boolean minimized;
+	boolean fullscreen;
 	boolean visible;
 	boolean mouseover; // is mouse in window
 	boolean focused;
 };
 
-boolean G_WindowInit(SDL_Window **window, struct config_t *const config);
+void G_SetWindowPtr(SDL_Window **window);
+boolean G_WindowInit(struct config_t *const config);
 boolean G_WindowAttribs(const int glmajor, const int glminor,
 						boolean doublebuffer);
 int G_WindowGetAttrib(SDL_GLattr attrib);
 void G_WindowHandleEvent(const SDL_Event *event);
-struct windowstate_t *G_WindowGetState();
+struct windowstate_t *G_WindowGetState(void);
 void G_WindowViewport(GLint posx, GLint posy, GLint width, GLint height);
-void G_WindowSwap(SDL_Window **window);
-boolean G_WindowClose(SDL_Window **window);
+void G_WindowSetFullscreen(boolean fullscreen);
+void G_WindowSetTitle(const char *title);
+void G_WindowSetSize(int width, int height);
+void G_WindowShowCursor(boolean cursor);
+void G_WindowSwap(void);
+boolean G_WindowClose(void);
 
 #endif

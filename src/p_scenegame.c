@@ -43,11 +43,27 @@ boolean P_GameStart(void) {
 }
 
 boolean P_GameUpdate(GLfloat delta_time) {
-	U_LogWrite(LOG_LOG, "Hello Game Scene is working.\n");
+	I_UpdateKeyboardState();
+	if (I_IsKeyDown(SDL_SCANCODE_A)) {
+		U_LogWrite(LOG_LOG, "Pressed key A.\n");
+	}
+	if (I_IsMouseButtonDown(SDL_BUTTON_LEFT)) {
+		U_LogWrite(LOG_LOG, "Clicked left mouse button.\n");
+	}
+	if (I_IsControllerButtonDown(SDL_CONTROLLER_BUTTON_X)) {
+		U_LogWrite(LOG_LOG, "Pressed controller button X.\n");
+	}
+	SDL_GameController *ctrl = SDL_GameControllerOpen(0);
+	SDL_Joystick *joy = SDL_GameControllerGetJoystick(ctrl);
+	SDL_GameControllerRumble(ctrl, 2000, 3000, 20);
 	return true;
 }
 
 boolean P_GameRender(GLfloat deltatime) {
+	/* static const GLfloat clear_color[] = { 1.0f, 1.0f, 0.0f, 0.0f };
+	   GLint drawbuf_id = 0;
+	   glGetIntegerv(GL_FRAMEBUFFER_BINDING, &drawbuf_id);
+	   glClearBufferfv(GL_COLOR, 0, clear_color); */
 	static const GLfloat color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	R_Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	R_ClearColor(color);

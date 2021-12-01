@@ -15,7 +15,8 @@ CPPFLAGS?=$(INC_FLAGS) -MMD -MP
 ASSETS_DIR=./assets
 
 $(BUILD_DIR)/$(PROGNAME): $(OBJS)
-	$(CC) $(OBJS) -o $@ $(LDFLAGS)
+	$(CC) $(OBJS) -o $@-debug $(LDFLAGS)
+	$(CC) $(OBJS) -DNDEBUG -o $@-release $(LDFLAGS)
 	$(CP_R) $(ASSETS_DIR) $(BUILD_DIR)
 
 $(BUILD_DIR)/%.c.o: %.c
