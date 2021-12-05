@@ -50,3 +50,4 @@ after three consecutive string of equal length Use static local variables
 
 Use #ifndef NDEBUG to create debug only source
 
+Use SDL_Thread for multi threading in scene intitialization code

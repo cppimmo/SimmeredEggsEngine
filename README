@@ -1,9 +1,12 @@
-Starship Fleet
-==============
-Starship Fleet is a spaceship combat game written in C11/w SDL2 and OpenGL 4.3.
-For Linux and FreeBSD.
+SimmeredEggsEngine
+===================
+Simmered Eggs Engine is a game engine project written in C/w SDL2 and Modern
+OpenGL. The project currently runs on Linux and FreeBSD.
 
-See screenshots directory for preview gameplay images.
+See screenshots/ directory for preview gameplay images.
+FEATURES
+========
+
 BUILD
 =====
 Dependencies:
@@ -14,17 +17,10 @@ Dependencies:
 	libaudio - version
     SDL_ttf - version 2.0.15
 	
-INSTALL
-=======
-
-
-GAMEPLAY
-========
-
-
-CONTROLS
-========
-
+$ make
+The output will be placed in the build/ directory. There will be two
+executables one with a trailing -debug and another with -release for debug and
+release builds, respectively.
 
 DOCUMENTATION
 =============
@@ -32,5 +28,5 @@ More information and documentation can be found in the docs/ directory.
 
 LICENSE
 =======
-All code and files are licensed under the BSD2 license.
+All code and files are licensed under the BSD-2-Clause License.
 Checkout LICENSE for more details.

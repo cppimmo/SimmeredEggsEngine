@@ -234,7 +234,7 @@ inline void I_KeyUnmark(void) {
 }
 
 inline static float AxisNormalize(const float value, const float min,
-						   const float max) {
+								  const float max) {
 	const float average = (min + max) / 2.0f;
 	const float range = (max - min) / 2.0f;
 	return (value - average) / range;
@@ -251,9 +251,8 @@ static float AxisDeadzone(float value, const float maxval,
 	} else if (value > deadzone) {
 		value -= deadzone;
 		// decrease positive values to remove deadzone discontinuity
-	} else {
+	} else
 		return 0.0f;
-	}
 	const float normalized = value / (maxval - deadzone);
 	return DEADZONE_MAX(-1.0f, DEADZONE_MIN(normalized, 1.0f));
 }

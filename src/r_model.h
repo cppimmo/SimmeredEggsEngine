@@ -17,7 +17,7 @@
 /* The .mdl file's header contains all information needed to 
  * process the data.
  */
-struct mdl_header_t {
+struct mdlheader_t {
 	int ident;   // 
 	int version; //
 
@@ -40,77 +40,76 @@ struct mdl_header_t {
 };
 
 // skin
-struct mdl_skin_t {
+struct mdlskin_t {
 	int group;
 	GLubyte *data;
 };
 
 // group of textures
-struct mdl_groupskin_t {
+struct mdlgroupskin_t {
 	int group;      // group num
 	int num;        // num textures
 	float *time;    // time duration of each texture
 	GLubyte **data; // texture data
 };
-// num_skins of mdl_skin_t or mdl_groupskin_t
+// num_skins of mdlskin_t or mdlgroupskin_t
 
 // texture coordinates
-struct mdl_texcoord_t {
+struct mdltexcoord_t {
 	int onseam;
 	int s;
 	int t;
 };
 
-struct mdl_triangle_t {
+struct mdltriangle_t {
 	int facesfront; // 0 = backface, 1 = frontface
 	int vertex[3];  // vertex indices
 };
 
 // compressed vertex
-struct mdl_vertex_t {
+struct mdlvertex_t {
 	unsigned char vertex[3];
 	unsigned char normalIndex;
 };
 
 // simple frame
-struct mdl_simpleframe_t {
-	struct mdl_vertex_t bboxmin;
-	struct mdl_vertex_t bboxmax;
+struct mdlsimpleframe_t {
+	struct mdlvertex_t bboxmin;
+	struct mdlvertex_t bboxmax;
 	char name[16];
-	struct mdl_vertex_t *verts;
+	struct mdlvertex_t *verts;
 };
 
 // model frame
-struct mdl_frame_t {
+struct mdlframe_t {
 	int type; // 0 = simple, not 0 = group
-	struct mdl_simpleframe_t frame; // this program can't read models composed of group frames!
+	struct mdlsimpleframe_t frame; // this program can't read models composed of group frames!
 };
 
 // group of simple frames
-struct mdl_groupframe_t {
+struct mdlgroupframe_t {
 	int type; // not 0 = group
-	struct mdl_vertex_t min;
-	struct mdl_vertex_t max;
+	struct mdlvertex_t min;
+	struct mdlvertex_t max;
 	float *time;
-	struct mdl_simpleframe_t *frames;
+	struct mdlsimpleframe_t *frames;
 };
 
-struct mdl_model_t {
-	struct mdl_header_t header;
+struct mdlmodel_t {
+	struct mdlheader_t header;
 
-	struct mdl_skin_t *skins;
-	struct mdl_texcoord_t *texcoords;
-	struct mdl_triangle_t *triangles;
-	struct mdl_frame_t *frames;
+	struct mdlskin_t *skins;
+	struct mdltexcoord_t *texcoords;
+	struct mdltriangle_t *triangles;
+	struct mdlframe_t *frames;
 
 	GLuint *tex_id;
 	int iskin;
 };
 
-boolean mdl_load(const char *filename, struct mdl_model_t *p_model);
-void mdl_destroy(struct mdl_model_t *p_model);
-
-boolean obj_load(const char *filename);
-void obj_destroy();
+boolean R_ModelLoad(const char *filename, struct mdlmodel_t *model);
+void R_ModelDestroy(struct mdlmodel_t *model);
+boolean R_ObjLoad(const char *filename);
+void R_ObjDestroy(void);
 
 #endif

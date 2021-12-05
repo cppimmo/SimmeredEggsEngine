@@ -1,12 +1,12 @@
 #include "r_model.h"
+#include "u_log.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "u_log.h"
 
-/* boolean mdl_load(const char *filename, struct mdl_model_t *p_model)
-{
+/* boolean mdl_load(const char *filename, struct mdl_model_t *p_model) {
 	FILE *file_handle = NULL;
 	int i;
 
@@ -37,7 +37,7 @@
 	for (i = 0; i < p_model->header.num_skins; ++i) {
 
         // p_model->tex_id[i] = ;
-		
+
 		free(p_model->skins[i].data);
 		p_model->skins[i].data = NULL;
 	}
@@ -46,7 +46,7 @@
 		  p_model->header.num_verts, file_handle);
 	fread(p_model->triangles, sizeof(struct mdl_triangle_t),
 		  p_model->header.num_tris, file_handle);
-	
+
 	// read frames
 	for (i = 0; i < p_model->header.num_frames; ++i) {
 		// memory alloc for vertices of this frame
@@ -55,7 +55,7 @@
 
 		// read frame data
 	}
-	
+
 	fclose(file_handle);
 	return true;
 }
@@ -96,7 +96,7 @@ void mdl_destroy(struct mdl_model_t *p_model)
 {
 	if (p_model->skins != NULL) {
 		free(p_model->skins);
-		p_model->skins = NULL;			 
+		p_model->skins = NULL;
 	}
 	if (p_model->texcoords != NULL) {
 		free(p_model->texcoords);
@@ -120,7 +120,7 @@ void mdl_destroy(struct mdl_model_t *p_model)
 	}
 } */
 
-struct mesh_sphere_t {
+/* struct mesh_sphere_t {
 	GLfloat *vertices;
 	GLuint *indices;
 	GLuint *line_indices;
@@ -137,7 +137,7 @@ void mesh_sphere_smooth(struct mesh_sphere_t *p_mesh, const size_t stack_count,
 	GLuint *line_indices = p_mesh->line_indices;
 	GLfloat *normals = p_mesh->normals;
 	GLfloat *tex_coords = p_mesh->tex_coords;
-	
+
 	GLfloat x, y, z, xy; // vertex position
 	GLfloat nx, ny, nz, length_inv = 1.0f / radius; // vertex normal
 	GLfloat s, t; // vertex tex coord
@@ -190,12 +190,12 @@ void mesh_sphere_smooth(struct mesh_sphere_t *p_mesh, const size_t stack_count,
 	line_indices = p_mesh->line_indices;
 	indices = malloc(sector_count * stack_count * sizeof(GLuint));
 	line_indices = malloc(sector_count * stack_count * sizeof(GLuint));
-	
+
 	int k1, k2;
 	for (size_t i = 0; i < stack_count; ++i) {
 		k1 = i * (sector_count + 1);
 		k2 = k1 + sector_count + 1;
-		
+
 		for (size_t j = 0; j < sector_count; ++j, ++k1, ++k2) {
 			if (i != 0) {
 				indices[i * sector_count + j] = k1;
@@ -226,5 +226,5 @@ void mesh_sphere_delete(struct mesh_sphere_t *p_mesh)
 	free(p_mesh->line_indices);
 	free(p_mesh->normals);
 	free(p_mesh->tex_coords);
-}
+} */
 

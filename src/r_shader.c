@@ -1,5 +1,6 @@
 #include "r_shader.h"
 #include "u_log.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -121,70 +122,95 @@ void R_DeleteProgram(GLuint program) {
 boolean R_UniformBoolean(GLuint program, const char *name, boolean value) {
 	if (!R_IsProgram(program))
 		return false;
-	glUniform1i(glGetUniformLocation(program, name), (int)value);
+	const GLint location = glGetUniformLocation(program, name);
+	if (location < 0)
+		return false;
+	glUniform1i(location, (int)value);
 	return true;
 }
 
 boolean R_UniformFloat(GLuint program, const char *name, float value) {
 	if (!R_IsProgram(program))
 		return false;
-	glUniform1f(glGetUniformLocation(program, name), value);
+	const GLint location = glGetUniformLocation(program, name);
+	if (location < 0)
+		return false;
+	glUniform1f(location, value);
 	return true;
 }
 
 boolean R_UniformInt(GLuint program, const char *name, int value) {
 	if (!R_IsProgram(program))
 		return false;
-	glUniform1i(glGetUniformLocation(program, name), value);
+	const GLint location = glGetUniformLocation(program, name);
+	if (location < 0)
+		return false;
+	glUniform1i(location, value);
 	return true;
 }
 
 boolean R_UniformVec2(GLuint program, const char *name, const vec2 value) {
 	if (!R_IsProgram(program))
 		return false;
-	glUniform2fv(glGetUniformLocation(program, name), 1, value);
+	const GLint location = glGetUniformLocation(program, name);
+	if (location < 0)
+		return false;
+	glUniform2fv(location, 1, value);
 	return true;
 }
 
 boolean R_UniformVec3(GLuint program, const char *name, const vec3 value) {
 	if (!R_IsProgram(program))
 		return false;
-	glUniform3fv(glGetUniformLocation(program, name), 1, value);
+	const GLint location = glGetUniformLocation(program, name);
+	if (location < 0)
+		return false;
+	glUniform3fv(location, 1, value);
 	return true;
 }
 
 boolean R_UniformVec4(GLuint program, const char *name, const vec4 value) {
 	if (!R_IsProgram(program))
 		return false;
-	glUniform4fv(glGetUniformLocation(program, name), 1, value);
+	const GLint location = glGetUniformLocation(program, name);
+	if (location < 0)
+		return false;
+	glUniform4fv(location, 1, value);
 	return true;
 }
 
 boolean R_UniformMat2(GLuint program, const char *name, const mat2 value) {
 	if (!R_IsProgram(program))
 		return false;
-	glUniformMatrix2fv(glGetUniformLocation(program, name), 1, GL_FALSE,
-					   value[0]);
+	const GLint location = glGetUniformLocation(program, name);
+	if (location < 0)
+		return false;
+	glUniformMatrix2fv(location, 1, GL_FALSE, value[0]);
 	return true;
 }
 
 boolean R_UniformMat3(GLuint program, const char *name, const mat3 value) {
 	if (!R_IsProgram(program))
 		return false;
-	glUniformMatrix3fv(glGetUniformLocation(program, name), 1, GL_FALSE,
-					   value[0]);
+	const GLint location = glGetUniformLocation(program, name);
+	if (location < 0)
+		return false;
+	glUniformMatrix3fv(location, 1, GL_FALSE, value[0]);
 	return true;
 }
 
 boolean R_UniformMat4(GLuint program, const char *name, const mat4 value) {
 	if (!R_IsProgram(program))
 		return false;
-	glUniformMatrix4fv(glGetUniformLocation(program, name), 1, GL_FALSE,
-					   value[0]);
+	const GLint location = glGetUniformLocation(program, name);
+	if (location < 0)
+		return false;
+	glUniformMatrix4fv(location, 1, GL_FALSE, value[0]);
 	return true;
 }
 
 boolean R_GetUniformBoolean(GLuint program, const char *name, boolean *value) {
+
 	return true;
 }
 

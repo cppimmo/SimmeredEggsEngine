@@ -1,9 +1,10 @@
 #ifndef __G_TIMER_H__
 #define __G_TIMER_H__
 
+#include "u_utility.h"
+
 #include <stdlib.h>
 #include <stdint.h>
-#include "u_utility.h"
 
 struct timer_t {
     uint64_t elapsed;

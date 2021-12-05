@@ -29,35 +29,59 @@ void R_GeometryCube(struct meshdata_t *const data, GLfloat width, GLfloat height
 	const GLfloat d2 = 0.5f * depth;
 
 	// Fill in the front face vertex data.
-	SetVertexData(&vertices[0], -w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-	SetVertexData(&vertices[1], -w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	SetVertexData(&vertices[2], +w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	SetVertexData(&vertices[3], +w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+	SetVertexData(&vertices[0], -w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
+				  0.0f, 0.0f, 1.0f);
+	SetVertexData(&vertices[1], -w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
+				  0.0f, 0.0f, 0.0f);
+	SetVertexData(&vertices[2], +w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
+				  0.0f, 1.0f, 0.0f);
+	SetVertexData(&vertices[3], +w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
+				  0.0f, 1.0f, 1.0f);
 	// Fill in the back face vertex data.
-	SetVertexData(&vertices[4], -w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
-	SetVertexData(&vertices[5], +w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-	SetVertexData(&vertices[6], +w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	SetVertexData(&vertices[7], -w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	SetVertexData(&vertices[4], -w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f,
+				  0.0f, 1.0f, 1.0f);
+	SetVertexData(&vertices[5], +w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f,
+				  0.0f, 0.0f, 1.0f);
+	SetVertexData(&vertices[6], +w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f,
+				  0.0f, 0.0f, 0.0f);
+	SetVertexData(&vertices[7], -w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f,
+				  0.0f, 1.0f, 0.0f);
 	// Fill in the top face vertex data.
-	SetVertexData(&vertices[8], -w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-	SetVertexData(&vertices[9], -w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	SetVertexData(&vertices[10], +w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	SetVertexData(&vertices[11], +w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+	SetVertexData(&vertices[8], -w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+				  0.0f, 0.0f, 1.0f);
+	SetVertexData(&vertices[9], -w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+				  0.0f, 0.0f, 0.0f);
+	SetVertexData(&vertices[10], +w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+				  0.0f, 1.0f, 0.0f);
+	SetVertexData(&vertices[11], +w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+				  0.0f, 1.0f, 1.0f);
 	// Fill in the bottom face vertex data.
-	SetVertexData(&vertices[12], -w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
-	SetVertexData(&vertices[13], +w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-	SetVertexData(&vertices[14], +w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	SetVertexData(&vertices[15], -w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	SetVertexData(&vertices[12], -w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f,
+				  0.0f, 1.0f, 1.0f);
+	SetVertexData(&vertices[13], +w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f,
+				  0.0f, 0.0f, 1.0f);
+	SetVertexData(&vertices[14], +w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f,
+				  0.0f, 0.0f, 0.0f);
+	SetVertexData(&vertices[15], -w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f,
+				  0.0f, 1.0f, 0.0f);
 	// Fill in the left face vertex data.
-	SetVertexData(&vertices[16], -w2, -h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f);
-	SetVertexData(&vertices[17], -w2, +h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f);
-	SetVertexData(&vertices[18], -w2, +h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f);
-	SetVertexData(&vertices[19], -w2, -h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f);
+	SetVertexData(&vertices[16], -w2, -h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+				  -1.0f, 0.0f, 1.0f);
+	SetVertexData(&vertices[17], -w2, +h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+				  -1.0f, 0.0f, 0.0f);
+	SetVertexData(&vertices[18], -w2, +h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+				  -1.0f, 1.0f, 0.0f);
+	SetVertexData(&vertices[19], -w2, -h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+				  -1.0f, 1.0f, 1.0f);
 	// Fill in the right face vertex data.
-	SetVertexData(&vertices[20], +w2, -h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f);
-	SetVertexData(&vertices[21], +w2, +h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
-	SetVertexData(&vertices[22], +w2, +h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
-	SetVertexData(&vertices[23], +w2, -h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+	SetVertexData(&vertices[20], +w2, -h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+				  1.0f, 0.0f, 1.0f);
+	SetVertexData(&vertices[21], +w2, +h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+				  1.0f, 0.0f, 0.0f);
+	SetVertexData(&vertices[22], +w2, +h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+				  1.0f, 1.0f, 0.0f);
+	SetVertexData(&vertices[23], +w2, -h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+				  1.0f, 1.0f, 1.0f);
 
 	// Create the indices.
 	GLuint *indices = data->indices;
@@ -194,16 +218,16 @@ void R_GeometryScreenQuad(struct meshdata_t *const data) {
 
 }
 
-static void R_GeometrySubdivide(struct meshdata_t *const data) {
+void R_GeometrySubdivide(struct meshdata_t *const data) {
 
 }
 
-void R_FreeMeshData(struct meshdata_t *const data) {
+inline void R_FreeMeshData(struct meshdata_t *const data) {
 	free(data->vertices);
 	free(data->indices);
 }
 
-inline static void SetVertexData(struct vertexdata_t *const data,
+inline void SetVertexData(struct vertexdata_t *const data,
 								 GLfloat x, GLfloat y, GLfloat z, GLfloat nx,
 								 GLfloat ny, GLfloat nz, GLfloat tx, GLfloat ty,
 								 GLfloat tz, GLfloat u, GLfloat v) {

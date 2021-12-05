@@ -1,4 +1,4 @@
-#ifndef __HU__FONT_H__
+#ifndef __HU_FONT_H__
 #define __HU_FONT_H__
 
 #include "GL/glew.h"

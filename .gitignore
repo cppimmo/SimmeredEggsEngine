@@ -2,5 +2,6 @@
 log.txt
 build/**
 lib/**
+# mydocs used for personal documents not to be staged
 docs/mydocs/**
 !lib/.placeholder
