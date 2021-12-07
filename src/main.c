@@ -71,6 +71,16 @@ int main(int argc, char **argv) {
 		U_LogWrite(LOG_ERR, "Window initilization failure.\n");
 		GAME_EXIT(GAME_EXIT_FAILURE);
 	}
+	{
+		SDL_version compiled;
+		SDL_VERSION(&compiled);
+		U_LogWrite(LOG_LOG, "Compiled with SDL version: %d.%d.%d\n",
+				   compiled.major, compiled.minor, compiled.patch);
+		SDL_version linked;
+		SDL_GetVersion(&linked);
+		U_LogWrite(LOG_LOG, "Linked against SDL version: %d.%d.%d\n",
+				   linked.major, linked.minor, linked.patch);
+	}
 	atexit(Shutdown);
     { // short scope for debug context checking
 		// need to check if the current context is version 4.3 or greater
