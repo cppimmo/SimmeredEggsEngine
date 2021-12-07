@@ -1,5 +1,5 @@
 CC=gcc
-PROGNAME?=starshipfleet
+PROGNAME?=program
 LIB_DIR?=./lib
 BUILD_DIR?=./build
 SRC_DIRS?=./src
