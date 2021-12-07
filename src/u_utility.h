@@ -20,8 +20,13 @@ typedef enum boolean_t boolean;
 
 void *U_Malloc(size_t size);
 void U_Free(void *ptr);
+int U_RandomInt(int minval, int maxval);
+float U_RandomFloat(float minval, float maxval);
+double U_RandomDouble(double minval, double maxval);
+int U_RandomColorUnsignedChar(void);
+float U_RandomColorNormalizedFloat(void);
 boolean U_InstanceFileLock(void);
-boolean U_IsOnlyInstance(const char *title);
+boolean U_IsOnlyInstance(void);
 boolean U_InstanceFileUnlock(void);
 boolean U_CheckStorage(const char *path, const unsigned long long needed);
 boolean U_CheckMemory(void);

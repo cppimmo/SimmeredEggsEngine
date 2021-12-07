@@ -9,9 +9,9 @@ inline void *U_Malloc(size_t size) {
 	void *ptr = malloc(size);
 #ifndef NDEBUG
 	if (ptr == NULL) {
-		U_LogWrite(LOG_ERR, "Failed to allocated %d bytes!", size);
+		U_LogWrite(LOG_ERR, "Failed to allocated %d bytes!\n", size);
 	} else {
-		U_LogWrite(LOG_MSG, "Allocated %d bytes, at %p.", size, ptr);
+		U_LogWrite(LOG_MSG, "Allocated %d bytes, at %p.\n", size, ptr);
 	}
 #endif
 	return ptr;
@@ -21,11 +21,48 @@ inline void U_Free(void *ptr) {
 	free(ptr);
 #ifndef NDEBUG
 	if (ptr == NULL) {
-		U_LogWrite(LOG_MSG, "Memory located at %p freed.", ptr);
+		U_LogWrite(LOG_MSG, "Memory located at %p freed.\n", ptr);
 	} else {
-		U_LogWrite(LOG_ERR, "Memory located at %p not freed!", ptr);
+		U_LogWrite(LOG_ERR, "Memory located at %p not freed!\n", ptr);
 	}
 #endif
+}
+
+int U_RandomInt(int minval, int maxval) {
+	static boolean hasran = false;
+	if (!hasran) {
+		hasran = true;
+		srand(time(NULL));
+	}
+	return minval + rand() & (maxval + 1 - minval);
+}
+
+float U_RandomFloat(float minval, float maxval) {
+	return (float)U_RandomInt(minval, maxval);
+}
+
+double U_RandomDouble(double minval, double maxval) {
+	return (double)U_RandomInt(minval, maxval);
+}
+
+int U_RandomColorUnsignedChar(void) {
+	return U_RandomInt(0, 255);
+}
+
+float U_RandomColorNormalizedFloat(void) {
+	return 0.0f;
+}
+
+boolean U_InstanceFileLock(void) {
+	return true;
+}
+
+boolean U_IsOnlyInstance(void) {
+	return true;
+}
+
+boolean U_InstanceFileUnlock(void) {
+	return true;
 }
 
 // check if the storage is available in path
