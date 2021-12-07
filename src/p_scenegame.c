@@ -1,5 +1,6 @@
 #include "p_scenegame.h"
 #include "u_log.h"
+#include "u_screenshot.h"
 
 struct vertexarray_t vao;
 struct vertexbuffer_t vbo;
@@ -42,7 +43,7 @@ boolean P_GameStart(void) {
 	return true;
 }
 
-boolean P_GameUpdate(GLfloat delta_time) {
+boolean P_GameUpdate(GLfloat deltatime) {
 	I_UpdateKeyboardState();
 	if (I_IsKeyDown(SDL_SCANCODE_A)) {
 		U_LogWrite(LOG_LOG, "Pressed key A.\n");
@@ -53,6 +54,11 @@ boolean P_GameUpdate(GLfloat delta_time) {
 	if (I_IsControllerButtonDown(SDL_CONTROLLER_BUTTON_X)) {
 		U_LogWrite(LOG_LOG, "Pressed controller button X.\n");
 	}
+ 	/* static boolean screenshotpress = false;
+	if (screenshotpress == false) {
+		U_TakeScreenshot();
+		screenshotpress = true;
+	} */
 	SDL_GameController *ctrl = SDL_GameControllerOpen(0);
 	SDL_Joystick *joy = SDL_GameControllerGetJoystick(ctrl);
 	SDL_GameControllerRumble(ctrl, 2000, 3000, 20);

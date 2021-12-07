@@ -8,8 +8,8 @@ struct scenegame_t {
 };
 
 boolean P_GameStart(void);
-boolean P_GameUpdate(GLfloat delta_time);
-boolean P_GameRender(GLfloat delta_time);
+boolean P_GameUpdate(GLfloat deltatime);
+boolean P_GameRender(GLfloat deltatime);
 boolean P_GameDestroy(void);
 
 #endif
