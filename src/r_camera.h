@@ -30,6 +30,9 @@
 #include "cglm/cglm.h"
 #include "u_utility.h"
 
+/* Camera has an associated state and only one can be bound at a time currently
+ */
+
 /* default structure values to be used if no configuration is given */
 #define CAMERA_YAW_DEFAULT -90.0f
 #define CAMERA_PITCH_DEFAULT 0.0f
@@ -50,6 +53,11 @@ enum cameratype_t {
 	CAMERA_TYPE_ORBIT,
 };
 
+enum cameraprojection_t {
+	CAMERA_ORTHOGRAPHIC,
+	CAMERA_PROSPECTIVE,
+};
+
 struct camera_t {
 	vec3 position;
 	vec3 front;
@@ -63,17 +71,25 @@ struct camera_t {
 	GLfloat fov; // zoom level
 	GLfloat sensitivity;
 	boolean locked; // is camera the priority of the mouse?
+	enum cameraprojection_t projection;
 	enum cameratype_t type;
+	// other stuff for updates
+	boolean firstmouse;
+	GLfloat lastx;
+	GLfloat lasty;
 };
 
-void R_CameraInit(struct camera_t *camera);
+boolean R_CameraInit(struct camera_t *camera,
+					 enum cameraprojection_t projection,
+					 enum cameratype_t type);
+void R_SetActiveCamera(struct camera_t *camera);
 void R_CameraViewMatrix(struct camera_t *camera, mat4 *view);
 void R_CameraFreeMouse(void);
 void R_CameraLockMouse(void);
 void R_CameraSetPos(vec3 position);
 void R_CameraSetSensitity(GLfloat sensitivity);
 void R_CameraSetSpeed(GLfloat forward, GLfloat strafe);
-void R_CameraSetFOV(GLfloat fov);
+void R_CameraSetFieldOfView(GLfloat fov);
 void R_CameraMove(void);
 void R_CameraUpdate(GLfloat deltatime);
 
