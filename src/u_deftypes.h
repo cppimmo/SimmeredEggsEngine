@@ -27,8 +27,7 @@
 
 /* this file stores type definitions and other constants */
 
-/*
- * CONSTANTS
+/* CONSTANTS
  */
 #define ENGINE_NAME "SimmeredEggsEngine"
 enum {
@@ -38,8 +37,21 @@ enum {
 };
 #define EMPTY_STRING ""
 
-/*
- * TYPES
+// supported OS types:
+#define __OS_UNIX__ __unix__
+// to be used with #ifdef
+#define __OS_BSD_UNIX__ __unix__ || BSD
+#define __OS_LINUX__ __linux__
+#define __OS_FREEBSD__ __FreeBSD__
+#define __OS_WINDOWS__ _WIN32
+#define __OS_WINDOWS64BIT__ _WIN64
+// unsupported:
+// phooey on you Apple!
+// to be used with #ifdef
+#define __OS_MACOS__ __APPLE__ || __MACH__
+#define __OS_ANDROID__ __ANDROID__
+
+/* TYPES
  */
 #ifdef __cplusplus
 // use builtin bool type with C++

@@ -25,8 +25,11 @@
 #include "u_utility.h"
 #include "u_log.h"
 
-#ifdef __unix__
+#ifdef __OS_UNIX__
 #include <sys/statvfs.h>
+#endif
+#ifdef __OS_WINDOWS__
+#include "winclude.h"
 #endif
 
 inline void *U_Malloc(size_t size) {
@@ -93,7 +96,7 @@ boolean U_InstanceFileUnlock(void) {
 // path value does not matter on windows
 boolean U_CheckStorage(const char *path, const unsigned long long needed) {
 	boolean retval = false;
-#if __unix__
+#if __OS_UNIX__
 	struct statvfs stat;
 
 	if (statvfs(path, &stat) != 0) {
@@ -106,7 +109,7 @@ boolean U_CheckStorage(const char *path, const unsigned long long needed) {
 		retval = false;
 	else
 		retval = true;
-#elif _WIN32
+#elif defined(__OS_WINDOWS__)
 	int const drive = _getdrive();
 	struct _diskfree_t diskfree;
 
@@ -124,6 +127,14 @@ boolean U_CheckStorage(const char *path, const unsigned long long needed) {
 }
 
 unsigned long U_GetCPUSpeed(void) {
+#ifdef __OS_LINUX__
+	// read /proc/cpuinfo
+	
+#elif defined(__OS_FREEBSD__)
+
+#elif defined(__OS_WINDOWS__)
+
+#endif
 	return 0;
 }
 
