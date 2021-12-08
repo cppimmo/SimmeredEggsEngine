@@ -28,7 +28,7 @@
 #include "SDL2/SDL.h"
 #include "GL/glew.h"
 #include "u_utility.h"
-
+#include "r_camera.h"
 #include "r_vertexarray.h"
 #include "r_vertexbuffer.h"
 
@@ -37,6 +37,7 @@
 
 void R_Clear(const GLbitfield mask);
 void R_ClearColor(const GLfloat *value);
+void R_BindCamera(struct camera_t *camera);
 void R_Viewport(GLint x, GLint y, GLint width, GLint height);
 GLboolean R_IsEnabled(GLenum capability);
 void R_Enable(GLenum capability);

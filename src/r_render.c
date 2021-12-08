@@ -33,6 +33,10 @@ inline void R_ClearColor(const GLfloat *value) {
 	glClearColor(value[0], value[1], value[2], value[3]);
 }
 
+inline void R_BindCamera(struct camera_t *camera) {
+	R_SetActiveCamera(camera);
+}
+
 inline void R_Viewport(GLint x, GLint y, GLint width, GLint height) {
 	glViewport(x, y, width, height);
 }
@@ -70,7 +74,7 @@ inline void R_DrawIndexed(GLenum mode, GLsizei count, GLenum type,
 }
 
 void R_MessageCallback(GLDEBUGPROC callback, void *userparam) {
-	glDebugMessageCallback(D_glDebugCallback, userparam);
+	glDebugMessageCallback(D_GLDebugCallback, userparam);
 }
 
 void R_MessageControl(GLenum source, GLenum type, GLenum severity,
