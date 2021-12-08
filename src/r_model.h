@@ -47,16 +47,16 @@ struct mdlheader_t {
 
 	vec3 scale;           // scale factor
 	vec3 translate;       // translation factor
-	float bounding_radius; //
-	vec3 eye_position;     // eyes' position
+	float boundingradius; //
+	vec3 eyeposition;     // eyes' position
 
-	int num_skins;  // num textures
-	int skin_width;  // texture width
-	int skin_height; // texture height
+	int numskins;  // num textures
+	int skinwidth;  // texture width
+	int skinheight; // texture height
 
-	int num_verts;  // num vertices
-	int num_tris;   // num triangles
-	int num_frames; // num frames
+	int numverts;  // num vertices
+	int numtris;   // num triangles
+	int numframes; // num frames
 
 	int synctype;   // 0 = synchron, 1 = random
 	int flags;      // state flag
@@ -127,7 +127,7 @@ struct mdlmodel_t {
 	struct mdltriangle_t *triangles;
 	struct mdlframe_t *frames;
 
-	GLuint *tex_id;
+	GLuint *texid;
 	int iskin;
 };
 
