@@ -30,6 +30,35 @@
 
 #include <stdlib.h>
 
+boolean R_CreateTexture(struct texture_t *texture, GLenum target) {
+    texture->target = target;
+	glCreateTextures(target, 1, &texture->id);
+	if (glIsTexture(texture->id))
+		return false;
+	return true;
+}
+
+void R_DeleteTexture(struct texture_t *texture) {
+	glDeleteTextures(1, &texture->id);
+}
+
+boolean R_CreateTextureArray(struct texture_t **texture, size_t count,
+							 GLenum target) {
+	for (size_t i = 0; i < count; ++i) {
+		texture[i]->target = target;
+		glCreateTextures(target, 1, &texture[i]->id);
+		if (!glIsTexture(texture[i]->id))
+			return false;
+	}
+	return true;
+}
+
+void R_DeleteTextureArray(struct texture_t **texture, size_t count) {
+	for (size_t i = 0; i < count; ++i) {
+		glDeleteTextures(1, &texture[i]->id);
+	}
+}
+
 GLuint R_LoadTexture2D(const char *filename) {
     GLuint texture;
     glGenTextures(1, &texture);
@@ -58,7 +87,7 @@ GLuint R_LoadTexture2D(const char *filename) {
 
 // returns zero on failure
 GLuint R_LoadTextureCubemap(const char *filenames[]) {
-	/*	GLuint texture;
+	GLuint texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
 
@@ -82,7 +111,7 @@ GLuint R_LoadTextureCubemap(const char *filenames[]) {
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	*/
+    // stbi_set_flip_vertically_on_load(false);
 	return 0;
 }
 

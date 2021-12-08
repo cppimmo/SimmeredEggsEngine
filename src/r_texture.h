@@ -28,6 +28,20 @@
 #include "GL/glew.h"
 #include "u_utility.h"
 
+#include <stdlib.h>
+
+#define TEXTURE_DIR "assets/textures"
+
+struct texture_t {
+	GLuint id;
+	GLenum target;
+};
+
+boolean R_CreateTexture(struct texture_t *texture, GLenum target);
+boolean R_CreateTextureArray(struct texture_t **texture, size_t count,
+							 GLenum target);
+void R_DeleteTexture(struct texture_t *texture);
+void R_DeleteTextureArray(struct texture_t **texture, size_t count);
 GLuint R_LoadTexture2D(const char *filename);
 GLuint R_LoadTextureCubemap(const char *filenames[]);
 
