@@ -29,8 +29,8 @@
 struct vertexarray_t vao;
 struct vertexbuffer_t vbo;
 struct shaderinfo_t shaders[2] = {
-		{GL_VERTEX_SHADER,"assets/shaders/triangle_vs.glsl",0},
-		{GL_FRAGMENT_SHADER,"assets/shaders/triangle_fs.glsl",0},
+		{GL_VERTEX_SHADER,"triangle_vs.glsl",0},
+		{GL_FRAGMENT_SHADER,"triangle_fs.glsl",0},
 };
 GLuint program;
 
@@ -78,11 +78,11 @@ boolean P_GameUpdate(GLfloat deltatime) {
 	if (I_IsControllerButtonDown(SDL_CONTROLLER_BUTTON_X)) {
 		U_LogWrite(LOG_LOG, "Pressed controller button X.\n");
 	}
- 	/* static boolean screenshotpress = false;
-	if (screenshotpress == false) {
+ 	static boolean screenshotpress = false;
+	if (I_IsKeyDown(SDL_SCANCODE_S) && screenshotpress == false) {
 		U_TakeScreenshot();
 		screenshotpress = true;
-	} */
+	}
 	SDL_GameController *ctrl = SDL_GameControllerOpen(0);
 	SDL_Joystick *joy = SDL_GameControllerGetJoystick(ctrl);
 	SDL_GameControllerRumble(ctrl, 2000, 3000, 20);

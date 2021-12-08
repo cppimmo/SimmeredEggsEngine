@@ -33,7 +33,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <limits.h>
+
+#ifdef __linux__
+#include <linux/limits.h>
+#elif defined(__unix__) && !defined(__linux__)
+
+#elif defined(_WIN32)
+
+#endif
 
 /*
  * The following code was implemented simarly to the resources listed below:
@@ -42,49 +49,35 @@
  * https://www.gamedev.net/forums/topic/303295-sdl-opengl-screenshot-problems/
  */
 
-static void AppendScreenshotFilename(char *path);
+static void ScreenshotFilename(char *filename);
 
-static void AppendScreenshotFilename(char *path) {
-	FILE *image;
-	char imagepath[256 + 1], imagename[256];
-
+static void ScreenshotFilename(char *filename) {
+#ifdef __linux__
+	char imagepath[PATH_MAX + 1], imagename[256];
+#elif defined(__unix__) && !defined(__linux__)
+	char imagepath[_POSIX_PATH_MAX + 1], imagename[256];
+#elif defined(_WIN32)
+	char imagepath[MAX_PATH + 1], imagename[256];
+#endif
 	time_t now;
 	struct tm timedata;
+	time(&now);
+	timedata = *localtime(&now);
+	if (now == NULL)
+		return;
 
-	unsigned int attempts = 0,
-		sleeptime_s = 1,
-		maxattempts_s = 10;
-	while (1) {
-		time(&now);
-		timedata = *localtime(&now);
-
-		strftime(imagename, sizeof(imagename), "shot_%Y%m%d_%H%M%S_%Z.bmp", &timedata);
-
-		strcpy(imagepath, path);
-		strcat(imagepath, imagename);
-
-		// presumed good if unable to open
-		if ((image = fopen(imagepath, "r")) == NULL)
-			break;
-
-		fclose(image);
-		++attempts;
-		sleep(sleeptime_s);
-
-		if (attempts > maxattempts_s / sleeptime_s) {
-			strcpy(imagename, "most_recent_screenshot.bmp");
-			break;
-		}
-	}
-
-	strcat(path, imagename);
+	strcpy(filename, ""); // make sure the is given a value
+	strftime(imagename, sizeof(imagename), "shot_%Y%m%d_%H%M%S_%Z.bmp", &timedata);
+    strcpy(imagepath, filename);
+	strcat(imagepath, imagename);
+	strcat(filename, imagename);
 }
 
 /* doesn't matter if this function fails just print messages based on release
  * (catastrophic failures probably are relevant!) check for NULL pointer! */
 void U_TakeScreenshot(void) {
 	struct windowstate_t *windowstate = G_WindowGetState();
-	if (windowstate == NULL) {
+		if (windowstate == NULL) {
 #ifdef SCREENSHOT_VERBOSE
 		U_LogWrite(LOG_ERR,
 				   "U_TakeScreenshot(): couldn't retrieve windowstat!\n");
@@ -95,8 +88,14 @@ void U_TakeScreenshot(void) {
 	const int height = windowstate->sizey;
 
 	// use C library time for timestamp in filename
-	const char *filename = "screenshot.bmp";
-	// AppendScreenshotFilename(filename);
+#ifdef __linux__
+	char filename[PATH_MAX + 1 + 256];
+#elif defined(__unix__) && !defined(__linux__)
+	char filename[_POSIX_PATH_MAX + 1 + 256];
+#elif defined(_WIN32)
+	char filename[MAX_PATH + 1 + 256];
+#endif
+    ScreenshotFilename(filename);
 	if (filename == NULL) {
 #ifdef SCREENSHOT_VERBOSE
 		U_LogWrite(LOG_ERR, "U_TakeScreenshot(): no filename!\n");
@@ -104,53 +103,43 @@ void U_TakeScreenshot(void) {
 		return;
 	}
 
-	SDL_Surface *screen = SDL_CreateRGBSurface(SDL_SWSURFACE, width,
-											   height, 32, 0x0000ff,
-											   0x00ff00, 0xff0000, 0x000000);
-	if (screen == NULL) {
-#ifdef SCREENSHOT_VERBOSE
-		U_LogWrite(LOG_ERR, "U_TakeScreenshot(): screen is NULL!\n");
+	Uint32 rmask, gmask, bmask, amask = 0x000000;
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+	rmask = 0xff0000;
+	gmask = 0x00ff00;
+	bmask = 0x0000ff;
+#else
+	rmask = 0x0000ff;
+	gmask = 0x00ff00;
+	bmask = 0xff0000;
 #endif
-	    return;
-	}
-
-	unsigned char *pixels = (unsigned char*)U_Malloc(width
-													 * height * 4);
-	unsigned char *pixelsbuf = (unsigned char*)U_Malloc(width
-														* height * 4);
-    if (pixels == NULL || pixelsbuf == NULL) {
+	const unsigned int colorbytes = 4;
+	const unsigned int bitsperpixel = 32;
+	SDL_Surface *temp = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height,
+											 bitsperpixel, rmask, gmask, bmask, amask);
+	SDL_Surface *image = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height,
+											  bitsperpixel, rmask, gmask, bmask, amask);
+	if (temp == NULL || image == NULL) {
 #ifdef SCREENSHOT_VERBOSE
-		U_LogWrite(LOG_ERR,
-					"U_TakeScreenshot(): pixels or pixelsbuf are NULL!\n");
+		U_LogWrite(LOG_ERR, "U_TakeScreenshot(): temp/image is NULL!\n");
 #endif
-	    return;
+		return;
 	}
-	glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-
-	memcpy(pixelsbuf, pixels, width * height * 4);
-	pixelsbuf = pixels;
-	// flip image
-	for (size_t i = 0; i < height; ++i) {
-		for (size_t j = 0; j < width; ++j)
-			pixels[width * (height - i) + j] =
-				pixelsbuf[width * i + j];
+	// glReadBuffer(GL_FRONT);
+	glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, image->pixels);
+	for (int i = 0; i < height; ++i) {
+		memcpy((char *)temp->pixels + colorbytes * width * i, (char *)image->pixels
+			   + colorbytes * width * (height - i), colorbytes * width);
 	}
-	screen->pixels = pixels;
-	// result doesn't matter at this point; just need to free this memory
-	const int result = SDL_SaveBMP(screen, filename);
+	memcpy(image->pixels, temp->pixels, width * height * 4);
+	const int result = SDL_SaveBMP(temp, filename);
 #ifdef SCREENSHOT_VERBOSE
 	if (result < 0)
 		U_LogWrite(LOG_ERR, "U_TakeScreenshot(): screenshot failed!\n");
 	else
 		U_LogWrite(LOG_MSG, "U_TakeScreenshot(): screenshot succeeded!\n");
 #endif
-    // this function below is causing segfaults
-	SDL_FreeSurface(screen);
-	screen = 0;
-
-    free(pixels);
-	free(pixelsbuf);
-	pixels = 0;
-	pixelsbuf = 0;
+	SDL_FreeSurface(image);
+	SDL_FreeSurface(temp);
 }
 
