@@ -26,7 +26,12 @@
 #include "u_log.h"
 #include <string.h>
 
-GLenum D_glCheckError(const char *filename, int line) {
+inline void D_GLClearError(void) {
+	GLenum errcode;
+	while ((errcode = glGetError()) != GL_NO_ERROR);
+}
+
+GLenum D_GLCheckError(const char *filename, int line) {
 	GLenum errcode;
 	while ((errcode = glGetError()) != GL_NO_ERROR) {
 		char errbuf[50];
@@ -58,7 +63,7 @@ GLenum D_glCheckError(const char *filename, int line) {
 	return errcode;
 }
 
-void D_glDebugCallback(GLenum source,
+void D_GLDebugCallback(GLenum source,
 					   GLenum type,
 					   GLuint id,
 					   GLenum severity,

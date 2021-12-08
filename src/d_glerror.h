@@ -27,10 +27,16 @@
 
 #include "GL/glew.h"
 
-GLenum D_glCheckError(const char *filename, int line);
-# define glCheckError() D_glCheckError(__FILE__, __LINE__)
+void D_GLClearError(void);
+GLenum D_GLCheckError(const char *filename, int line);
+#define GL_CheckError() D_glCheckError(__FILE__, __LINE__)
 
-void D_glDebugCallback(GLenum source,
+// probably should assert here respective to NDEBUG
+// wrapper for any OPENGL functions; prefer use of debug callback
+#define GL_CALL(X) D_GLClearError(); \
+	X \
+
+void D_GLDebugCallback(GLenum source,
 					   GLenum type,
 					   GLuint id,
 					   GLenum severity,
