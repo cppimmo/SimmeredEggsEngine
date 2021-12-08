@@ -1,5 +1,5 @@
 /* =============================================================================
-** SimmeredEggsEngine, file: u_utility.h Created 12/6/2021
+** SimmeredEggsEngine, file: u_types.h Created 12/7/2021
 **
 ** Copyright 2021 Brian Hoffpauir TX, USA
 ** All rights reserved.
@@ -22,27 +22,41 @@
 ** ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ** =============================================================================
 **/
-#ifndef __U_UTILITY_H__
-#define __U_UTILITY_H__
+#ifndef __U_DEFTYPES_H__
+#define __U_DEFTYPES_H__
 
-#include "u_deftypes.h"
+/* this file stores type definitions and other constants */
 
-#include <stdlib.h>
+/*
+ * CONSTANTS
+ */
+#define ENGINE_NAME "SimmeredEggsEngine"
+enum {
+	ENGINE_VERSION_MAJOR = 1,
+	ENGINE_VERSION_MINOR = 0,
+	ENGINE_VERSION_PATCH = 0,
+};
+#define EMPTY_STRING ""
 
-#define INSTANCE_FILE "/tmp/see_instance"
+/*
+ * TYPES
+ */
+#ifdef __cplusplus
+// use builtin bool type with C++
+typedef bool boolean;
+#else
+// phooey on you GCC!
+#undef bool
+#undef true
+#undef false
+#undef TRUE
+#undef FALSE
 
-void *U_Malloc(size_t size);
-void U_Free(void *ptr);
-int U_RandomInt(int minval, int maxval);
-float U_RandomFloat(float minval, float maxval);
-double U_RandomDouble(double minval, double maxval);
-int U_RandomColorUnsignedChar(void);
-float U_RandomColorNormalizedFloat(void);
-boolean U_InstanceFileLock(void);
-boolean U_IsOnlyInstance(void);
-boolean U_InstanceFileUnlock(void);
-boolean U_CheckStorage(const char *path, const unsigned long long needed);
-boolean U_CheckMemory(void);
-unsigned long U_GetCPUSpeed(void);
+enum boolean_t {
+	false,
+	true,
+};
+typedef enum boolean_t boolean;
+#endif
 
 #endif

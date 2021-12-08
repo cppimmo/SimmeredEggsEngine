@@ -28,9 +28,10 @@
 #include <string.h>
 
 #include "SDL2/SDL.h"
-#include "d_glerror.h"
+#include "u_utility.h"
 #include "u_log.h"
 #include "g_config.h"
+#include "d_glerror.h"
 #include "g_window.h"
 #include "i_input.h"
 #include "r_render.h"
@@ -40,7 +41,6 @@
 #include "r_vertexbuffer.h"
 #include "p_scene.h"
 
-#define GAME_VERSION "1.0.0"
 #define GAME_EXIT_SUCCESS 0
 #define GAME_EXIT_FAILURE 1
 #define GAME_EXIT(X) \
@@ -65,16 +65,18 @@ struct gamestate_t {
 };
 struct gamestate_t gamestate = {false,false,false,false,false,};
 
-int main(int argc, char **argv) {
+int main(int argc, char *argv[]) {
 	ProcessArguments(argc, argv);
 	if (!U_LogOpen(LOG_FILE, verbose)) {
 		fprintf(stderr, "Failed to open log file for writing, %s", LOG_FILE);
 	}
-	U_LogWrite(LOG_MSG, "Initializing Starship Fleet...\n");
+	U_LogWrite(LOG_MSG, "Initializing %s v%d.%d.%d...\n", ENGINE_NAME,
+			   ENGINE_VERSION_MAJOR, ENGINE_VERSION_MINOR,
+			   ENGINE_VERSION_PATCH);
 	U_LogWrite(LOG_MSG, "Loading configuration file...\n");
 
 	struct config_t config = {
-        .title = "Starship Fleet",
+        .title = "Program",
 		.sizex = 800,
 		.sizey = 600,
 		.fullscreen = false,
@@ -106,6 +108,7 @@ int main(int argc, char **argv) {
 				   linked.major, linked.minor, linked.patch);
 	}
 	atexit(Shutdown);
+#ifndef NDEBUG
     { // short scope for debug context checking
 		// need to check if the current context is version 4.3 or greater
 		int contextflags;
@@ -115,10 +118,11 @@ int main(int argc, char **argv) {
 		}
 		glEnable(GL_DEBUG_OUTPUT);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-		glDebugMessageCallback(D_glDebugCallback, NULL);
+		glDebugMessageCallback(D_GLDebugCallback, NULL);
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL,
 							  GL_TRUE);
 	}
+#endif
 	if (!S_SoundInit()) {
 		U_LogWrite(LOG_ERR, "Failed to init sound system!");
 		GAME_EXIT(GAME_EXIT_FAILURE);
@@ -246,12 +250,12 @@ void ProcessArguments(int argc, char **argv) {
 }
 
 inline void ShowUsage(void) {
-	printf("Starship Fleet v"GAME_VERSION"\n"
-		   "Starship Fleet is a spaceship fleet battle game.\n\n"
-		   "usage:\n\tstarshipfleet [FLAGS] [OPTIONS]\n\n"
+	/* printf("SimmeredEggsEngine v"GAME_VERSION"\n"
+		   "blah blah blah.\n\n"
+		   "usage:\n\tSimmeredEggsEngine [FLAGS] [OPTIONS]\n\n"
            "FLAGS:\n"
 	       "    -q, --quiet Suppress IO to stdout and stderr\n\n"
-           "OPTIONS:\n");
+           "OPTIONS:\n"); */
 	exit(1); // okay to exit no initialization done
 }
 
