@@ -37,11 +37,15 @@ struct mousewheel_t { // positive=right, negative=left
 	Uint32 direction; // see Remarks of SDL_MouseWheelEvent
 };
 
-struct mouse_t {
+struct mousepos_t {
 	Sint32 x; // x-coord relative to window
 	Sint32 y;
 	Sint32 xrel; // relative motion in horizontal direction
 	Sint32 yrel;
+};
+
+struct mouse_t {
+	struct mousepos_t pos;
 	boolean buttonl; // left button and so on
 	boolean buttonm; // true if pressed
 	boolean buttonr;
@@ -96,6 +100,7 @@ void I_UpdateKeyboardState(void);
 boolean I_IsKeyDown(SDL_Keycode key);
 boolean I_IsMouseButtonDown(Uint8 button);
 struct mousewheel_t *I_GetMouseWheelState(void);
+struct mousepos_t *I_GetMousePos(void);
 boolean I_IsControllerButtonDown(SDL_GameControllerButton button);
 // these functions control buffer input
 void I_KeyMark(void);

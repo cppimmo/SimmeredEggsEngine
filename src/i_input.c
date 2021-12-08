@@ -34,10 +34,10 @@ static char keybuffer[KEY_BUFFER_SIZE];
 static Uint8 *keystates;
 static size_t keystatelen;
 static struct mouse_t mouse = {
-	.x = 0,
-	.y = 0,
-	.xrel = 0,
-	.yrel = 0,
+	.pos.x = 0,
+	.pos.y = 0,
+	.pos.xrel = 0,
+	.pos.yrel = 0,
 	.buttonl = false,
 	.buttonm = false,
 	.buttonr = false,
@@ -68,15 +68,15 @@ static struct controller_t controller = {
 };
 
 void I_OnMouseMotion(const SDL_MouseMotionEvent *event) {
-	mouse.x = event->x;
-	mouse.y = event->y;
-	mouse.xrel = event->xrel;
-	mouse.yrel = event->yrel;
+	mouse.pos.x = event->x;
+	mouse.pos.y = event->y;
+	mouse.pos.xrel = event->xrel;
+	mouse.pos.yrel = event->yrel;
 }
 
 void I_OnMouseButtonDown(const SDL_MouseButtonEvent *event) {
-	mouse.x = event->x;
-	mouse.y = event->y;
+	mouse.pos.x = event->x;
+	mouse.pos.y = event->y;
 	switch (event->button) {
 	case SDL_BUTTON_LEFT:
 		mouse.buttonl = true;
@@ -97,8 +97,8 @@ void I_OnMouseButtonDown(const SDL_MouseButtonEvent *event) {
 }
 
 void I_OnMouseButtonUp(const SDL_MouseButtonEvent *event) {
-	mouse.x = event->x;
-	mouse.y = event->y;
+	mouse.pos.x = event->x;
+	mouse.pos.y = event->y;
 	switch (event->button) {
 	case SDL_BUTTON_LEFT:
 		mouse.buttonl = false;
@@ -234,6 +234,10 @@ inline boolean I_IsMouseButtonDown(Uint8 button) {
 
 inline struct mousewheel_t *I_GetMouseWheelState(void) {
 	return &mouse.wheel;
+}
+
+inline struct mousepos_t *I_GetMousePos(void) {
+	return &mouse.pos;
 }
 
 inline boolean I_IsControllerButtonDown(SDL_GameControllerButton button) {
