@@ -42,6 +42,7 @@ struct windowstate_t {
 	boolean visible;
 	boolean mouseover; // is mouse in window
 	boolean focused;
+	boolean cursorvisible;
 };
 
 void G_SetWindowPtr(SDL_Window **window);

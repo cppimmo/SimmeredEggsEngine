@@ -208,6 +208,7 @@ inline void G_WindowSetSize(int width, int height) {
 }
 
 inline void G_WindowShowCursor(boolean cursor) {
+	windowstate.cursorvisible = cursor;
 	SDL_ShowCursor((cursor)? SDL_ENABLE : SDL_DISABLE);
 }
 
