@@ -96,7 +96,12 @@ inline GLuint R_CreateShader(GLenum type) {
 }
 
 const GLchar *ShaderSource(const char *filename) {
-	FILE *p_handle = fopen(filename, "rb");
+	char filenamebuf[FILENAME_MAX];
+	strcat(filenamebuf, SHADER_DIR);
+	strcat(filenamebuf, filename);
+
+	FILE *p_handle = fopen(filenamebuf, "rb");
+	*filenamebuf = 0;
 	if (!p_handle) {
 		U_LogWrite(LOG_ERR, "Failure loading shader source from %s!\n", filename);
 		return NULL;

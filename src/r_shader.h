@@ -27,8 +27,13 @@
 
 #include "GL/glew.h"
 #include "cglm/cglm.h"
-#include <stdlib.h>
 #include "u_utility.h"
+
+#include <stdlib.h>
+
+/* all shader source files are presumed to be in this directory, thus do not
+   supply a leading directory for filenames */
+#define SHADER_DIR "assets/shaders/"
 
 struct shaderuniform_t {
 	GLuint location;
