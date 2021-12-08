@@ -25,6 +25,18 @@
 #ifndef __R_SKYBOX_H__
 #define __R_SKYBOX_H__
 
+#include "u_utility.h"
+#include "r_vertexarray.h"
+#include "r_vertexbuffer.h"
 
+struct skybox_t {
+	struct vertexarray_t vao;
+	struct vertexbuffer_t vbo;
+	GLuint texture;
+};
+
+boolean R_SkyboxInit(const char *filenames[]);
+void R_SkyboxRender();
+void R_SkyboxDestroy(void);
 
 #endif
