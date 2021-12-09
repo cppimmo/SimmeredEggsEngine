@@ -25,6 +25,71 @@
 #ifndef __U_LUA_H__
 #define __U_LUA_H__
 
+#include "u_utility.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include "lua.h"
+#include "lauxlib.h"
+#include "lualib.h"
+#ifdef __cplusplus
+}
+#endif
 /* Wrapper for Lua version 5.1 */
+
+#include <stdarg.h>
+
+#ifndef NDEBUG
+#define LUA_VERBOSE
+#else
+#define LUA_SHUTUP
+#endif
+
+#define LUA_DIR "scripts/"
+
+boolean L_LuaCreate(lua_State *state);
+void L_BindLuaState(lua_State *state);
+lua_State *L_GetLuaState(void);
+void L_LuaError(lua_State *state, const char *fmt, ...);
+boolean L_LuaOkay(const int status);
+void L_LuaDumpStack(lua_State *state);
+boolean L_DoString(const char *str);
+boolean L_DoFile(const char *filename);
+boolean L_IsNil(void);
+boolean L_IsTable(void);
+boolean L_IsUserData(void);
+boolean L_IsCFunction(void);
+boolean L_IsNumber(void);
+boolean L_IsString(void);
+boolean L_IsConvertibleToNumber(void);
+boolean L_IsFunction(void);
+boolean L_IsNone(void);
+boolean L_IsLightUserData(void);
+boolean L_IsBoolean(void);
+int L_GetInteger(void);
+float L_GetFloat(void);
+double L_GetDouble(void);
+const char *L_GetString(void);
+void *L_GetUserData(void);
+void *L_GetLightUserData(void);
+boolean L_GetBoolean(void);
+void L_AssignNil(lua_State *state);
+void L_AssignBoolean(lua_State *state, boolean value);
+void L_AssignInteger(lua_State *state, int value);
+void L_AssignNumber(lua_State *state, double value);
+void L_AssignString(lua_State *state, const char *value);
+void L_AssignUserData(lua_State *state, void *value);
+void L_AssignLightUserData(lua_State *state, void *value);
+// void L_AssignObject(lua_State *state);
+void L_AssignNewTable(lua_State *state, int narray, int nhash);
+void L_TableSetNil(const char *key);
+void L_TableSetBoolean(const char *key, boolean value);
+void L_TableSetInteger(const char *key, int value);
+void L_TableSetNumber(const char *key, double value);
+void L_TableSetString(const char *key, const char *value);
+void L_TableSetUserData(const char *key, void *value);
+void L_TableSetLightUserData(const char *key, void *value);
+// void L_TableSetObject(const char *key);
+void L_LuaDestroy(lua_State *state);
 
 #endif

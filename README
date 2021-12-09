@@ -16,7 +16,7 @@ Dependencies:
 	OpenAL - version 1.21.1
 	libaudio - version
     SDL_ttf - version 2.0.15
-	
+    lua - version 5.1.5	
 $ make
 The output will be placed in the build/ directory. There will be two
 executables one with a trailing -debug and another with -release for debug and
