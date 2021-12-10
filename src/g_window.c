@@ -30,7 +30,7 @@
 	if (window == NULL) } \
 		return; } \
 
-static struct windowstate_t windowstate;
+static WindowState windowstate;
 static SDL_Window *currentwindow;
 static SDL_GLContext context;
 
@@ -38,15 +38,15 @@ inline void G_SetWindowPtr(SDL_Window **window) {
 	currentwindow = *window;
 }
 
-boolean G_WindowInit(struct config_t *const config) {
+boolean G_WindowInit(Options *const options) {
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
 		U_LogWrite(LOG_ERR, "SDL_Init failure: %s\n", SDL_GetError());
 		return false;
 	}
 
-	currentwindow = SDL_CreateWindow(config->title, SDL_WINDOWPOS_UNDEFINED,
-							   SDL_WINDOWPOS_UNDEFINED, config->sizex,
-							   config->sizey,
+	currentwindow = SDL_CreateWindow(options->title, SDL_WINDOWPOS_UNDEFINED,
+							   SDL_WINDOWPOS_UNDEFINED, options->sizex,
+							   options->sizey,
 							   SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 	if (currentwindow == NULL) {
 		U_LogWrite(LOG_ERR, "SDL_CreateWindow() failure: %s\n", SDL_GetError());
@@ -70,7 +70,7 @@ boolean G_WindowInit(struct config_t *const config) {
 				   SDL_GetError());
 		return false;
 	}
-	if (SDL_GL_SetSwapInterval(((config->vsync) ? 1 : 0)) < 0) {
+	if (SDL_GL_SetSwapInterval(((options->vsync) ? 1 : 0)) < 0) {
 		U_LogWrite(LOG_ERR, "SDL_GL_SetSwapInterval() failure: %s\n",
 				   SDL_GetError());
 	}
@@ -82,7 +82,7 @@ boolean G_WindowInit(struct config_t *const config) {
 				   glewGetErrorString(glewerr));
 		return false;
 	}
-	G_WindowViewport(0, 0, config->sizex, config->sizey);
+	G_WindowViewport(0, 0, options->sizex, options->sizey);
 
 	if (glGetString(GL_VENDOR) != 0)
         U_LogWrite(LOG_LOG, "GL_VENDOR=%s\n", glGetString(GL_VENDOR));
@@ -175,7 +175,7 @@ void G_WindowHandleEvent(const SDL_Event *event) {
 	}
 }
 
-struct windowstate_t *G_WindowGetState(void) {
+const WindowState *G_WindowGetState(void) {
 	return &windowstate;
 }
 

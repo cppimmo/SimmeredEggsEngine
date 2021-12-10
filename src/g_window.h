@@ -28,7 +28,7 @@
 #include "SDL2/SDL.h"
 #include "GL/glew.h"
 #include "u_utility.h"
-#include "g_config.h"
+#include "g_options.h"
 
 struct windowstate_t {
 	char title[75];
@@ -44,14 +44,15 @@ struct windowstate_t {
 	boolean focused;
 	boolean cursorvisible;
 };
+typedef struct windowstate_t WindowState;
 
 void G_SetWindowPtr(SDL_Window **window);
-boolean G_WindowInit(struct config_t *const config);
+boolean G_WindowInit(Options *const options);
 boolean G_WindowAttribs(const int glmajor, const int glminor,
 						boolean doublebuffer);
 int G_WindowGetAttrib(SDL_GLattr attrib);
 void G_WindowHandleEvent(const SDL_Event *event);
-struct windowstate_t *G_WindowGetState(void);
+const WindowState *G_WindowGetState(void);
 void G_WindowViewport(GLint posx, GLint posy, GLint width, GLint height);
 void G_WindowSetFullscreen(boolean fullscreen);
 void G_WindowSetTitle(const char *title);

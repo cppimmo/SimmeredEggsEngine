@@ -36,12 +36,14 @@ struct timer_t {
     uint64_t end;
     boolean paused;
 };
+typedef struct timer_t Timer;
 
-void G_TimerInit(struct timer_t *timer);
-void G_TimerStart(struct timer_t *timer);
-void G_TimerStop(struct timer_t *timer);
-boolean G_TimerPaused(struct timer_t *timer);
-void G_TimerUdpate(struct timer_t *timer);
-uint64_t G_TimerPeekMS(struct timer_t *timer);
+void G_TimerInit(Timer *timer);
+void G_TimerStart(Timer *timer);
+void G_TimerEnd(Timer *timer);
+boolean G_TimerIsPaused(Timer *timer);
+void G_TimerPause(Timer *timer, boolean pause);
+void G_TimerUpdate(Timer *timer);
+uint64_t G_TimerPeekMS(Timer *timer);
 
 #endif

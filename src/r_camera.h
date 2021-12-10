@@ -47,16 +47,19 @@ enum cameradirection_t {
 	CAMERA_LEFT,
 	CAMERA_RIGHT,
 };
-
-enum cameratype_t {
-	CAMERA_TYPE_FIRST_PERSON,
-	CAMERA_TYPE_ORBIT,
-};
+typedef enum cameradirection_t CameraDirection;
 
 enum cameraprojection_t {
 	CAMERA_ORTHOGRAPHIC,
-	CAMERA_PROSPECTIVE,
+	CAMERA_PERSPECTIVE,
 };
+typedef enum cameraprojection_t CameraProjection;
+
+enum cameratype_t {
+	CAMERA_FIRST_PERSON,
+	CAMERA_ORBIT,
+};
+typedef enum cameratype_t CameraType;
 
 struct camera_t {
 	vec3 position;
@@ -75,22 +78,26 @@ struct camera_t {
 	enum cameratype_t type;
 	// other stuff for updates
 	boolean firstmouse;
+	boolean contrainpitch;
 	GLfloat lastx;
 	GLfloat lasty;
 };
+typedef struct camera_t Camera;
 
-boolean R_CameraInit(struct camera_t *camera,
-					 enum cameraprojection_t projection,
-					 enum cameratype_t type);
-void R_SetActiveCamera(struct camera_t *camera);
-void R_CameraViewMatrix(struct camera_t *camera, mat4 *view);
+boolean R_CameraInit(Camera *camera,
+					 CameraProjection projection,
+					 CameraType type);
+void R_SetActiveCamera(Camera *camera);
+void R_CameraViewMatrix(Camera *camera, mat4 view);
 void R_CameraFreeMouse(void);
 void R_CameraLockMouse(void);
 void R_CameraSetPos(vec3 position);
 void R_CameraSetSensitity(GLfloat sensitivity);
 void R_CameraSetSpeed(GLfloat forward, GLfloat strafe);
 void R_CameraSetFieldOfView(GLfloat fov);
-void R_CameraMove(void);
+void R_CameraProcessMovement(GLfloat deltatime);
+void R_CameraProcessMouse(void);
+void R_CameraProcessScroll(GLfloat deltatime);
 void R_CameraUpdate(GLfloat deltatime);
 
 #endif

@@ -33,8 +33,16 @@ struct shaderinfo_t shaders[2] = {
 		{GL_FRAGMENT_SHADER,"triangle_fs.glsl",0},
 };
 GLuint program;
+Timer timer;
+Camera camera;
 
 boolean P_GameStart(void) {
+	G_TimerInit(&timer);
+	G_TimerPause(&timer, false);
+
+	R_CameraInit(&camera, CAMERA_PERSPECTIVE, CAMERA_FIRST_PERSON);
+	R_SetActiveCamera(&camera);
+
 	glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
@@ -68,7 +76,10 @@ boolean P_GameStart(void) {
 }
 
 boolean P_GameUpdate(GLfloat deltatime) {
+	G_TimerStart(&timer);
 	I_UpdateKeyboardState();
+
+	R_CameraUpdate(deltatime);
 	if (I_IsKeyDown(SDL_SCANCODE_A)) {
 		U_LogWrite(LOG_LOG, "Pressed key A.\n");
 	}
@@ -86,6 +97,9 @@ boolean P_GameUpdate(GLfloat deltatime) {
 	SDL_GameController *ctrl = SDL_GameControllerOpen(0);
 	SDL_Joystick *joy = SDL_GameControllerGetJoystick(ctrl);
 	SDL_GameControllerRumble(ctrl, 2000, 3000, 20);
+	G_TimerEnd(&timer);
+	G_TimerUpdate(&timer);
+	// printf("Timer: %dms\n", G_TimerPeekMS(&timer));
 	return true;
 }
 

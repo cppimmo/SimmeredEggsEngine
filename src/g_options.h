@@ -1,5 +1,5 @@
 /* =============================================================================
-** SimmeredEggsEngine, file: g_config.h Created 12/6/2021
+** SimmeredEggsEngine, file: g_options.h Created 12/6/2021
 **
 ** Copyright 2021 Brian Hoffpauir TX, USA
 ** All rights reserved.
@@ -22,16 +22,16 @@
 ** ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ** =============================================================================
 **/
-#ifndef __G_CONFIG_H__
-#define __G_CONFIG_H__
+#ifndef __G_OPTIONS_H__
+#define __G_OPTIONS_H__
 
 #include <stdio.h>
 #include <stdlib.h>
 #include "u_utility.h"
 
-#define CONFIG_FILE "starshipfleet.ini"
+#define OPTIONS_SCRIPT "options.lua"
 
-struct config_t {
+struct options_t {
 	char title[75];
 	unsigned int sizex;
 	unsigned int sizey;
@@ -40,8 +40,9 @@ struct config_t {
 	boolean vsync;
 	unsigned int quality;
 };
+typedef struct options_t Options;
 
-boolean G_ConfigLoad(const char *filename, struct config_t *const options);
-void G_ConfigClose(void);
+boolean G_OptionsLoad(const char *filename, Options *const options);
+void G_OptionsClose(void);
 
 #endif

@@ -80,6 +80,7 @@ float U_RandomColorNormalizedFloat(void) {
 	return 0.0f;
 }
 
+// use UNIX: https://rosettacode.org/wiki/Determine_if_only_one_instance_is_running#C
 boolean U_InstanceFileLock(void) {
 	return true;
 }
@@ -129,7 +130,7 @@ boolean U_CheckStorage(const char *path, const unsigned long long needed) {
 unsigned long U_GetCPUSpeed(void) {
 #ifdef __OS_LINUX__
 	// read /proc/cpuinfo
-	
+
 #elif defined(__OS_FREEBSD__)
 
 #elif defined(__OS_WINDOWS__)

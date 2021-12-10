@@ -38,10 +38,12 @@
 void R_Clear(const GLbitfield mask);
 void R_ClearColor(const GLfloat *value);
 void R_BindCamera(struct camera_t *camera);
+mat4 *R_GetProjection(void);
 void R_Viewport(GLint x, GLint y, GLint width, GLint height);
 GLboolean R_IsEnabled(GLenum capability);
 void R_Enable(GLenum capability);
 void R_Disable(GLenum capability);
+void R_DepthFunctionality(GLenum func);
 void R_Wireframe(const boolean value);
 void R_LineWidth(GLfloat width);
 void R_DrawArrays(GLenum mode, GLint first, GLsizei count);

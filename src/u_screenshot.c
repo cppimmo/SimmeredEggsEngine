@@ -76,7 +76,7 @@ static void ScreenshotFilename(char *filename) {
 /* doesn't matter if this function fails just print messages based on release
  * (catastrophic failures probably are relevant!) check for NULL pointer! */
 void U_TakeScreenshot(void) {
-	struct windowstate_t *windowstate = G_WindowGetState();
+	const WindowState *windowstate = G_WindowGetState();
 		if (windowstate == NULL) {
 #ifdef SCREENSHOT_VERBOSE
 		U_LogWrite(LOG_ERR,

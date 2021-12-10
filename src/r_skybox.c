@@ -23,4 +23,23 @@
 ** =============================================================================
 **/
 #include "r_skybox.h"
+#include "r_texture.h"
+#include "r_shader.h"
+#include "r_render.h"
+
+boolean R_SkyboxInit(Skybox *skybox, const char *filenames[]) {
+	skybox->texture = R_LoadTextureCubemap(filenames);
+
+}
+
+void R_SkyboxRender(Skybox *skybox, mat4 *view, mat4 *projection) {
+	R_DepthFunctionality(GL_LEQUAL);
+
+}
+
+void R_SkyboxDestroy(Skybox *skybox) {
+	R_DeleteTexture(&skybox->texture);
+	R_DeleteVertexArray(&skybox->vao);
+	R_DeleteVertexBuffer(&skybox->vbo);
+}
 

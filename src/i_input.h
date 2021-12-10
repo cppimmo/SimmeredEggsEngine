@@ -36,6 +36,7 @@ struct mousewheel_t { // positive=right, negative=left
 	Sint32 y; // vertical scroll
 	Uint32 direction; // see Remarks of SDL_MouseWheelEvent
 };
+typedef struct mousewheel_t IMouseWheel;
 
 struct mousepos_t {
 	Sint32 x; // x-coord relative to window
@@ -43,6 +44,7 @@ struct mousepos_t {
 	Sint32 xrel; // relative motion in horizontal direction
 	Sint32 yrel;
 };
+typedef struct mousepos_t IMousePos;
 
 struct mouse_t {
 	struct mousepos_t pos;
@@ -54,15 +56,18 @@ struct mouse_t {
 					     SDL_BUTTON_X1, SDL_BUTTON_X2 */
 	struct mousewheel_t wheel;
 };
+typedef struct mouse_t IMouse;
 
 struct keyboard_t {
 
 };
+typedef struct keyboard_t IKeyboard;
 
 struct controlleraxis_t {
 	Uint16 x;
 	Uint16 y;
 };
+typedef struct controlleraxis_t IControllerAxis;
 
 struct controller_t { // axis range -32768 to 32767
     struct controlleraxis_t laxis;
@@ -80,6 +85,7 @@ struct controller_t { // axis range -32768 to 32767
 	 SDL_CONTROLLER_BUTTON_DPAD_LEFT 14, SDL_CONTROLLER_BUTTON_DPAD_RIGHT 15
 	 SDL_CONTROLLER_BUTTON_MAX */
 };
+typedef struct controller_t IController;
 
 void I_OnMouseMotion(const SDL_MouseMotionEvent *event);
 void I_OnMouseButtonDown(const SDL_MouseButtonEvent *event);
@@ -99,8 +105,8 @@ void I_OnControllerDeviceRemapped(const SDL_ControllerDeviceEvent *event);
 void I_UpdateKeyboardState(void);
 boolean I_IsKeyDown(SDL_Keycode key);
 boolean I_IsMouseButtonDown(Uint8 button);
-struct mousewheel_t *I_GetMouseWheelState(void);
-struct mousepos_t *I_GetMousePos(void);
+const IMouseWheel *I_GetMouseWheelState(void);
+const IMousePos *I_GetMousePos(void);
 boolean I_IsControllerButtonDown(SDL_GameControllerButton button);
 // these functions control buffer input
 void I_KeyMark(void);

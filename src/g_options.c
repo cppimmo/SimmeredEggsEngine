@@ -1,5 +1,5 @@
 /* =============================================================================
-** SimmeredEggsEngine, file: g_config.c Created 12/6/2021
+** SimmeredEggsEngine, file: g_options.c Created 12/6/2021
 **
 ** Copyright 2021 Brian Hoffpauir TX, USA
 ** All rights reserved.
@@ -22,13 +22,15 @@
 ** ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ** =============================================================================
 **/
-#include "g_config.h"
-#include <unistd.h>
+#include "g_options.h"
+#include "u_lua.h"
 
-static FILE *confhandle = NULL;
+// #include <unistd.h>
 
-boolean G_ConfigLoad(const char *filename, struct config_t *const config) {
-	confhandle = fopen(filename, "r");
+// static FILE *confhandle = NULL;
+
+boolean G_OptionsLoad(const char *filename, Options *const options) {
+	/* confhandle = fopen(filename, "r");
 	if (confhandle == NULL) {
 		fprintf(stderr, "Failed to reading configuration file.\n");
 		return false;
@@ -42,13 +44,40 @@ boolean G_ConfigLoad(const char *filename, struct config_t *const config) {
 		fwrite(line, nread, 1, stdout);
 	}
 
-	free(line);
+	free(line); */
+	lua_State *state = L_LuaCreate();
+	if (state == NULL) {
+		fprintf(stderr, "G_OptionsLoad(): failed to create state!\n");
+		return false;
+	}
+	L_LuaOpenLibraries(state);
+	if (!L_DoFile(state, filename)) {
+		fprintf(stderr, "G_OptionsLoad(): failed to do %s!\n", filename);
+		return false;
+	}
+
+	L_GetGlobal(state, "options");
+	if (!L_IsTable(state, -1)) {
+		fprintf(stderr, "G_OptionsLoad(): no options global in %s!\n",
+				filename);
+		return false;
+	}
+
+	const char *title = L_TableGetString(state, "title");
+	lua_Integer sizex = L_TableGetInteger(state, "sizex");
+	lua_Integer sizey = L_TableGetInteger(state, "sizey");
+	boolean fullscreen = L_TableGetBoolean(state, "fullscreen");
+	lua_Integer refreshrate = L_TableGetInteger(state, "refreshrate");
+	boolean vsync = L_TableGetBoolean(state, "vsync");
+	lua_Integer quality = L_TableGetInteger(state, "quality");
+	printf("crap: %s, %d, %d, %d, %d, %d, %d\n",
+		   title, sizex, sizey, fullscreen, refreshrate, vsync, quality);
 	return true;
 }
 
-void G_ConfigClose(void) {
-	if (confhandle != NULL) {
+void G_OptionsClose(void) {
+	/* if (confhandle != NULL) {
 		fclose(confhandle);
-	}
+	} */
 }
 

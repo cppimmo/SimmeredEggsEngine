@@ -30,7 +30,7 @@
 #include "SDL2/SDL.h"
 #include "u_utility.h"
 #include "u_log.h"
-#include "g_config.h"
+#include "g_options.h"
 #include "d_glerror.h"
 #include "g_window.h"
 #include "i_input.h"
@@ -73,9 +73,9 @@ int main(int argc, char *argv[]) {
 	U_LogWrite(LOG_MSG, "Initializing %s v%d.%d.%d...\n", ENGINE_NAME,
 			   ENGINE_VERSION_MAJOR, ENGINE_VERSION_MINOR,
 			   ENGINE_VERSION_PATCH);
-	U_LogWrite(LOG_MSG, "Loading configuration file...\n");
+	U_LogWrite(LOG_MSG, "Loading options file...\n");
 
-	struct config_t config = {
+	Options options = {
         .title = "Program",
 		.sizex = 800,
 		.sizey = 600,
@@ -84,16 +84,16 @@ int main(int argc, char *argv[]) {
 		.vsync = true,
 		.quality = 6,
 	};
-	if (!G_ConfigLoad(CONFIG_FILE, &config)) {
-		U_LogWrite(LOG_MSG, "Configuration parsing error. Using reasonable set of defaults.\n");
+	if (!G_OptionsLoad(OPTIONS_SCRIPT, &options)) {
+		U_LogWrite(LOG_MSG, "Options parsing error. Using reasonable set of defaults.\n");
 	}
-	G_ConfigClose();
-	U_LogWrite(LOG_MSG, "Configuration parsed successfully.\n");
+	G_OptionsClose();
+	U_LogWrite(LOG_MSG, "Options parsed successfully.\n");
 	U_LogWrite(LOG_MSG, "Initialization complete. Elapsed time: %ds\n", 0);
 
 	SDL_Window *window;
     G_SetWindowPtr(&window);
-	if (!G_WindowInit(&config)) {
+	if (!G_WindowInit(&options)) {
 		U_LogWrite(LOG_ERR, "Window initilization failure.\n");
 		GAME_EXIT(GAME_EXIT_FAILURE);
 	}
@@ -134,7 +134,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	uint64_t starttime, endtime, deltatime = 0;
-	const uint64_t framedelay = 1000 / config.refreshrate;
+	const uint64_t framedelay = 1000 / options.refreshrate;
 	boolean running = true;
 	while (running) {
 		starttime = SDL_GetTicks();

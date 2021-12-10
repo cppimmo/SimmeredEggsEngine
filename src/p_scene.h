@@ -31,6 +31,7 @@
 #include "i_input.h"
 #include "r_render.h"
 #include "r_shader.h"
+#include "g_timer.h"
 
 #include <stdlib.h>
 

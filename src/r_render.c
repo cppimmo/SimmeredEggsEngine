@@ -25,6 +25,8 @@
 #include "r_render.h"
 #include "d_glerror.h"
 
+mat4 projection;
+
 inline void R_Clear(const GLbitfield mask) {
 	glClear(mask);
 }
@@ -35,6 +37,10 @@ inline void R_ClearColor(const GLfloat *value) {
 
 inline void R_BindCamera(struct camera_t *camera) {
 	R_SetActiveCamera(camera);
+}
+
+inline mat4 *R_GetProjection(void) {
+	return &projection;
 }
 
 inline void R_Viewport(GLint x, GLint y, GLint width, GLint height) {
@@ -51,6 +57,10 @@ inline void R_Enable(GLenum capability) {
 
 inline void R_Disable(GLenum capability) {
 	glDisable(capability);
+}
+
+inline void R_DepthFunctionality(GLenum func) {
+	glDepthFunc(func);
 }
 
 inline void R_Wireframe(const boolean value) {

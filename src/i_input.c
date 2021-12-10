@@ -33,7 +33,7 @@ static boolean iskeymark = false;
 static char keybuffer[KEY_BUFFER_SIZE];
 static Uint8 *keystates;
 static size_t keystatelen;
-static struct mouse_t mouse = {
+static IMouse mouse = {
 	.pos.x = 0,
 	.pos.y = 0,
 	.pos.xrel = 0,
@@ -48,9 +48,9 @@ static struct mouse_t mouse = {
 	.wheel.direction = 0,
 };
 
-static struct keyboard_t keyboard;
+static IKeyboard keyboard;
 
-static struct controller_t controller = {
+static IController controller = {
 	.laxis.x = 0,
 	.laxis.y = 0,
 	.raxis.x = 0,
@@ -232,11 +232,11 @@ inline boolean I_IsMouseButtonDown(Uint8 button) {
 	}
 }
 
-inline struct mousewheel_t *I_GetMouseWheelState(void) {
+inline const IMouseWheel *I_GetMouseWheelState(void) {
 	return &mouse.wheel;
 }
 
-inline struct mousepos_t *I_GetMousePos(void) {
+inline const IMousePos *I_GetMousePos(void) {
 	return &mouse.pos;
 }
 

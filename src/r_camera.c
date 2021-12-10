@@ -25,14 +25,18 @@
 #include "r_camera.h"
 #include "i_input.h"
 
-struct camera_t *activecamera;
+#include <math.h>
+
+static void UpdateCameraVectors(Camera *camera);
+
+static Camera *activecamera;
 #define NULL_CAMERA(X) \
 	if (activecamera == NULL) \
 		return X \
 
-boolean R_CameraInit(struct camera_t *camera,
-					 enum cameraprojection_t projection,
-					 enum cameratype_t type) {
+boolean R_CameraInit(Camera *camera,
+					 CameraProjection projection,
+					 CameraType type) {
 	if (camera == NULL)
 		return false;
 	glm_vec3_zero(camera->position);
@@ -50,17 +54,33 @@ boolean R_CameraInit(struct camera_t *camera,
     camera->type = type;
     // other stuff
 	camera->firstmouse = true;
+	camera->contrainpitch = true;
 	camera->lastx = 0.0f;
 	camera->lasty = 0.0f;
 	return true;
 }
 
-inline void R_SetActiveCamera(struct camera_t *camera) {
+inline void R_SetActiveCamera(Camera *camera) {
 	activecamera = camera;
 }
 
-void R_CameraViewMatrix(struct camera_t *camera, mat4 *view) {
+void R_CameraViewMatrix(Camera *camera, mat4 view) {
+	vec3 dest;
+	glm_vec3_add(camera->position, camera->front, dest);
+	glm_lookat(camera->position, dest, camera->up, view);
+}
 
+static void UpdateCameraVectors(Camera *camera) {
+	vec3 front; // calculate new front vector
+    front[0] = cos(glm_rad(camera->yaw)) * cos(glm_rad(camera->pitch));
+	front[1] = sin(glm_rad(camera->pitch));
+	front[2] = sin(glm_rad(camera->yaw)) * cos(glm_rad(camera->pitch));
+    glm_normalize(front);
+	// calculate the right and up vector
+	glm_vec3_cross(camera->front, camera->worldup, camera->right);
+	glm_normalize(camera->right); // normalize vectors to increase movement speed
+	glm_vec3_cross(camera->right, camera->front, camera->up);
+	glm_normalize(camera->up);
 }
 
 inline void R_CameraFreeMouse(void) {
@@ -94,37 +114,86 @@ inline void R_CameraSetFieldOfView(GLfloat fov) {
 	activecamera->fov = fov;
 }
 
-void R_CameraMove(void) {
-	if (I_IsKeyDown(SDL_SCANCODE_W)) {
+void R_CameraProcessMovement(GLfloat deltatime) {
+	GLfloat forwardspeed = activecamera->speedforward * deltatime;
+	GLfloat strafespeed = activecamera->speedstrafe * deltatime;
 
+	vec3 vecforward; glm_vec3_broadcast(forwardspeed, vecforward);
+	vec3 vecstrafe; glm_vec3_broadcast(strafespeed, vecstrafe);
+	if (I_IsKeyDown(SDL_SCANCODE_W)) {
+		vec3 result;
+		glm_vec3_mul(activecamera->front, vecforward, result);
+		glm_vec3_add(activecamera->position, result, activecamera->position);
 	}
 	if (I_IsKeyDown(SDL_SCANCODE_A)) {
-
+		vec3 result;
+		glm_vec3_mul(activecamera->right, vecstrafe, result);
+		glm_vec3_sub(activecamera->position, result, activecamera->position);
 	}
 	if (I_IsKeyDown(SDL_SCANCODE_S)) {
-
+		vec3 result;
+		glm_vec3_mul(activecamera->front, vecforward, result);
+		glm_vec3_sub(activecamera->position, result, activecamera->position);
 	}
 	if (I_IsKeyDown(SDL_SCANCODE_D)) {
-
+		vec3 result;
+		glm_vec3_mul(activecamera->right, vecstrafe, result);
+		glm_vec3_add(activecamera->position, result, activecamera->position);
 	}
+}
+
+void R_CameraProcessMouse(void) {
+	IMousePos *pos = I_GetMousePos();
+
+	activecamera->lastx *= activecamera->sensitivity;
+	activecamera->lasty *= activecamera->sensitivity;
+
+	activecamera->yaw += activecamera->lastx;
+	activecamera->pitch += activecamera->lasty;
+
+	// make sure that when pitch is out of bounds, screen doesn't get flipped
+	if (activecamera->contrainpitch) {
+		if (activecamera->pitch > 89.0f)
+			activecamera->pitch = 89.0f;
+		if (activecamera->pitch < -89.0f)
+			activecamera->pitch = -89.0f;
+	}
+
+	activecamera->lastx = (GLfloat)pos->x;
+	activecamera->lasty = (GLfloat)pos->y;
+}
+
+void R_CameraProcessScroll(GLfloat deltatime) {
+	IMouseWheel *wheel = I_GetMouseWheelState();
+    // last value, you should really make this non-static lol
+	static GLfloat yoffset = 0.0f;
+	activecamera->fov -= yoffset;
+
+	if (activecamera->fov < 1.0f)
+		activecamera->fov = 1.0f;
+	if (activecamera->fov > 45.0f)
+		activecamera->fov = 45.0f;
+
+	yoffset = (GLfloat)wheel->y;
 }
 
 void R_CameraUpdate(GLfloat deltatime) {
 	NULL_CAMERA();
-	struct mousepos_t *mousepos = I_GetMousePos();
+	/* struct mousepos_t *mousepos = I_GetMousePos();
 	if (activecamera->firstmouse) {
 		activecamera->lastx = (GLfloat)mousepos->x;
 		activecamera->lasty = (GLfloat)mousepos->y;
 		activecamera->firstmouse = false;
 	}
-
 	const float xoffset = mousepos->x - activecamera->lastx;
 	// reversed since y-coords go from bottom to top
 	const float yoffset = activecamera->lasty - mousepos->y;
-
 	activecamera->lastx = (GLfloat)mousepos->x;
 	activecamera->lasty = (GLfloat)mousepos->y;
-
-	// process mouse movement (xoffset, yoffset)
+	// process mouse movement (xoffset, yoffset) */
+	R_CameraProcessMovement(deltatime);
+	R_CameraProcessMouse();
+	R_CameraProcessScroll(deltatime);
+	UpdateCameraVectors(activecamera);
 }
 
