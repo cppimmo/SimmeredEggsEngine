@@ -35,6 +35,7 @@ struct shaderinfo_t shaders[2] = {
 GLuint program;
 Timer timer;
 Camera camera;
+mat4 model;
 
 boolean P_GameStart(void) {
 	G_TimerInit(&timer);
@@ -112,6 +113,18 @@ boolean P_GameRender(GLfloat deltatime) {
 	R_Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	R_ClearColor(color);
 
+	mat4 view;
+	R_CameraViewMatrix(&camera, view);
+	mat4 projection;
+
+	mat4 result;
+	mat4 model;
+	vec3 position = { -1.0f, -1.0f, -1.0f };
+	glm_scale(model, GLM_VEC3_ONE);
+	glm_translate(model, position);
+	glm_mat4_mul(model, view, result);
+	glm_mat4_mul(result, projection, result);
+	R_UniformMat4(program, "mvp", &result);
 	R_BindVertexArray(&vao);
 	R_Wireframe(false);
 	R_LineWidth(1.0f);

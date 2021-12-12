@@ -24,6 +24,7 @@
 **/
 #include "r_camera.h"
 #include "i_input.h"
+#include "u_log.h"
 
 #include <math.h>
 
@@ -122,7 +123,9 @@ void R_CameraProcessMovement(GLfloat deltatime) {
 	vec3 vecstrafe; glm_vec3_broadcast(strafespeed, vecstrafe);
 	if (I_IsKeyDown(SDL_SCANCODE_W)) {
 		vec3 result;
+		printf("Vecforward %.2f %.2f %.2f\n", vecforward[0], vecforward[1], vecforward[2]);
 		glm_vec3_mul(activecamera->front, vecforward, result);
+		printf("result %.2f %.2f %.2f\n", result[0], result[1], result[2]);
 		glm_vec3_add(activecamera->position, result, activecamera->position);
 	}
 	if (I_IsKeyDown(SDL_SCANCODE_A)) {
@@ -192,6 +195,8 @@ void R_CameraUpdate(GLfloat deltatime) {
 	activecamera->lasty = (GLfloat)mousepos->y;
 	// process mouse movement (xoffset, yoffset) */
 	R_CameraProcessMovement(deltatime);
+	U_LogWrite(LOG_MSG, "%.2f,%.2f,%.2f\n", activecamera->position[0],
+			   activecamera->position[1], activecamera->position[2]);
 	R_CameraProcessMouse();
 	R_CameraProcessScroll(deltatime);
 	UpdateCameraVectors(activecamera);

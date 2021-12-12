@@ -25,6 +25,33 @@
 #ifndef __N_NET_H__
 #define __N_NET_H__
 
+#include "u_utility.h"
 
+#ifdef __OS_UNIX__
+#include <sys/socket.h>
+#elif defined(__OS_WINDOWS__)
+#include <winsock2.h>
+#endif
+
+#define MAX_PACKET_SIZE (256)
+#define RECV_BUFFER_SIZE (MAX_PACKET_SIZE * 512)
+
+struct nbinarypacket_t {
+
+};
+typedef struct nbinarypacket_t NBinaryPacket;
+
+struct nsocket_t {
+	int portnum;
+	int socketid;
+	int blockflag;
+	int bindflag;
+};
+typedef struct nsocket_t NSocket;
+
+struct nlistensocket_t {
+
+};
+typedef struct nlistensocket_t NListenSocket;
 
 #endif
