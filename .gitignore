@@ -1,7 +1,7 @@
 *~
-log.txt
-build/**
-lib/**
+Log.txt
+Build/**
+Lib/**
 # mydocs used for personal documents not to be staged
-docs/mydocs/**
-!lib/.placeholder
+Docs/MyDocs/**
+!Lib/.placeholder
